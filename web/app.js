@@ -176,7 +176,8 @@ async function playWord(word) {
     if (blob) {
       const url = URL.createObjectURL(blob);
       const a = new Audio(url);
-      await new Promise((res) => { a.onended = a.onerror = res; a.play().catch(res); });
+      await new Promise((res) => { a.onended = a.onerror = res; a.play().catch(res); setTimeout(res, 5000); }); // 재생이 멈춰도 5초 뒤엔 넘어간다
+      a.pause();
       URL.revokeObjectURL(url);
       return 'family';
     }
@@ -565,7 +566,7 @@ async function renderPlay(stage) {
   const level = data.levels[stage] || 1;
   const st = STAGES[stage - 1];
   const results = [];
-  let toneDb = -10; // 1단계 시작 음량
+  let toneDb = -10 * level; // 1단계 시작 음량: 레벨이 오를수록 작은 소리에서 시작한다
   let quietest = null;
   const sessionConf = {};
   const intro = {
@@ -596,10 +597,13 @@ async function renderPlay(stage) {
   const $ = (s) => view.querySelector(s);
   await new Promise((r) => { $('#start').onclick = r; });
   audio(); // 사용자 터치로 오디오를 깨운다
+  if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance('')); // iOS 사파리는 터치 안에서 한 번 말해야 이후 음성이 나온다
 
   const orb = $('#orb');
   const setOrb = (mode, icon) => { orb.className = `orb ${mode}`; if (icon) orb.innerHTML = icon; };
-  const playing = async (p) => { setOrb('playing'); try { return await p; } finally { if (alive()) setOrb('idle'); } };
+  let busy = false; // 소리가 나는 동안에는 다시 듣기를 막아 소리가 겹치지 않게 한다
+  const playing = async (p) => { busy = true; setOrb('playing'); try { return await p; } finally { busy = false; if (alive()) setOrb('idle'); } };
+  const replay = (fn) => () => { if (!busy) playing(fn()); };
   const setQ = (q, hint = '') => { $('#q').textContent = q; $('#hint').innerHTML = hint; };
 
   for (let i = 0; i < TRIALS && alive(); i++) {
@@ -681,7 +685,7 @@ async function renderPlay(stage) {
     const target = pick(ids);
     $('#answers').innerHTML = '';
     setQ('무슨 소리일까요?', replayBtn());
-    $('#replay').onclick = () => playing(playEnv(target));
+    $('#replay').onclick = replay(() => playEnv(target));
     await playing(playEnv(target));
     if (!alive()) return false;
     const ans = await ask(ids.map((id) => [ENV_SOUNDS[id].name, ENV_SOUNDS[id].icon]), ids.indexOf(target), ids.length === 2 ? 'two' : '');
@@ -697,7 +701,7 @@ async function renderPlay(stage) {
     const target = pick(set);
     $('#answers').innerHTML = '';
     setQ('어떤 단어를 들었나요?', replayBtn() + '<span class="src" id="src"></span>');
-    $('#replay').onclick = () => playing(playWord(target));
+    $('#replay').onclick = replay(() => playWord(target));
     const src = await playing(playWord(target));
     if (!alive()) return false;
     const label = { family: '가족 목소리', tts: 'AI 음성', 'tts-nokorean': '이 기기에는 한국어 음성이 없어 발음이 어색할 수 있어요', none: '이 브라우저는 음성을 지원하지 않아요' }[src];
@@ -767,7 +771,13 @@ function countUp(el, to) {
 
 // 화면 상태는 메모리에 둔다(주소 해시를 쓸 수 없는 미리보기 환경에서도 동작하도록).
 let current = location.hash || '#home';
-function go(h) { current = h; route(); }
+function go(h) {
+  current = h;
+  try { history.pushState({ h }, ''); } catch {} // 휴대폰 뒤로가기로 앱 안의 이전 화면으로 돌아오게 한다
+  route();
+}
+window.addEventListener('popstate', (e) => { current = e.state?.h || '#home'; route(); });
+try { history.replaceState({ h: current }, ''); } catch {}
 function route() {
   playToken++;
   if (window.speechSynthesis) speechSynthesis.cancel();
