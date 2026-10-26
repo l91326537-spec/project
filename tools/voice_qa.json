@@ -457,7 +457,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 8
 },
 "기린": {
 "heard": "비린",
@@ -567,7 +568,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 2
 },
 "김영미 님 들어오세요": {
 "heard": "비명리님 들어오세요",
@@ -597,7 +599,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 2
 },
 "김치": {
 "heard": "김치",
@@ -637,7 +640,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 8
 },
 "꽃": {
 "heard": "코.",
@@ -657,7 +661,8 @@
 "exact": false,
 "try": 3,
 "speed": 0.8,
-"ok": false
+"ok": false,
+"base": 8
 },
 "나라": {
 "heard": "나라",
@@ -1177,7 +1182,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 2
 },
 "동생이 곰을 찼어요": {
 "heard": "동생이 곰을 찼어요.",
@@ -1197,7 +1203,8 @@
 "exact": false,
 "try": 2,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 2
 },
 "동생이 콩을 찼어요": {
 "heard": "동생이 콩을 찼어요.",
@@ -1377,7 +1384,8 @@
 "exact": false,
 "try": 3,
 "speed": 0.8,
-"ok": false
+"ok": false,
+"base": 8
 },
 "땅": {
 "heard": "땅",
@@ -1647,7 +1655,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 2
 },
 "무슨 요일이에요?": {
 "heard": "무슨 요일이에요?",
@@ -1660,13 +1669,14 @@
 "ok": true
 },
 "묵": {
-"heard": "뭐",
-"sim": 33.3,
-"margin": -16.7,
-"rival": "무",
+"heard": "보",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "물",
 "exact": false,
-"try": 1,
-"speed": 0.9,
+"try": 13,
+"speed": 0.85,
+"base": 8,
 "ok": false
 },
 "묵을 열어 주세요": {
@@ -1837,7 +1847,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 8
 },
 "바람": {
 "heard": "바람",
@@ -1870,14 +1881,15 @@
 "ok": true
 },
 "바지": {
-"heard": "다지",
-"sim": 75.0,
-"margin": 0.0,
+"heard": "바지",
+"sim": 100.0,
+"margin": 25.0,
 "rival": "차지",
-"exact": false,
-"try": 1,
-"speed": 0.9,
-"ok": false
+"exact": true,
+"try": 14,
+"speed": 1.05,
+"base": 8,
+"ok": true
 },
 "밖에 기가 와요": {
 "heard": "밖에 기가 와요.",
@@ -1947,7 +1959,8 @@
 "exact": false,
 "try": 8,
 "speed": 1.0,
-"ok": false
+"ok": false,
+"base": 8
 },
 "발이 맛있어요": {
 "heard": "다리 맛있어요",
@@ -1957,7 +1970,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 2
 },
 "발이 아파요": {
 "heard": "발이 아파요.",
@@ -1997,7 +2011,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 8
 },
 "밥 먹었어요?": {
 "heard": "밥 먹었어요?",
@@ -2237,7 +2252,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 8
 },
 "비가 와요": {
 "heard": "비가 와요.",
@@ -2340,13 +2356,14 @@
 "ok": true
 },
 "뿔": {
-"heard": "풀",
+"heard": "둘",
 "sim": 66.7,
-"margin": -33.3,
+"margin": 0.0,
 "rival": "풀",
 "exact": false,
-"try": 1,
-"speed": 0.9,
+"try": 10,
+"speed": 1.0,
+"base": 8,
 "ok": false
 },
 "사과": {
@@ -2707,7 +2724,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 8
 },
 "속을 깨끗이 씻어요": {
 "heard": "속을 깨끗이 씻어요.",
@@ -2827,7 +2845,8 @@
 "exact": false,
 "try": 2,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 2
 },
 "송을 들고 가요": {
 "heard": "솜을 들고 가요.",
@@ -3037,7 +3056,8 @@
 "exact": false,
 "try": 2,
 "speed": 1.0,
-"ok": false
+"ok": false,
+"base": 8
 },
 "쌀": {
 "heard": "쌀",
@@ -3687,7 +3707,8 @@
 "exact": false,
 "try": 2,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 2
 },
 "오늘 날씨가 좋네요": {
 "heard": "오늘 날씨가 좋네요.",
@@ -4747,7 +4768,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 8
 },
 "지갑 놓고 왔어요": {
 "heard": "지갑 놓고 왔어요.",
@@ -5287,7 +5309,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 8
 },
 "토기가 깡충 뛰어요": {
 "heard": "토기가 깡충 띄어요",
@@ -5367,7 +5390,8 @@
 "exact": false,
 "try": 4,
 "speed": 0.95,
-"ok": false
+"ok": false,
+"base": 8
 },
 "팔": {
 "heard": "탈",
@@ -5377,7 +5401,8 @@
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": false,
+"base": 8
 },
 "팔이 아파요": {
 "heard": "팔이 아파요.",
@@ -5460,14 +5485,15 @@
 "ok": true
 },
 "피아노": {
-"heard": "Piano",
-"sim": 0.0,
-"margin": 0.0,
-"rival": "전화",
-"exact": false,
-"try": 1,
-"speed": 0.9,
-"ok": false
+"heard": "피아노",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "세탁소",
+"exact": true,
+"try": 16,
+"speed": 1.0,
+"base": 8,
+"ok": true
 },
 "하늘": {
 "heard": "하늘",
