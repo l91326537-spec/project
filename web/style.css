@@ -529,6 +529,39 @@ label.btn { white-space: nowrap; }
 .patients .weak-cell { white-space: normal; max-width: 150px; font-size: 14px; }
 .chip.demo.sm { display: inline-block; margin-left: 6px; padding: 1px 7px; font-size: 11px; vertical-align: 1px; }
 
+/* ---------- 오늘의 연습 ---------- */
+.today-btn { min-height: 74px; padding: 12px 20px; text-align: left; }
+.today-btn > svg { flex: none; width: 30px; height: 30px; }
+.today-btn > span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.today-btn b { font: 400 23px/1.2 var(--display); }
+.today-btn small { margin-left: 0; font-size: 14px; }
+.goal-seg { grid-template-columns: repeat(4, 1fr); margin-bottom: 4px; }
+.cheer-row { padding: 0; border: 0; }
+.actions > .run-next { flex-basis: 100%; }
+.settings .field-label { margin: 0 0 8px; }
+.run-tag { margin: 0; font-size: 16px; color: var(--muted); }
+.run-tag b { color: var(--accent); font-variant-numeric: tabular-nums; }
+.goal-bar { display: grid; gap: 8px; padding: 14px 16px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow); text-align: left; font-size: 16px; color: var(--muted); }
+.goal-bar b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.goal-bar .acc-bar i { transition: width .9s ease .3s; }
+.goal-met { flex-direction: row; align-items: center; gap: 12px; background: var(--warm-soft); animation: rise .5s ease .3s both; }
+.goal-met > div { flex: 1; min-width: 0; }
+.goal-met .focus-ico { background: var(--warm); color: #3a2200; }
+.goal-met .note { margin-top: 2px; }
+.confetti { position: fixed; left: 0; right: 0; top: 0; height: 0; z-index: 20; pointer-events: none; }
+.confetti i {
+  position: absolute; top: -18px; left: var(--x); width: 9px; height: 16px; border-radius: 3px; opacity: 0;
+  background: var(--accent); animation: confetti 2.4s cubic-bezier(.25, .6, .45, 1) var(--d) forwards;
+}
+.confetti i:nth-child(4n+1) { background: var(--warm); }
+.confetti i:nth-child(4n+2) { width: 9px; height: 9px; border-radius: 50%; background: var(--good); }
+.confetti i:nth-child(4n+3) { background: #e5689a; }
+@keyframes confetti {
+  0% { opacity: 1; transform: translateY(0) rotate(var(--r)); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(80vh) rotate(calc(var(--r) + 540deg)); }
+}
+
 @page { size: A4; margin: 12mm; }
 @media print {
   :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {

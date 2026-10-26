@@ -468,12 +468,49 @@ const ICON = {
   doc: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',
   mic2: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>',
   print: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3h10v6M7 17H4v-7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v7h-3"/><rect x="7" y="14" width="10" height="7"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
 };
 const stars = (n) => `<span class="stars" aria-label="레벨 ${n}/3">${[1, 2, 3].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
 
 /* ---------- 화면 ---------- */
 
-const DAILY_GOAL = 3;
+// 하루 목표: 선생님 숙제가 있으면 숙제 분량, 없으면 집 화면에서 고른 목표(처음엔 3판)
+const GOAL_CHOICES = [{ kind: 'r', amount: 3 }, { kind: 'r', amount: 5 }, { kind: 'm', amount: 10 }, { kind: 'm', amount: 20 }];
+const goalOf = (d = data) => (d.plan ? { kind: d.plan.kind, amount: d.plan.amount } : Object.assign({ kind: 'r', amount: 3 }, d.goal));
+const goalNow = (d = data) => { const t = todayDone(d); return goalOf(d).kind === 'm' ? t.min : t.rounds; };
+const goalText = (g) => `${g.amount}${PLAN_UNIT[g.kind]}`;
+
+// 오늘의 연습: 버튼 하나로 숙제(없으면 추천 단계)를 목표를 채울 때까지 이어서 한다
+let todayRun = null; // { queue: [단계], i }
+function todayQueue() {
+  const q = data.plan ? data.plan.stages : STAGES.filter((st) => st.ready).map((st) => st.n);
+  const first = data.plan ? planNext(data) : recommended();
+  const k = Math.max(0, q.indexOf(first));
+  return [...q.slice(k), ...q.slice(0, k)];
+}
+function startToday() {
+  unlockAudio(); // 누른 김에 소리를 열어 두어 판마다 '시작'을 다시 누르지 않게 한다
+  const queue = todayQueue();
+  todayRun = { queue, i: 0 };
+  go(`#play/${queue[0]}`);
+}
+
+// 응원 한마디: 가족이 녹음해 두면 하루 목표를 채웠을 때 들려준다
+const CHEER_KEY = '__cheer__';
+function fanfare() {
+  const c = audio(); const t = c.currentTime + 0.05;
+  [523, 659, 784, 1047].forEach((f, i) => osc(c, c.destination, 'triangle', f, t + i * 0.12, i === 3 ? 0.5 : 0.18, 0.18));
+}
+async function playCheer() {
+  fanfare();
+  const blob = await voiceDb.get(CHEER_KEY);
+  if (!blob) return false;
+  await wait(800);
+  const url = URL.createObjectURL(blob);
+  await playUrl(url);
+  URL.revokeObjectURL(url);
+  return true;
+}
 
 function setNav(name) {
   document.body.classList.toggle('in-play', name === 'play');
@@ -505,7 +542,9 @@ function renderHome() {
   const todays = data.sessions.filter((s) => s.date === today());
   const rec = recommended();
   const played = (n) => data.sessions.some((s) => s.stage === n);
-  const goalDone = todays.length >= DAILY_GOAL;
+  const goal = goalOf(); const now = goalNow();
+  const goalDone = now >= goal.amount;
+  const unit = PLAN_UNIT[goal.kind];
   const hour = new Date().getHours();
   const hello = hour < 12 ? '좋은 아침이에요' : hour < 18 ? '좋은 오후예요' : '편안한 저녁이에요';
 
@@ -524,21 +563,21 @@ function renderHome() {
     <section class="hero">
       <div class="hero-text">
         <p class="eyebrow">${hello}</p>
-        <h1>${goalDone ? '오늘 목표를<br>채웠어요' : `오늘 ${DAILY_GOAL - todays.length}판만<br>더 들어 봐요`}</h1>
+        <h1>${goalDone ? '오늘 목표를<br>채웠어요' : `오늘 ${goal.amount - now}${unit}만<br>더 들어 봐요`}</h1>
         <div class="chips">
           <span class="chip warm">${ICON.flame}<b>${streak()}일</b> 연속</span>
           <span class="chip">오늘 <b>${todays.reduce((a, s) => a + s.score, 0)}</b>점</span>
         </div>
       </div>
-      <div class="hero-ring">
-        ${ring(todays.length, DAILY_GOAL)}
-        <span class="ring-num"><b>${Math.min(todays.length, DAILY_GOAL)}</b>/${DAILY_GOAL}</span>
+      <div class="hero-ring" aria-label="오늘 목표 ${goal.amount}${unit} 중 ${Math.min(now, goal.amount)}${unit}">
+        ${ring(now, goal.amount)}
+        <span class="ring-num"><b>${Math.min(now, goal.amount)}</b>/${goal.amount}${goal.kind === 'm' ? '<small>분</small>' : ''}</span>
       </div>
-      <button class="btn primary block" data-go="#play/${rec}">${ICON.play}${rec}단계 ${STAGES[rec - 1].name} 시작</button>
+      <button class="btn primary block today-btn" id="today">${ICON.play}<span><b>${goalDone ? '한 판 더 하기' : now ? '오늘의 연습 이어서' : '오늘의 연습 시작'}</b>
+        <small>${data.plan ? '선생님 숙제' : `${rec}단계 ${STAGES[rec - 1].name}부터`} · 하루 ${goalText(goal)}</small></span></button>
     </section>
     ${data.plan ? (() => {
-      const p = data.plan; const t = todayDone(data); const pct = Math.round(planProgress(data) * 100);
-      const doneToday = p.kind === 'm' ? t.min : t.rounds;
+      const p = data.plan;
       return `
     <section class="panel plan-card">
       <div class="focus-head">
@@ -550,16 +589,13 @@ function renderHome() {
       </div>
       <div class="plan-bars">
         <div class="plan-bar">
-          <span class="plan-lab">오늘 <b>${doneToday}/${p.amount}${PLAN_UNIT[p.kind]}</b></span>
-          <span class="acc-bar"><i style="width:${pct}%"></i></span>
-        </div>
-        <div class="plan-bar">
           <span class="plan-lab">이번 주 <b>${weekDays(data.sessions)}/${p.days}일</b></span>
           <span class="acc-bar"><i style="width:${Math.min(100, Math.round((100 * weekDays(data.sessions)) / p.days))}%"></i></span>
         </div>
       </div>
+      <div class="chips">${p.stages.map((n) => `<span class="chip focus">${n}단계 ${STAGES[n - 1].name}</span>`).join('')}</div>
       ${p.memo ? `<p class="note">“${esc(p.memo)}”</p>` : ''}
-      <button class="btn primary block" data-go="#play/${planNext(data)}">${ICON.play}숙제 ${planNext(data)}단계 하기</button>
+      <p class="note">위의 '오늘의 연습'을 누르면 숙제 단계를 차례로 이어서 해요.</p>
     </section>`;
     })() : ''}
     ${checkDue() ? `
@@ -606,6 +642,9 @@ function renderHome() {
       <span><b>따라 말하기</b><small>들은 말을 소리 내어 따라 하면 발음을 확인해 드려요</small></span>
     </button>
     <section class="panel settings">
+      ${data.plan ? `<p class="note">하루 목표는 선생님 숙제(${goalText(goalOf())})를 따라요.</p>` : `
+      <p class="field-label">하루 목표</p>
+      <div class="seg goal-seg">${GOAL_CHOICES.map((g, i) => `<button type="button" class="seg-btn${g.kind === goal.kind && g.amount === goal.amount ? ' on' : ''}" data-goal="${i}">${goalText(g)}</button>`).join('')}</div>`}
       <label class="switch" for="big">
         <input type="checkbox" id="big" ${data.bigText ? 'checked' : ''}>
         <span class="switch-ui" aria-hidden="true"></span>
@@ -614,12 +653,16 @@ function renderHome() {
     </section>
     <p class="note center">훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.</p>`;
   view.querySelector('#big').onchange = (e) => { data.bigText = e.target.checked; persist(); applyTextSize(); };
+  view.querySelector('#today').onclick = startToday;
+  view.querySelectorAll('[data-goal]').forEach((b) => { b.onclick = () => { data.goal = GOAL_CHOICES[+b.dataset.goal]; persist(); renderHome(); }; });
 }
 
 let openGroup = 0; // 녹음한 뒤 다시 그려도 보던 묶음을 펼쳐 둔다
 async function renderVoices() {
   setNav('voices');
-  const have = new Set(await voiceDb.keys());
+  const keys = await voiceDb.keys();
+  const have = new Set(keys.filter((k) => k !== CHEER_KEY));
+  const cheer = keys.includes(CHEER_KEY);
   const canRec = !!(navigator.mediaDevices && window.MediaRecorder);
   const groups = [
     ['쉬운 단어', [...new Set(WORD_SETS[1].flat())]],
@@ -637,6 +680,20 @@ async function renderVoices() {
       <h1>매일 듣는 목소리로<br>연습해요</h1>
       <p class="lead">가족이 단어와 문장을 읽어 녹음하면 문제를 그 목소리로 들려드려요.</p>
     </header>
+    <section class="panel cheer-panel">
+      <div class="focus-head">
+        <span class="focus-ico">${ICON.heart}</span>
+        <div><h2 class="panel-title">응원 한마디</h2>
+        <p class="note">하루 목표를 채우면 축하 소리와 함께 들려드려요. “오늘도 잘했어요, 사랑해요!”처럼 5초 안으로 남겨 주세요.</p></div>
+      </div>
+      <div class="word-row cheer-row ${cheer ? 'has' : ''}" data-w="${CHEER_KEY}">
+          <span class="word">응원</span>
+          <span class="word-state">${cheer ? `${ICON.check}녹음됨` : '아직 없어요'}</span>
+          ${cheer ? `<button class="icon-btn" data-act="play" aria-label="응원 들어 보기">${ICON.speaker}</button>` : ''}
+          <button class="icon-btn rec-btn" data-act="rec" ${canRec ? '' : 'disabled'} aria-label="응원 녹음">${ICON.mic}</button>
+          ${cheer ? `<button class="icon-btn" data-act="del" aria-label="응원 지우기">${ICON.trash}</button>` : ''}
+      </div>
+    </section>
     <section class="panel">
       <div class="meter-row"><span>녹음한 단어</span><b>${have.size} / ${total}</b></div>
       <div class="meter"><i style="width:${pct}%"></i></div>
@@ -667,7 +724,7 @@ async function renderVoices() {
   view.querySelectorAll('.word-row button').forEach((b) => {
     b.onclick = async () => {
       const w = b.closest('.word-row').dataset.w;
-      if (b.dataset.act === 'play') { b.classList.add('busy'); await playWord(w); b.classList.remove('busy'); return; }
+      if (b.dataset.act === 'play') { b.classList.add('busy'); await (w === CHEER_KEY ? playCheer() : playWord(w)); b.classList.remove('busy'); return; }
       if (b.dataset.act === 'del') { await voiceDb.del(w); return renderVoices(); }
       const ok = await recordWord(w, b);
       if (ok) renderVoices();
@@ -1278,12 +1335,6 @@ const todayDone = (d) => {
   const t = (d.sessions || []).filter((s) => s.date === today());
   return { rounds: t.length, min: Math.round(t.reduce((a, s) => a + (s.sec || 180), 0) / 60) };
 };
-// 오늘 숙제를 얼마나 했는지(0~1)
-const planProgress = (d) => {
-  const p = d.plan; if (!p) return 0;
-  const t = todayDone(d);
-  return Math.min(1, (p.kind === 'm' ? t.min : t.rounds) / p.amount);
-};
 // 숙제에 든 단계 중 오늘 아직 안 한 것부터
 const planNext = (d) => {
   const done = new Set((d.sessions || []).filter((s) => s.date === today()).map((s) => s.stage));
@@ -1653,6 +1704,7 @@ async function renderPlay(stage) {
   const alive = () => token === playToken;
   const level = data.levels[stage] || 1;
   const st = STAGES[stage - 1];
+  const inRun = !!todayRun && todayRun.queue[todayRun.i] === stage;
   const results = [];
   let toneDb = -10 * level; // 1단계 시작 음량: 레벨이 오를수록 작은 소리에서 시작한다
   let quietest = null;
@@ -1680,8 +1732,9 @@ async function renderPlay(stage) {
         <p class="lead center" id="hint">${intro[1]}</p>
       </div>
       <div id="answers" class="start-box">
+        ${inRun ? `<p class="run-tag center">오늘의 연습 · <b id="count">3</b>초 뒤 시작해요</p>` : ''}
         <button class="btn block" id="soundcheck">${ICON.speaker}소리 확인하기</button>
-        <button class="btn primary block" id="start">시작하기</button>
+        <button class="btn primary block" id="start">${inRun ? '바로 시작' : '시작하기'}</button>
         <p class="note center">초인종 소리와 "안녕하세요"가 들리면 준비 끝이에요. 안 들리면 휴대폰 음량과 무음 모드를 확인해 주세요.</p>
         ${stage >= 3 && !canSpeak() ? '<p class="note warn center" id="nospeech">이 화면에서는 AI 음성이 나오지 않아요. 크롬이나 삼성 인터넷 같은 브라우저에서 열어 주세요. 가족 목소리로 녹음한 단어는 여기서도 들려요.</p>' : ''}
       </div>
@@ -1692,8 +1745,22 @@ async function renderPlay(stage) {
       <button class="btn block" id="next">다음</button>
     </div>`;
   const $ = (s) => view.querySelector(s);
-  $('#soundcheck').onclick = () => { unlockAudio(); playEnv('doorbell'); setTimeout(() => playWord('안녕하세요'), 1400); };
-  await new Promise((r) => { $('#start').onclick = () => { unlockAudio(); r(); }; });
+  let countdown = null;
+  const stopCount = () => { clearInterval(countdown); countdown = null; $('.run-tag').textContent = '오늘의 연습 · 준비되면 시작을 눌러 주세요'; $('#start').textContent = '시작하기'; };
+  $('#soundcheck').onclick = () => { if (countdown) stopCount(); unlockAudio(); playEnv('doorbell'); setTimeout(() => playWord('안녕하세요'), 1400); };
+  await new Promise((r) => {
+    $('#start').onclick = () => { clearInterval(countdown); unlockAudio(); r(); };
+    if (!inRun) return;
+    // 오늘의 연습에서는 앞 화면의 터치로 소리가 이미 풀려 있어서 시작을 따로 누르지 않아도 된다.
+    let left = 3;
+    countdown = setInterval(() => {
+      if (!alive()) { clearInterval(countdown); return; }
+      left -= 1;
+      if (left > 0) { $('#count').textContent = left; return; }
+      clearInterval(countdown); r();
+    }, 1000);
+  });
+  if (!alive()) return;
   const startedAt = Date.now();
 
   const orb = $('#orb');
@@ -1730,14 +1797,23 @@ async function renderPlay(stage) {
   data.toneByFreq = data.toneByFreq || {};
   for (const [f, db] of Object.entries(freqBest)) data.toneByFreq[f] = Math.min(data.toneByFreq[f] ?? 0, db);
   for (const [k, v] of Object.entries(sessionConf)) data.confusions[k] = (data.confusions[k] || 0) + v;
+  const goal = goalOf(); const before = goalNow();
   data.sessions.push({ date: today(), stage, level, score, correct, total: TRIALS, at: Date.now(), sec: Math.round((Date.now() - startedAt) / 1000) });
   persist();
+  const after = goalNow();
+  const justMet = before < goal.amount && after >= goal.amount;
+  const runNext = inRun && !justMet ? todayRun.queue[(todayRun.i + 1) % todayRun.queue.length] : null;
+  if (!runNext) todayRun = null;
+  const hasCheer = justMet && !!(await voiceDb.get(CHEER_KEY).catch(() => null));
+  if (!alive()) return;
+  const goalPct = (v) => Math.min(100, Math.round((100 * v) / goal.amount));
 
   const medal = acc >= 0.9 ? 3 : acc >= 0.7 ? 2 : acc >= 0.4 ? 1 : 0;
   const weak = Object.entries(sessionConf).sort((a, b) => b[1] - a[1]).slice(0, 3);
   const headline = ['오늘도 들어 본 것만으로 충분해요', '좋아요, 감이 오고 있어요', '잘 들으셨어요', '훌륭해요!'][medal];
   view.innerHTML = `
     <div class="play result">
+      ${justMet ? `<div class="confetti" aria-hidden="true">${Array.from({ length: 28 }, (_, k) => `<i style="--x:${(k * 37) % 100}%;--d:${(k % 7) * 90}ms;--r:${(k * 53) % 360}deg"></i>`).join('')}</div>` : ''}
       <p class="eyebrow center">${stage}단계 · ${st.name}</p>
       <div class="medal">${[1, 2, 3].map((k) => `<i class="${k <= medal ? 'on' : ''}" style="--d:${k * 120}ms"></i>`).join('')}</div>
       <h1 class="q">${headline}</h1>
@@ -1748,15 +1824,41 @@ async function renderPlay(stage) {
         ${stage === 1 && quietest != null ? `<span class="chip">기준보다 <b>${-quietest}dB</b> 작게 들음</span>` : ''}
       </div>
       <p class="lead center">${next > level ? `다음 판은 <b>레벨 ${next}</b>로 올라가요.` : next < level ? `다음 판은 레벨 ${next}에서 다시 익혀요.` : `다음 판도 레벨 ${next}로 연습해요.`}</p>
+      ${justMet ? `
+      <section class="panel goal-met">
+        <span class="focus-ico">${ICON.heart}</span>
+        <div>
+          <h2 class="panel-title">오늘 목표 ${goalText(goal)}을 채웠어요!</h2>
+          <p class="note">${hasCheer ? '가족이 남긴 응원을 들려드려요.' : '가족 목소리 화면에서 응원 한마디를 녹음해 두면 목표를 채울 때 같이 들려드려요.'}</p>
+        </div>
+        ${hasCheer ? `<button class="icon-btn" id="cheer-again" aria-label="응원 다시 듣기">${ICON.speaker}</button>` : ''}
+      </section>` : `
+      <div class="goal-bar">
+        <span>오늘 목표 <b>${Math.min(after, goal.amount)}/${goalText(goal)}</b>${after >= goal.amount ? ' · 채웠어요' : ''}</span>
+        <span class="acc-bar"><i style="width:${goalPct(before)}%" data-to="${goalPct(after)}"></i></span>
+      </div>`}
       ${weak.length ? `<section class="panel"><h2 class="panel-title">이번에 헷갈린 소리</h2>
         <ul class="weak-list">${weak.map(([k, v]) => `<li><span class="weak-k">${esc(friendly(k))}</span><span class="weak-bar"><i style="width:${(100 * v) / weak[0][1]}%"></i></span><b>${v}회</b></li>`).join('')}</ul>
         <p class="note">다음 판부터 이 소리가 든 문제를 더 자주 내 드릴게요.</p></section>` : ''}
       <div class="actions">
+        ${runNext ? `
+        <button class="btn primary run-next" id="run-next">이어서 ${runNext === stage ? '한 판 더' : `${runNext}단계 ${STAGES[runNext - 1].name}`}</button>
+        <button class="btn" data-go="#home">오늘은 그만</button>` : justMet ? `
+        <button class="btn primary" data-go="#home">소리길로</button>
+        <button class="btn" data-go="#play/${stage}">한 판 더</button>` : `
         <button class="btn primary" data-go="#play/${stage}">한 판 더</button>
-        <button class="btn" data-go="#home">소리길로</button>
+        <button class="btn" data-go="#home">소리길로</button>`}
       </div>
     </div>`;
   countUp(view.querySelector('#score'), score);
+  const bar = view.querySelector('.goal-bar i');
+  if (bar) requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = `${bar.dataset.to}%`; }));
+  if (runNext) $('#run-next').onclick = () => { unlockAudio(); todayRun.i = (todayRun.i + 1) % todayRun.queue.length; go(`#play/${runNext}`); };
+  if (justMet) {
+    playCheer();
+    const again = view.querySelector('#cheer-again');
+    if (again) again.onclick = () => playCheer();
+  }
 
   // 1단계: 순음 감지. 들리면 5dB 작게, 놓치면 5dB 크게.
   async function toneTrial() {
@@ -1973,6 +2075,7 @@ function route() {
   document.body.classList.remove('in-play');
   const h = current;
   const m = h.match(/^#play\/(\d)$/);
+  if (!m || !todayRun || todayRun.queue[todayRun.i] !== +m[1]) todayRun = null; // 오늘의 연습 밖으로 나가면 끝낸다
   const inv = h.match(/^#plan\/(.+)$/);
   if (m && STAGES[+m[1] - 1]?.ready) renderPlay(+m[1]);
   else if (inv) renderPlanInvite(inv[1]);
