@@ -577,10 +577,13 @@ async function renderPlay(stage) {
 
 /* ---------- 라우터 ---------- */
 
+// 화면 상태는 메모리에 둔다(주소 해시를 쓸 수 없는 미리보기 환경에서도 동작하도록).
+let current = location.hash || '#home';
+function go(h) { current = h; route(); }
 function route() {
   playToken++;
   if (window.speechSynthesis) speechSynthesis.cancel();
-  const h = location.hash || '#home';
+  const h = current;
   const m = h.match(/^#play\/(\d)$/);
   if (m && STAGES[+m[1] - 1]?.ready) renderPlay(+m[1]);
   else if (h === '#voices') renderVoices();
@@ -588,10 +591,10 @@ function route() {
   else renderHome();
   window.scrollTo(0, 0);
 }
-view.addEventListener('click', (e) => {
-  const go = e.target.closest('[data-go]');
-  if (!go) return;
-  if (location.hash === go.dataset.go) route(); else location.hash = go.dataset.go;
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-go]');
+  if (!el) return;
+  e.preventDefault();
+  go(el.dataset.go);
 });
-window.addEventListener('hashchange', route);
 route();
