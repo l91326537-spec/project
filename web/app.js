@@ -915,3 +915,8 @@ document.addEventListener('click', (e) => {
   go(el.dataset.go);
 });
 route();
+
+// 홈 화면에 설치한 앱이 인터넷 없이도 열리게 한다(https나 localhost에서만 동작).
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
