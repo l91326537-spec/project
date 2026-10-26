@@ -36,6 +36,7 @@ cd web && python3 -m http.server 8000
 
 ## 문항과 음성
 - 문항은 `web/content.js`에 모여 있습니다. 한 줄(배열)이 한 문제의 보기 4개입니다.
-- `web/voice/index.json`(`{"글자": "voice/파일.mp3"}`)과 음성 파일을 넣으면 기기 음성(TTS) 대신 그 파일을 씁니다. Claude 앱 화면처럼 기기 음성이 없는 곳에서도 소리가 나게 하려면 필요합니다.
-- 음성 파일은 `web/content.js`를 고친 PR을 올리면 GitHub Actions(`음성 파일 만들기`)가 새 문항만 만들어 그 PR 브랜치에 커밋합니다. Actions 탭에서 직접 돌릴 수도 있습니다.
-- 직접 만들려면 `python3 tools/make_voices.py`를 돌립니다(`pip install edge-tts`, node·ffmpeg 필요, `speech.platform.bing.com` 접속 필요). 다시 돌리면 새 문항만 만들고 빠진 문항 파일은 지웁니다.
+- `web/voice/index.json`(`{"글자": "voice/파일.mp3"}`)과 음성 파일이 있으면 기기 음성(TTS) 대신 그 파일을 씁니다. Claude 앱 화면처럼 기기 음성이 없는 곳에서도 소리가 나게 하려면 필요합니다.
+- 음성은 **Azure 음성 서비스(공식 API, 한국어 SunHi 음성)**로 만듭니다. 저장소 Settings > Secrets and variables > Actions에 `AZURE_SPEECH_KEY`(Speech 리소스 키)와 `AZURE_SPEECH_REGION`(예: `koreacentral`)을 넣어 두면, `web/content.js`를 고친 PR마다 GitHub Actions(`음성 파일 만들기`)가 새 문항만 만들어 그 PR 브랜치에 커밋합니다. Actions 탭에서 직접 돌릴 수도 있습니다.
+- 직접 만들려면 `AZURE_SPEECH_KEY=... AZURE_SPEECH_REGION=koreacentral python3 tools/make_voices.py`(node 필요). 무료(F0) 요금제는 1분에 20번까지라 처음 전체를 만들 때 30분쯤 걸립니다. 무료 한도는 한 달 50만 자이고 지금 문항 전체는 약 5천 자입니다.
+- 파일 수 제한이 있는 곳(예: Claude 아티팩트)에 올릴 때는 `python3 tools/make_sprites.py OUT`으로 음성을 묶음 몇 개로 합칩니다(ffmpeg 필요). 앱은 index.json 값이 객체(`{s, t, d}`)면 묶음의 해당 구간을 재생합니다.

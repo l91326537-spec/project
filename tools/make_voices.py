@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-소리길 음성 파일 만들기
-- web/content.js의 단어·문장을 모두 읽어 마이크로소프트 한국어 음성(edge-tts)으로 mp3를 만든다.
+소리길 음성 파일 만들기 (Azure 음성 서비스, 공식 API)
+- web/content.js의 단어·문장을 모두 읽어 마이크로소프트 한국어 음성(ko-KR-SunHiNeural)으로 mp3를 만든다.
 - 결과: web/voice/<해시>.mp3, web/voice/index.json ({"글자": "voice/<해시>.mp3"})
-- 이미 만든 파일은 건너뛰므로 문항을 추가한 뒤 다시 돌리면 새 문항만 만든다.
+- 이미 만든 파일은 건너뛰므로 문항을 추가한 뒤 다시 돌리면 새 문항만 만든다. 문항에서 빠진 파일은 지운다.
+- 앞뒤 무음은 0.15초로 맞춘다(말이 끝난 뒤 보기 버튼이 늦게 뜨지 않게).
 
-- 끝에 붙는 긴 무음은 0.15초만 남기고 자른다(말이 끝난 뒤 보기 버튼이 늦게 뜨지 않게).
-
-준비: pip install edge-tts, node (content.js를 읽는 데 씀), ffmpeg (무음 자르기)
-실행: python3 tools/make_voices.py [--voice ko-KR-SunHiNeural] [--rate -10%]
-네트워크: speech.platform.bing.com 접속이 필요하다. 프록시 환경에서는 HTTPS_PROXY를 자동으로 쓴다.
+준비: Azure Speech 리소스의 키와 지역, node (content.js를 읽는 데 씀). 다른 패키지는 필요 없다.
+실행: AZURE_SPEECH_KEY=... AZURE_SPEECH_REGION=koreacentral python3 tools/make_voices.py
+무료(F0) 요금제는 1분에 20번까지만 요청할 수 있어 기본으로 3.2초마다 하나씩 만든다.
 """
-import argparse, asyncio, hashlib, json, os, shutil, subprocess, sys
-
-import edge_tts
+import argparse, hashlib, json, os, subprocess, sys, time, urllib.error, urllib.request
+from xml.sax.saxutils import escape
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WEB = os.path.join(ROOT, 'web')
@@ -38,61 +36,78 @@ def all_texts():
     return json.loads(out.stdout)
 
 
-def trim_tail(path):
-    tmp = path + '.tmp.mp3'
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', path,
-                    '-af', 'areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.15,areverse',
-                    '-c:a', 'libmp3lame', '-b:a', '48k', '-ar', '24000', '-ac', '1', tmp], check=True)
-    os.replace(tmp, path)
+class KeyError_(Exception):
+    pass
 
 
-async def make(text, path, voice, rate, proxy):
-    for attempt in range(3):
+def synth(text, voice, rate, key, region):
+    ssml = (f"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='ko-KR'>"
+            f"<voice name='{voice}'><mstts:silence type='Leading-exact' value='150ms'/><mstts:silence type='Tailing-exact' value='150ms'/>"
+            f"<prosody rate='{rate}'>{escape(text)}</prosody></voice></speak>")
+    req = urllib.request.Request(
+        f'https://{region}.tts.speech.microsoft.com/cognitiveservices/v1', data=ssml.encode('utf-8'), method='POST',
+        headers={'Ocp-Apim-Subscription-Key': key, 'Content-Type': 'application/ssml+xml',
+                 'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3', 'User-Agent': 'sorigil-voices'})
+    for attempt in range(6):
         try:
-            await edge_tts.Communicate(text, voice, rate=rate, proxy=proxy).save(path)
-            if os.path.getsize(path) > 0:
-                await asyncio.to_thread(trim_tail, path)
-                return True
+            with urllib.request.urlopen(req, timeout=60) as r:
+                body = r.read()
+            if body:
+                return body
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):
+                raise KeyError_(f'키나 지역이 맞지 않아요 (HTTP {e.code})')
+            if e.code == 429:  # 요청이 너무 잦다: 알려 준 만큼 쉬었다가 다시
+                time.sleep(float(e.headers.get('Retry-After') or 10))
+                continue
+            err = e
         except Exception as e:  # 일시적인 네트워크 오류는 다시 시도한다
             err = e
-        await asyncio.sleep(1 + attempt * 2)
+        time.sleep(2 + attempt * 3)
     print(f'  실패: {text} ({err})', file=sys.stderr)
-    if os.path.exists(path):
-        os.remove(path)
-    return False
+    return None
 
 
-async def main():
+def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--voice', default='ko-KR-SunHiNeural')
     ap.add_argument('--rate', default='-10%')  # 청능훈련용으로 조금 천천히
-    ap.add_argument('--jobs', type=int, default=4)
+    ap.add_argument('--interval', type=float, default=3.2)  # 무료 요금제: 1분에 20번
     a = ap.parse_args()
-    proxy = os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')
-    if not shutil.which('ffmpeg'):
-        sys.exit('ffmpeg가 필요해요 (무음 자르기).')
+    key = os.environ.get('AZURE_SPEECH_KEY')
+    region = os.environ.get('AZURE_SPEECH_REGION') or 'koreacentral'
+    if not key:
+        sys.exit('AZURE_SPEECH_KEY가 없어요. GitHub 저장소 Settings > Secrets and variables > Actions에 넣어 주세요.')
     os.makedirs(OUT, exist_ok=True)
 
     texts = all_texts()
     index = {}
     todo = []
     for t in texts:
-        name = hashlib.sha1(f'{a.voice}|{a.rate}|trim|{t}'.encode()).hexdigest()[:12] + '.mp3'
+        name = hashlib.sha1(f'azure|{a.voice}|{a.rate}|{t}'.encode()).hexdigest()[:12] + '.mp3'
         index[t] = f'voice/{name}'
         if not os.path.exists(os.path.join(OUT, name)):
             todo.append((t, os.path.join(OUT, name)))
-    print(f'문항 {len(texts)}개, 새로 만들 것 {len(todo)}개')
+    print(f'문항 {len(texts)}개, 새로 만들 것 {len(todo)}개 (약 {len(todo) * a.interval / 60:.0f}분)', flush=True)
 
-    sem = asyncio.Semaphore(a.jobs)
-    async def one(t, p):
-        async with sem:
-            return await make(t, p, a.voice, a.rate, proxy)
-    results = await asyncio.gather(*(one(t, p) for t, p in todo))
-    failed = [t for (t, _), ok in zip(todo, results) if not ok]
+    failed = []
+    for i, (t, path) in enumerate(todo):
+        t0 = time.time()
+        try:
+            audio = synth(t, a.voice, a.rate, key, region)
+        except KeyError_ as e:
+            sys.exit(str(e))
+        if audio:
+            with open(path, 'wb') as fp:
+                fp.write(audio)
+        else:
+            failed.append(t)
+        if (i + 1) % 50 == 0:
+            print(f'  {i + 1}/{len(todo)}', flush=True)
+        time.sleep(max(0, a.interval - (time.time() - t0)))
     for t in failed:
         index.pop(t, None)
 
-    # 문항에서 빠진 옛 파일은 지운다
     keep = {os.path.basename(v) for v in index.values()}
     for f in os.listdir(OUT):
         if f.endswith('.mp3') and f not in keep:
@@ -106,4 +121,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    sys.exit(asyncio.run(main()))
+    sys.exit(main())

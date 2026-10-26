@@ -1,5 +1,5 @@
 # 문항(web/content.js)을 고친 PR에서 AI 음성 파일을 만들어 그 PR 브랜치에 올린다.
-# 작업 환경에서 음성 서버에 접속할 수 없어도 GitHub에서 대신 만든다. 이미 있는 파일은 건너뛴다.
+# Azure 음성 서비스(공식 API)를 쓴다. 키는 저장소 Secrets의 AZURE_SPEECH_KEY, AZURE_SPEECH_REGION. 이미 있는 파일은 건너뛴다.
 name: 음성 파일 만들기
 
 on:
@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: voices-${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: false # 처음 만들 때는 30분쯤 걸리므로 도중에 끊지 않는다
 
 jobs:
   voices:
@@ -26,12 +26,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install edge-tts && sudo apt-get install -y -qq --no-install-recommends ffmpeg
       - id: gen
         continue-on-error: true # 일부가 실패해도 만든 파일은 올린다
+        env:
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
         run: python3 tools/make_voices.py
       - name: 바뀐 음성 파일 올리기
         env:
@@ -47,4 +46,4 @@ jobs:
           # 봇이 올린 커밋은 배포를 다시 돌리지 않으므로 main이면 직접 배포한다
           if [ "$BRANCH" = main ]; then gh workflow run pages.yml --ref main; fi
       - if: steps.gen.outcome == 'failure'
-        run: echo "만들지 못한 음성이 있어요. 위 로그의 '실패' 줄을 확인하세요." && exit 1
+        run: echo "만들지 못한 음성이 있어요. 위 로그를 확인하세요. 키가 없다면 저장소 Secrets에 AZURE_SPEECH_KEY, AZURE_SPEECH_REGION을 넣어 주세요." && exit 1
