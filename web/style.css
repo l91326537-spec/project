@@ -387,6 +387,107 @@ html.big main, html.big .sheet, html.big .tabbar { zoom: 1.15; }
 }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- 맞춤 출제 ---------- */
+.focus-head { display: flex; gap: 12px; align-items: flex-start; }
+.focus-ico { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--warm-soft); color: color-mix(in srgb, var(--warm) 75%, var(--ink)); }
+.focus-ico svg { width: 24px; height: 24px; }
+.focus-head .note { margin-top: 2px; }
+.chip.focus { background: var(--warm-soft); color: var(--ink); font-weight: 700; font-size: 16px; }
+.chip.demo { align-self: flex-start; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.chip.scene { background: var(--surface-2); color: var(--ink); font-weight: 700; }
+.focus-tag {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
+  background: var(--warm-soft); color: color-mix(in srgb, var(--warm) 70%, var(--ink)); font-size: 15px; font-weight: 700;
+}
+.focus-tag svg { width: 18px; height: 18px; }
+
+/* ---------- 리포트 ---------- */
+.report-link {
+  display: flex; align-items: center; gap: 14px; width: 100%; padding: 16px 18px; text-align: left;
+  border: 2px solid var(--accent); border-radius: var(--radius); background: var(--accent-soft); box-shadow: var(--shadow);
+}
+.report-link .focus-ico { background: var(--accent); color: var(--accent-ink); }
+.report-link b { display: block; font: 400 21px/1.25 var(--display); }
+.report-link small { display: block; font-size: 14px; color: var(--muted); }
+.report { display: flex; flex-direction: column; gap: 14px; }
+.report-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 4px 2px; }
+.report-head > div { display: flex; flex-direction: column; gap: 6px; }
+.report-logo { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: var(--accent); color: var(--accent-ink); }
+.report-logo svg { width: 30px; height: 30px; }
+.field { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; color: var(--muted); }
+.field input, .report textarea {
+  flex: 1; min-width: 0; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line);
+  background: var(--surface); color: var(--ink); font: 400 17px var(--body);
+}
+.report textarea { flex: none; width: 100%; resize: vertical; line-height: 1.6; }
+.kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 520px) { .kpis { grid-template-columns: repeat(4, 1fr); } }
+.kpis .small-num { font-size: 22px; line-height: 1.5; }
+.att { display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; }
+.att i { height: 14px; border-radius: 4px; background: var(--surface-2); }
+.att i.on { background: var(--accent); }
+.summary { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 8px; font-size: 17px; }
+.summary b { color: var(--accent); }
+.line-chart .line { fill: none; stroke: var(--accent); stroke-width: 2; }
+.line-chart .dot { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.line-chart .hit { fill: transparent; stroke: none; }
+.line-chart .pt:hover .dot { r: 6.5; }
+.rtable { width: 100%; border-collapse: collapse; font-size: 16px; font-variant-numeric: tabular-nums; }
+.rtable th, .rtable td { padding: 8px 4px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.rtable thead th { font-size: 13px; color: var(--muted); font-weight: 700; }
+.rtable th:first-child { text-align: left; font-weight: 500; }
+.rtable tbody tr:last-child > * { border-bottom: 0; }
+.rtable .n {
+  display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 6px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink); font: 400 13px var(--display); vertical-align: 1px;
+}
+.rtable small { font-size: 12px; color: var(--muted); }
+.rtable .up { color: var(--good); font-weight: 700; }
+.rtable .down { color: var(--muted); }
+.status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+.status svg { width: 14px; height: 14px; }
+.status.good { background: var(--good-soft); color: var(--good); }
+.status.warn { background: var(--warm-soft); color: color-mix(in srgb, var(--warm) 70%, var(--ink)); }
+@media (max-width: 380px) { .rtable { font-size: 14px; } .rtable th, .rtable td { padding: 7px 2px; } }
+
+@page { size: A4; margin: 12mm; }
+@media print {
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    --bg: #fff; --surface: #fff; --surface-2: #eef3f0; --ink: #13302b; --muted: #4f625c; --line: #d5e0da;
+    --accent: #127a67; --accent-ink: #fff; --accent-soft: #d6ede6; --warm: #c97a12; --warm-soft: #fdebd0;
+    --good: #1f8a4c; --good-soft: #dcf2e4; color-scheme: light;
+  }
+  body { background: #fff; font-size: 11pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .tabbar, #toast, .no-print { display: none !important; }
+  main { max-width: none; padding: 0; gap: 8px; }
+  html.big main { zoom: 1; }
+  /* A4 한 장: 표와 그래프를 두 줄로 나란히 놓는다 */
+  .report {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 10px; align-items: start;
+    grid-template-areas: "head head" "kpis kpis" "att att" "sum sum" "chart stages" "weak freq" "weak memo" "foot foot";
+  }
+  .report-head { grid-area: head; } .kpis { grid-area: kpis; } .att { grid-area: att; } .p-sum { grid-area: sum; }
+  .p-chart { grid-area: chart; } .p-stages { grid-area: stages; } .p-weak { grid-area: weak; }
+  .p-freq { grid-area: freq; } .p-memo { grid-area: memo; } .p-foot { grid-area: foot; }
+  .report h1 { font-size: 20pt; }
+  .report .note { font-size: 9pt; }
+  .panel { box-shadow: none; border: 1px solid var(--line); padding: 10px 14px; gap: 6px; break-inside: avoid; }
+  .tile { box-shadow: none; border: 1px solid var(--line); padding: 4px 8px; }
+  .att i { height: 8px; }
+  .report-head { padding: 0; }
+  .report-head > div { gap: 2px; }
+  .report-logo { width: 40px; height: 40px; }
+  .summary { gap: 3px; }
+  .kpis { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .tile b { font-size: 22px; }
+  .kpis .small-num { font-size: 16px; }
+  .summary, .rtable { font-size: 10.5pt; }
+  .rtable th, .rtable td { padding: 4px; }
+  .line-chart { max-height: 140px; }
+  .report textarea { border: 1px solid var(--line); min-height: 56px; height: 56px; font-size: 10.5pt; resize: none; }
+  .report textarea:placeholder-shown::placeholder { color: transparent; }
+}
+
 @keyframes halo { from { transform: scale(.9); opacity: .9; } to { transform: scale(1.25); opacity: 0; } }
 @keyframes bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -4px); } }
 @keyframes wave { from { transform: scale(1); opacity: .7; } to { transform: scale(1.6); opacity: 0; } }
