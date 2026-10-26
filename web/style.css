@@ -507,6 +507,22 @@ html.big main, html.big .sheet, html.big .tabbar { zoom: 1.15; }
   width: 100%; min-width: 0; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line);
   background: var(--surface-2); color: var(--muted); font: 400 13px var(--body); text-overflow: ellipsis;
 }
+/* 월간 듣기 점검 */
+.check-bar { flex: 1; height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.check-bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--accent); transition: width .3s ease; }
+.miss-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.check-compare { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; text-align: center; }
+.check-compare div { display: flex; flex-direction: column; gap: 2px; padding: 10px 6px; border-radius: 16px; background: var(--surface-2); }
+.check-compare span { font-size: 14px; color: var(--muted); }
+.check-compare b { font: 400 30px var(--display); color: var(--ink); }
+.check-compare b small { font-size: 15px; margin-left: 2px; }
+.check-compare em { font-style: normal; font-size: 13px; color: var(--muted); }
+.check-compare i { font-style: normal; color: var(--muted); }
+.check-compare strong { grid-column: 1 / -1; font-size: 16px; color: var(--muted); }
+.check-compare strong.up { color: var(--good); }
+.check-compare.one { grid-template-columns: 1fr; }
+.check-panel { gap: 12px; }
+.btn small { font-size: 14px; font-weight: 500; opacity: .85; margin-left: 4px; }
 label.btn { white-space: nowrap; }
 .scroll-x { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
 .patients { min-width: 540px; }
@@ -547,7 +563,9 @@ label.btn { white-space: nowrap; }
   .summary, .rtable { font-size: 10.5pt; }
   .rtable th, .rtable td { padding: 4px; }
   .line-chart { max-height: 140px; }
-  .report textarea { border: 1px solid var(--line); min-height: 56px; height: 56px; font-size: 10.5pt; resize: none; }
+  .report textarea { border: 1px solid var(--line); min-height: 44px; height: 44px; font-size: 10.5pt; resize: none; }
+  /* 한 장에 넣으려고 표 설명은 인쇄에서 뺀다(dB 기준 안내는 맨 아래 줄에 남긴다) */
+  .p-stages .note, .p-freq .note { display: none; }
   .report textarea:placeholder-shown::placeholder { color: transparent; }
 }
 
