@@ -25,10 +25,14 @@ let data = Object.assign({
   sessions: [],          // {date, stage, score, correct, total, level}
   levels: { 1: 1, 2: 1, 3: 1, 5: 1 },
   minDb: null,           // 1단계에서 들린 가장 작은 소리(dB, 기준 대비)
+  toneByFreq: {},        // 1단계 주파수별로 들린 가장 작은 소리
+  bigText: false,
   confusions: {},        // '초성 ㅅ↔ㅆ': 횟수
   preferFamily: true,
 }, store.load());
 const persist = () => store.save(data);
+const applyTextSize = () => document.documentElement.classList.toggle('big', !!data.bigText);
+applyTextSize();
 
 // 가족 녹음은 용량이 커서 IndexedDB에 둔다.
 const voiceDb = (() => {
@@ -412,7 +416,15 @@ function renderHome() {
         </div>`;
       }).join('')}
     </div>
+    <section class="panel settings">
+      <label class="switch" for="big">
+        <input type="checkbox" id="big" ${data.bigText ? 'checked' : ''}>
+        <span class="switch-ui" aria-hidden="true"></span>
+        글자 크게 보기
+      </label>
+    </section>
     <p class="note center">훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.</p>`;
+  view.querySelector('#big').onchange = (e) => { data.bigText = e.target.checked; persist(); applyTextSize(); };
 }
 
 async function renderVoices() {
@@ -478,16 +490,37 @@ async function recordWord(word, btn) {
   rec.ondataavailable = (e) => chunks.push(e.data);
   const done = new Promise((res) => { rec.onstop = res; });
   recording = rec;
+  const limit = word.length > 4 ? 5000 : 3000; // 단어는 3초, 문장은 5초
+  btn.style.setProperty('--dur', `${limit}ms`);
   btn.classList.add('recording'); btn.setAttribute('aria-label', '녹음 멈추기');
   document.querySelectorAll('.word-row button').forEach((x) => { if (x !== btn) x.disabled = true; });
   rec.start();
-  const timer = setTimeout(() => rec.state === 'recording' && rec.stop(), word.length > 4 ? 5000 : 3000); // 단어는 3초, 문장은 5초
+  const timer = setTimeout(() => rec.state === 'recording' && rec.stop(), limit);
   await done;
   clearTimeout(timer);
   stream.getTracks().forEach((t) => t.stop());
   recording = null;
-  if (chunks.length) await voiceDb.put(word, new Blob(chunks, { type: rec.mimeType }));
+  if (!chunks.length) return true;
+  const blob = new Blob(chunks, { type: rec.mimeType });
+  const peak = await peakLevel(blob);
+  if (peak != null && peak < 0.02) { toast('목소리가 들리지 않았어요. 마이크 가까이에서 다시 녹음해 주세요.'); return true; }
+  await voiceDb.put(word, blob);
+  if (peak != null && peak < 0.12) toast('소리가 작게 녹음됐어요. 휴대폰에 조금 더 가까이 대고 다시 녹음하면 좋아요.');
+  else if (peak != null && peak > 0.99) toast('소리가 너무 커서 찢어질 수 있어요. 조금 떨어져서 다시 녹음해 보세요.');
   return true;
+}
+
+// 녹음의 가장 큰 소리(0~1). 분석할 수 없으면 null
+async function peakLevel(blob) {
+  try {
+    const buf = await audio().decodeAudioData(await blob.arrayBuffer());
+    let peak = 0;
+    for (let ch = 0; ch < buf.numberOfChannels; ch++) {
+      const d = buf.getChannelData(ch);
+      for (let i = 0; i < d.length; i++) { const v = Math.abs(d[i]); if (v > peak) peak = v; }
+    }
+    return peak;
+  } catch { return null; }
 }
 
 function toast(msg) {
@@ -507,7 +540,7 @@ function renderProgress() {
   }
   const max = Math.max(100, ...days.map((d) => d.score));
   const top = Math.ceil(max / 50) * 50;
-  const weak = Object.entries(data.confusions).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const weak = Object.entries(data.confusions).filter(([k]) => k !== '단어 길이').sort((a, b) => b[1] - a[1]).slice(0, 5);
   const weakMax = Math.max(1, ...weak.map(([, v]) => v));
   const acc = (n) => {
     const ss = data.sessions.filter((s) => s.stage === n).slice(-5);
@@ -532,19 +565,26 @@ function renderProgress() {
   view.innerHTML = `
     <header class="page-head">
       <p class="eyebrow">나의 기록</p>
-      <h1>꾸준히 듣고 있어요</h1>
+      <h1>${data.sessions.length ? '꾸준히 듣고 있어요' : '첫 기록을 만들어 봐요'}</h1>
       <p class="lead">치료사 선생님께 이 화면을 보여 드리세요.</p>
     </header>
-    <section class="tiles">
+    ${data.sessions.length ? '' : `
+    <section class="panel empty">
+      <div class="empty-orb" aria-hidden="true">${ICON.chart}</div>
+      <h2 class="panel-title">아직 기록이 없어요</h2>
+      <p class="lead">한 판을 마치면 점수, 단계별 정답률, 헷갈린 소리가 여기에 쌓여요. 1단계를 하면 높낮이별로 얼마나 작은 소리까지 들리는지도 기록돼요.</p>
+      <button class="btn primary block" data-go="#play/1">${ICON.play}1단계부터 시작하기</button>
+    </section>`}
+    <section class="tiles"${data.sessions.length ? '' : ' hidden'}>
       <div class="tile"><b>${streak()}<small>일</small></b><span>연속 연습</span></div>
       <div class="tile"><b>${practiceDays}<small>일</small></b><span>연습한 날</span></div>
       <div class="tile"><b>${data.sessions.length}<small>판</small></b><span>전체 판 수</span></div>
     </section>
-    <section class="panel">
+    <section class="panel"${data.sessions.length ? '' : ' hidden'}>
       <h2 class="panel-title">최근 14일 점수</h2>
       ${chart}
     </section>
-    <section class="panel">
+    <section class="panel"${data.sessions.length ? '' : ' hidden'}>
       <h2 class="panel-title">단계별 정답률 <span>최근 5판</span></h2>
       <ul class="acc-list">
         ${STAGES.filter((s) => s.ready).map((s) => {
@@ -554,9 +594,21 @@ function renderProgress() {
             <span class="acc-val">${a == null ? '–' : a + '%'}</span></li>`;
         }).join('')}
       </ul>
-      <p class="note">${data.minDb == null ? '1단계를 하면 들린 가장 작은 소리를 기록해요.' : `1단계에서 기준보다 <b>${-data.minDb}dB</b> 작은 소리까지 들었어요.`}</p>
     </section>
-    <section class="panel">
+    <section class="panel"${data.minDb == null ? ' hidden' : ''}>
+      <h2 class="panel-title">높낮이별로 들린 가장 작은 소리 <span>1단계</span></h2>
+      <ul class="acc-list freq-list">
+        ${TONES.map((f) => {
+          const db = (data.toneByFreq || {})[f];
+          const name = { 500: '낮은 소리', 1000: '중간 소리', 2000: '높은 소리', 4000: '아주 높은 소리' }[f];
+          return `<li><span class="acc-name">${name} <small>${f}Hz</small></span>
+            <span class="acc-bar"><i style="width:${db == null ? 0 : Math.round((-db / 60) * 100)}%"></i></span>
+            <span class="acc-val">${db == null ? '–' : `${db}dB`}</span></li>`;
+        }).join('')}
+      </ul>
+      <p class="note">막대가 길수록 더 작은 소리까지 들은 거예요. 기준 음량보다 몇 dB 작게 들었는지 보여 줘요. 높은 소리 쪽이 짧다면 치료사 선생님께 알려 주세요.</p>
+    </section>
+    <section class="panel"${data.sessions.length ? '' : ' hidden'}>
       <h2 class="panel-title">자주 헷갈린 소리</h2>
       ${weak.length ? `<ul class="weak-list">${weak.map(([k, v]) => `
           <li><span class="weak-k">${esc(k)}</span><span class="weak-bar"><i style="width:${(100 * v) / weakMax}%"></i></span><b>${v}회</b></li>`).join('')}</ul>
@@ -595,6 +647,7 @@ async function renderPlay(stage) {
   const results = [];
   let toneDb = -10 * level; // 1단계 시작 음량: 레벨이 오를수록 작은 소리에서 시작한다
   let quietest = null;
+  const freqBest = {}; // 이번 판 주파수별로 들린 가장 작은 소리
   const sessionConf = {};
   const intro = {
     1: ['소리가 들리면 알려 주세요', '삐 소리가 날 수도, 안 날 수도 있어요. 조용한 곳에서 해 주세요.'],
@@ -620,6 +673,7 @@ async function renderPlay(stage) {
     </div>
     <div class="sheet" id="sheet" hidden>
       <div class="sheet-msg"><span class="sheet-icon"></span><div><b id="sheet-title"></b><p id="sheet-text"></p></div></div>
+      <div class="compare" id="compare" hidden></div>
       <button class="btn block" id="next">다음</button>
     </div>`;
   const $ = (s) => view.querySelector(s);
@@ -657,6 +711,8 @@ async function renderPlay(stage) {
   const acc = correct / TRIALS;
   const next = adjustLevel(stage, acc);
   if (stage === 1 && quietest != null) data.minDb = data.minDb == null ? quietest : Math.min(data.minDb, quietest);
+  data.toneByFreq = data.toneByFreq || {};
+  for (const [f, db] of Object.entries(freqBest)) data.toneByFreq[f] = Math.min(data.toneByFreq[f] ?? 0, db);
   for (const [k, v] of Object.entries(sessionConf)) data.confusions[k] = (data.confusions[k] || 0) + v;
   data.sessions.push({ date: today(), stage, level, score, correct, total: TRIALS, at: Date.now() });
   persist();
@@ -690,18 +746,29 @@ async function renderPlay(stage) {
     const present = Math.random() > 0.25; // 4번 중 1번은 소리 없음(찍기 방지)
     const freq = pick(TONES);
     $('#answers').innerHTML = '';
-    setQ('잘 들어 보세요', '&nbsp;');
-    setOrb('listening');
-    await wait(800 + Math.random() * 1500);
+    setQ('준비하세요', '&nbsp;');
+    setOrb('idle');
+    await wait(700);
     if (!alive()) return false;
-    if (present) await playing(playTone(freq, toneDb)); else await wait(900);
+    // 3초 '듣는 시간'을 막대로 보여 준다. 소리는 이 안의 아무 때나 나거나 나지 않는다.
+    const WINDOW = 3000; const t0 = performance.now();
+    setQ('지금 잘 들어 보세요', `<span class="listen-window" style="--dur:${WINDOW}ms" aria-hidden="true"><i></i></span><span class="src">소리가 안 날 수도 있어요</span>`);
+    setOrb('listening');
+    await wait(400 + Math.random() * 1500);
+    if (!alive()) return false;
+    if (present) { await playTone(freq, toneDb); if (!alive()) return false; }
+    await wait(Math.max(0, WINDOW - (performance.now() - t0)));
     if (!alive()) return false;
     setOrb('idle');
     setQ('소리가 들렸나요?', '&nbsp;');
-    const ans = await ask([['들렸어요'], ['안 들렸어요']], null, 'two');
+    const ans = await ask([['들렸어요', ICON.ear], ['안 들렸어요', ICON.x]], null, 'two');
     const heard = ans === 0;
     const ok = heard === present;
-    if (present && heard) { quietest = quietest == null ? toneDb : Math.min(quietest, toneDb); toneDb = Math.max(-60, toneDb - 5); }
+    if (present && heard) {
+      quietest = quietest == null ? toneDb : Math.min(quietest, toneDb);
+      freqBest[freq] = Math.min(freqBest[freq] ?? 0, toneDb);
+      toneDb = Math.max(-60, toneDb - 5);
+    }
     else if (present && !heard) toneDb = Math.min(0, toneDb + 5);
     feedback(ok, ok ? (present ? '정확해요' : '맞아요') : '아쉬워요',
       ok ? (present ? '다음은 조금 더 작게 들려드릴게요.' : '이번엔 소리가 없었어요.') : (present ? `${freq}Hz 소리가 있었어요. 조금 크게 다시 해 봐요.` : '이번엔 소리가 없었어요.'));
@@ -719,7 +786,8 @@ async function renderPlay(stage) {
     if (!alive()) return false;
     const ans = await ask(ids.map((id) => [ENV_SOUNDS[id].name, ENV_SOUNDS[id].icon]), ids.indexOf(target), ids.length === 2 ? 'two' : '');
     const ok = ids[ans] === target;
-    feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `${ENV_SOUNDS[target].name} 소리였어요.` : `정답은 ${ENV_SOUNDS[target].name}이에요. 한 번 더 들어 보세요.`);
+    feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `${ENV_SOUNDS[target].name} 소리였어요.` : `정답은 ${ENV_SOUNDS[target].name}이에요. 두 소리를 비교해 들어 보세요.`,
+      ok ? null : [[`정답: ${ENV_SOUNDS[target].name}`, () => playEnv(target)], [`고른 것: ${ENV_SOUNDS[ids[ans]].name}`, () => playEnv(ids[ans])]]);
     if (!ok) await playEnv(target);
     return ok;
   }
@@ -737,9 +805,10 @@ async function renderPlay(stage) {
     const srcEl = $('#src'); if (srcEl) srcEl.textContent = label;
     const ans = await ask(set.map((w) => [w]), set.indexOf(target), 'words');
     const ok = set[ans] === target;
-    if (!ok) for (const c of contrasts(target, set[ans])) sessionConf[c] = (sessionConf[c] || 0) + 1;
+    if (!ok) for (const c of contrasts(target, set[ans])) if (c !== '단어 길이') sessionConf[c] = (sessionConf[c] || 0) + 1; // 길이 차이는 소리 혼동이 아니다
     const why = ok ? '' : contrasts(target, set[ans]).filter((c) => c !== '단어 길이').join(', ');
-    feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `"${esc(target)}"였어요.` : `정답은 "${esc(target)}"예요.${why ? ` <span class="why">${esc(why)}</span>` : ''}`);
+    feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `"${esc(target)}"였어요.` : `정답은 "${esc(target)}"예요.${why ? ` <span class="why">${esc(why)}</span>` : ''}`,
+      ok ? null : [[`정답: ${target}`, () => playWord(target)], [`고른 것: ${set[ans]}`, () => playWord(set[ans])]]);
     if (!ok) await playWord(target); // 틀리면 정답을 한 번 더 들려준다
     return ok;
   }
@@ -747,10 +816,10 @@ async function renderPlay(stage) {
   // 5단계: 문장 고르기. 레벨 3은 문장 속 낱말을 고르게 해 취약음 분석에 넣는다.
   async function sentenceTrial() {
     const keyword = level >= 3;
-    let say; let opts; let target;
+    let say; let opts; let target; let frame;
     if (keyword) {
       const item = pick(SENTENCE_SETS[3]);
-      opts = shuffle(item.words); target = pick(opts); say = fillFrame(item.frame, target);
+      frame = item.frame; opts = shuffle(item.words); target = pick(opts); say = fillFrame(frame, target);
     } else {
       opts = shuffle(pick(SENTENCE_SETS[level])); target = pick(opts); say = target;
     }
@@ -764,7 +833,9 @@ async function renderPlay(stage) {
     const ok = opts[ans] === target;
     if (!ok && keyword) for (const c of contrasts(target, opts[ans])) sessionConf[c] = (sessionConf[c] || 0) + 1;
     const why = !ok && keyword ? contrasts(target, opts[ans]).join(', ') : '';
-    feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `"${esc(say)}"` : `들린 문장은 "${esc(say)}"예요.${why ? ` <span class="why">${esc(why)}</span>` : ''}`);
+    const chosenSay = keyword ? fillFrame(frame, opts[ans]) : opts[ans];
+    feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `"${esc(say)}"` : `들린 문장은 "${esc(say)}"예요.${why ? ` <span class="why">${esc(why)}</span>` : ''}`,
+      ok ? null : [['정답 문장', () => playWord(say)], ['고른 문장', () => playWord(chosenSay)]]);
     if (!ok) await playWord(say);
     return ok;
   }
@@ -793,12 +864,17 @@ async function renderPlay(stage) {
     });
   }
 
-  function feedback(ok, title, text) {
+  // compare: 틀렸을 때 정답과 고른 답을 번갈아 들어 보는 버튼 [[이름, 재생 함수], ...]
+  function feedback(ok, title, text, compare) {
     const sh = $('#sheet');
     sh.className = `sheet ${ok ? 'good' : 'bad'}`;
     sh.querySelector('.sheet-icon').innerHTML = ok ? ICON.check : ICON.x;
     $('#sheet-title').textContent = title;
     $('#sheet-text').innerHTML = text;
+    const cmp = $('#compare');
+    cmp.innerHTML = compare ? compare.map(([label], i) => `<button class="pill" data-k="${i}">${ICON.speaker}${esc(label)}</button>`).join('') : '';
+    cmp.hidden = !compare;
+    cmp.querySelectorAll('button').forEach((b) => { b.onclick = replay(compare[+b.dataset.k][1]); });
     sh.hidden = false;
   }
   function nextTap(last) {
