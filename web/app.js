@@ -37,6 +37,7 @@ const fresh = () => ({
   preferFamily: true,
   reportName: '',
   reportMemo: '',
+  plan: null,            // 선생님이 보낸 숙제 {by, stages, kind, amount, days, memo, at}
 });
 let data = Object.assign(fresh(), store.load());
 const persist = () => store.save(data);
@@ -534,6 +535,32 @@ function renderHome() {
       </div>
       <button class="btn primary block" data-go="#play/${rec}">${ICON.play}${rec}단계 ${STAGES[rec - 1].name} 시작</button>
     </section>
+    ${data.plan ? (() => {
+      const p = data.plan; const t = todayDone(data); const pct = Math.round(planProgress(data) * 100);
+      const doneToday = p.kind === 'm' ? t.min : t.rounds;
+      return `
+    <section class="panel plan-card">
+      <div class="focus-head">
+        <span class="focus-ico">${ICON.doc}</span>
+        <div>
+          <h2 class="panel-title">선생님 숙제${p.by ? ` <span>${esc(p.by)} 선생님</span>` : ''}</h2>
+          <p class="note">하루 ${p.amount}${PLAN_UNIT[p.kind]} · 주 ${p.days}일</p>
+        </div>
+      </div>
+      <div class="plan-bars">
+        <div class="plan-bar">
+          <span class="plan-lab">오늘 <b>${doneToday}/${p.amount}${PLAN_UNIT[p.kind]}</b></span>
+          <span class="acc-bar"><i style="width:${pct}%"></i></span>
+        </div>
+        <div class="plan-bar">
+          <span class="plan-lab">이번 주 <b>${weekDays(data.sessions)}/${p.days}일</b></span>
+          <span class="acc-bar"><i style="width:${Math.min(100, Math.round((100 * weekDays(data.sessions)) / p.days))}%"></i></span>
+        </div>
+      </div>
+      ${p.memo ? `<p class="note">“${esc(p.memo)}”</p>` : ''}
+      <button class="btn primary block" data-go="#play/${planNext(data)}">${ICON.play}숙제 ${planNext(data)}단계 하기</button>
+    </section>`;
+    })() : ''}
     ${weakTop(3).length ? `
     <section class="panel focus-card">
       <div class="focus-head">
@@ -780,6 +807,10 @@ function renderProgress() {
         <p class="note">단어와 문장 속 낱말에서 틀린 답을 자모 단위로 비교했어요. 이 소리가 든 문제를 더 자주 내요.</p>`
         : '<p class="note">3단계를 하면 어떤 소리를 헷갈리는지 알려 드려요.</p>'}
     </section>
+    <button class="report-link" data-go="#clinic">
+      <span class="focus-ico">${ICON.target}</span>
+      <span><b>선생님용 화면</b><small>숙제를 내고 여러 사람의 기록을 한 줄씩 모아 봐요</small></span>
+    </button>
     <div class="actions">
       <button class="btn" id="export">기록 파일 받기</button>
       <button class="btn ghost" id="reset">기록 지우기</button>
@@ -1186,18 +1217,240 @@ function renderReport() {
   $('#print').onclick = () => { try { window.print(); } catch { toast('이 화면에서는 인쇄할 수 없어요. 크롬에서 열어 주세요.'); } };
 }
 
+/* ---------- 선생님 숙제 ---------- */
+
+// 숙제는 서버 없이 링크 하나에 담는다(선생님이 링크나 QR을 보내면 그 사람 기기에만 저장된다).
+const b64u = {
+  enc: (s) => btoa(Array.from(new TextEncoder().encode(s), (b) => String.fromCharCode(b)).join('')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
+  dec: (s) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0))),
+};
+const PLAN_UNIT = { m: '분', r: '판' };
+const planLink = (p) => `${location.href.split('#')[0]}#plan/${b64u.enc(JSON.stringify({ v: 1, by: p.by, st: p.stages, k: p.kind, a: p.amount, d: p.days, m: p.memo }))}`;
+
+// 링크로 받은 값은 남이 고칠 수 있으니 범위를 다시 확인한다.
+function planUnpack(code) {
+  try {
+    const j = JSON.parse(b64u.dec(code));
+    const stages = (Array.isArray(j.st) ? j.st : []).map(Number).filter((n) => STAGES.some((s) => s.n === n && s.ready));
+    if (!stages.length) return null;
+    const kind = j.k === 'r' ? 'r' : 'm';
+    const num = (v, d, max) => Math.min(max, Math.max(1, Math.round(Number(v) || d)));
+    return {
+      by: String(j.by || '').slice(0, 20), stages, kind,
+      amount: num(j.a, kind === 'm' ? 10 : 3, kind === 'm' ? 120 : 20),
+      days: num(j.d, 5, 7), memo: String(j.m || '').slice(0, 200), at: Date.now(),
+    };
+  } catch { return null; }
+}
+
+const weekStart = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.toLocaleDateString('sv-SE'); }; // 월요일부터
+const weekDays = (ss) => { const w = weekStart(); return new Set(ss.filter((s) => s.date >= w).map((s) => s.date)).size; };
+const todayDone = (d) => {
+  const t = (d.sessions || []).filter((s) => s.date === today());
+  return { rounds: t.length, min: Math.round(t.reduce((a, s) => a + (s.sec || 180), 0) / 60) };
+};
+// 오늘 숙제를 얼마나 했는지(0~1)
+const planProgress = (d) => {
+  const p = d.plan; if (!p) return 0;
+  const t = todayDone(d);
+  return Math.min(1, (p.kind === 'm' ? t.min : t.rounds) / p.amount);
+};
+// 숙제에 든 단계 중 오늘 아직 안 한 것부터
+const planNext = (d) => {
+  const done = new Set((d.sessions || []).filter((s) => s.date === today()).map((s) => s.stage));
+  return d.plan.stages.find((n) => !done.has(n)) || d.plan.stages[0];
+};
+
+function renderPlanInvite(code) {
+  setNav('home');
+  const p = planUnpack(code);
+  if (!p) {
+    view.innerHTML = `<section class="panel empty">
+      <div class="empty-orb" aria-hidden="true">${ICON.doc}</div>
+      <h2 class="panel-title">숙제 링크를 읽을 수 없어요</h2>
+      <p class="lead">링크가 잘린 것 같아요. 선생님께 링크를 다시 받아 주세요.</p>
+      <button class="btn primary block" data-go="#home">처음으로</button></section>`;
+    return;
+  }
+  const unit = PLAN_UNIT[p.kind];
+  view.innerHTML = `
+    <header class="page-head">
+      <p class="eyebrow">선생님이 보낸 숙제</p>
+      <h1>${p.by ? `${esc(p.by)} 선생님이<br>` : ''}연습할 거리를 보냈어요</h1>
+    </header>
+    <section class="panel focus-card">
+      <div class="focus-head">
+        <span class="focus-ico">${ICON.target}</span>
+        <div>
+          <h2 class="panel-title">하루 ${p.amount}${unit}, 주 ${p.days}일</h2>
+          <p class="note">숙제에 든 단계예요. 받으면 집 화면에 이번 주 진도가 같이 나와요.</p>
+        </div>
+      </div>
+      <div class="chips">${p.stages.map((n) => `<span class="chip focus">${n}단계 ${STAGES[n - 1].name}</span>`).join('')}</div>
+      ${p.memo ? `<p class="lead">“${esc(p.memo)}”</p>` : ''}
+    </section>
+    <div class="actions">
+      <button class="btn primary" id="take">${ICON.check}숙제 받기</button>
+      <button class="btn ghost" data-go="#home">나중에</button>
+    </div>
+    <p class="note center">숙제는 이 기기에만 저장돼요. 기록이 선생님께 저절로 가지는 않아요.</p>`;
+  view.querySelector('#take').onclick = () => {
+    data.plan = p; persist();
+    go('#home'); toast('숙제를 받았어요. 집 화면에서 진도를 볼 수 있어요.');
+  };
+}
+
+// 기록 파일(기록 > 기록 파일 받기)에서 환자 한 명의 요약을 만든다
+function patientRow(d, name) {
+  const ss = Array.isArray(d.sessions) ? d.sessions : [];
+  const accStage = (n) => { const l = ss.filter((s) => s.stage === n).slice(-5); return l.length ? accOf(l) : null; };
+  const checks = Array.isArray(d.checks) ? d.checks : [];
+  return {
+    name: name || '이름 없음',
+    last: ss.length ? ss[ss.length - 1].date : null,
+    week: weekDays(ss), planDays: d.plan?.days || null, rounds: ss.length,
+    acc: { 3: accStage(3), 5: accStage(5), 6: accStage(6) },
+    weak: Object.entries(d.confusions || {}).filter(([k]) => k !== '단어 길이').sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => friendly(k)),
+    check: checks.length ? { first: checks[0].score, last: checks[checks.length - 1].score, n: checks.length } : null,
+  };
+}
+
+let clinicRows = null; // 불러온 환자 요약(예시를 지우면 빈 배열)
+function renderClinic() {
+  setNav('progress');
+  if (!clinicRows) clinicRows = demoPatients().map((d) => Object.assign(patientRow(d, d.reportName), { demo: true }));
+  const form = Object.assign({ by: '', stages: [3, 5], kind: 'm', amount: 10, days: 5, memo: '' }, clinicForm);
+  const unit = PLAN_UNIT[form.kind];
+  const dayName = (s) => (s ? `${s.slice(5, 7)}/${s.slice(8, 10)}` : '–');
+  view.innerHTML = `
+    <header class="page-head">
+      <p class="eyebrow">선생님용 화면</p>
+      <h1>숙제를 내고<br>기록을 모아 봐요</h1>
+      <p class="note">치료사·선생님용 화면이에요. 보호자에게는 숙제 링크나 QR만 보내면 돼요.</p>
+    </header>
+
+    <section class="panel">
+      <h2 class="panel-title">숙제 만들기</h2>
+      <label class="field">선생님 이름 <input id="by" value="${esc(form.by)}" placeholder="예: 김민정" autocomplete="off" maxlength="20"></label>
+      <p class="field-label">연습할 단계</p>
+      <div class="seg stage-pick">${STAGES.filter((s) => s.ready).map((s) => `
+        <button type="button" data-stage="${s.n}" class="${form.stages.includes(s.n) ? 'on' : ''}" aria-pressed="${form.stages.includes(s.n)}">${s.n}단계 ${s.name}</button>`).join('')}</div>
+      <div class="two-col">
+        <label class="field">하루 분량
+          <span class="amount">
+            <input id="amount" type="number" min="1" max="${form.kind === 'm' ? 120 : 20}" value="${form.amount}" inputmode="numeric">
+            <select id="kind"><option value="m"${form.kind === 'm' ? ' selected' : ''}>분</option><option value="r"${form.kind === 'r' ? ' selected' : ''}>판</option></select>
+          </span>
+        </label>
+        <label class="field">주 며칠 <input id="days" type="number" min="1" max="7" value="${form.days}" inputmode="numeric"></label>
+      </div>
+      <label class="field">보호자에게 전할 말 <textarea id="memo" rows="2" maxlength="200" placeholder="예: 받침 소리를 천천히 들려주세요.">${esc(form.memo)}</textarea></label>
+      <div id="out"></div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">환자 기록 모아 보기 <span>기록 파일을 여러 개 골라요</span></h2>
+      <p class="note">보호자가 '기록 &gt; 기록 파일 받기'로 보낸 파일을 한 번에 열어 한 줄씩 봅니다. 파일은 이 기기 안에서만 읽어요.</p>
+      <div class="actions no-print">
+        <label class="btn">기록 파일 열기<input id="files" type="file" accept=".json,application/json" multiple hidden></label>
+        <button class="btn ghost" id="clear">목록 비우기</button>
+      </div>
+      <div class="scroll-x">
+        <table class="rtable patients">
+          <thead><tr><th>이름</th><th>마지막</th><th>이번 주</th><th>3단계</th><th>5단계</th><th>6단계</th><th>약한 소리</th><th>월 점검</th></tr></thead>
+          <tbody>${clinicRows.length ? clinicRows.map((r) => `
+            <tr><th scope="row">${esc(r.name)}${r.demo ? '<span class="chip demo sm">예시</span>' : ''}</th>
+              <td>${dayName(r.last)}</td>
+              <td class="${r.planDays && r.week >= r.planDays ? 'up' : ''}">${r.week}${r.planDays ? `/${r.planDays}일` : '일'}</td>
+              ${[3, 5, 6].map((n) => `<td>${r.acc[n] == null ? '–' : `${r.acc[n]}%`}</td>`).join('')}
+              <td class="weak-cell">${r.weak.length ? r.weak.map((w) => esc(w)).join(', ') : '–'}</td>
+              <td class="${r.check && r.check.last > r.check.first ? 'up' : r.check && r.check.last < r.check.first ? 'down' : ''}">${r.check ? (r.check.n > 1 ? `${r.check.first}→${r.check.last}` : `${r.check.last}`) : '–'}</td></tr>`).join('')
+            : '<tr><td colspan="8" class="center note">목록이 비어 있어요. 기록 파일을 열어 주세요.</td></tr>'}</tbody>
+        </table>
+      </div>
+      <p class="note">단계별 숫자는 최근 5판 정답률이에요. '이번 주'는 이번 주(월요일부터) 연습한 날수이고, 숙제가 있으면 계획 일수와 함께 보여 줘요.</p>
+    </section>
+    <button class="btn ghost block" data-go="#progress">기록으로 돌아가기</button>`;
+
+  const $ = (q) => view.querySelector(q);
+  const out = $('#out');
+  const paint = () => {
+    clinicForm = form;
+    if (!form.stages.length) { out.innerHTML = '<p class="note">단계를 하나 이상 골라 주세요.</p>'; return; }
+    const link = planLink({ by: form.by.trim(), stages: form.stages, kind: form.kind, amount: form.amount, days: form.days, memo: form.memo.trim() });
+    let qr = '';
+    try { qr = QR.svg(link); } catch { qr = '<p class="note">전할 말이 너무 길어 QR을 만들지 못했어요. 조금 줄여 주세요.</p>'; }
+    out.innerHTML = `
+      <div class="plan-out">
+        <div class="qr-box">${qr}</div>
+        <div class="plan-sum">
+          <p><b>하루 ${form.amount}${PLAN_UNIT[form.kind]}</b> · 주 ${form.days}일 · ${form.stages.map((n) => `${n}단계`).join(', ')}</p>
+          <p class="note">보호자가 QR을 찍거나 링크를 열면 숙제가 그 기기에 저장돼요.</p>
+          <div class="actions no-print">
+            <button class="btn primary" id="copy">링크 복사</button>
+            <button class="btn" id="open">열어 보기</button>
+          </div>
+          <input class="link-box" id="link" value="${esc(link)}" readonly aria-label="숙제 링크">
+        </div>
+      </div>`;
+    out.querySelector('#copy').onclick = async () => {
+      try { await navigator.clipboard.writeText(link); toast('링크를 복사했어요.'); }
+      catch { const i = out.querySelector('#link'); i.select(); toast('링크를 길게 눌러 복사해 주세요.'); }
+    };
+    out.querySelector('#open').onclick = () => go(`#plan/${link.split('#plan/')[1]}`);
+  };
+  paint();
+  $('#by').oninput = (e) => { form.by = e.target.value; paint(); };
+  $('#memo').oninput = (e) => { form.memo = e.target.value; paint(); };
+  $('#amount').onchange = (e) => { form.amount = Math.min(form.kind === 'm' ? 120 : 20, Math.max(1, Math.round(+e.target.value || 1))); e.target.value = form.amount; paint(); };
+  $('#days').onchange = (e) => { form.days = Math.min(7, Math.max(1, Math.round(+e.target.value || 1))); e.target.value = form.days; paint(); };
+  $('#kind').onchange = (e) => {
+    form.kind = e.target.value === 'r' ? 'r' : 'm';
+    form.amount = form.kind === 'm' ? 10 : 3;
+    renderClinic();
+  };
+  view.querySelectorAll('[data-stage]').forEach((b) => {
+    b.onclick = () => {
+      const n = +b.dataset.stage;
+      form.stages = form.stages.includes(n) ? form.stages.filter((x) => x !== n) : [...form.stages, n].sort((a, c) => a - c);
+      b.classList.toggle('on'); b.setAttribute('aria-pressed', form.stages.includes(n));
+      paint();
+    };
+  });
+  $('#clear').onclick = () => { clinicRows = []; renderClinic(); };
+  $('#files').onchange = async (e) => {
+    const files = [...e.target.files];
+    const rows = clinicRows.filter((r) => !r.demo);
+    let bad = 0;
+    for (const f of files) {
+      try {
+        const d = JSON.parse(await f.text());
+        if (!Array.isArray(d.sessions)) throw new Error('기록이 아니에요');
+        rows.push(patientRow(d, (d.reportName || '').trim() || f.name.replace(/\.json$/i, '')));
+      } catch { bad++; }
+    }
+    clinicRows = rows;
+    renderClinic();
+    toast(bad ? `${files.length - bad}개를 열었고 ${bad}개는 읽지 못했어요.` : `${files.length}개를 열었어요.`);
+  };
+}
+let clinicForm = null; // 화면을 다시 그려도 적던 값을 둔다
+
 /* ---------- 시연용 예시 기록 ---------- */
 
 const BACKUP_KEY = 'sorigil.v1.backup';
 // 2주 동안 꾸준히 쓴 사람처럼 기록을 만든다. 날마다 정답률이 조금씩 오른다.
-function demoData() {
-  let seed = 7;
+// opts로 사람마다 다르게 만들어 선생님 화면의 예시 환자로도 쓴다.
+function demoData(opts = {}) {
+  const { seed0 = 7, name = '김소리', boost = 0, rest = [9, 4], plan = null } = opts;
+  let seed = seed0;
   const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-  const ACC = { 1: [0.6, 0.9], 2: [0.6, 0.95], 3: [0.45, 0.82], 5: [0.5, 0.8], 6: [0.4, 0.72] };
-  const d = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, demo: true, reportName: '김소리' });
+  const shift = (a, b) => [Math.max(0.2, a + boost), Math.max(0.3, Math.min(1, b + boost))];
+  const ACC = { 1: shift(0.6, 0.9), 2: shift(0.6, 0.95), 3: shift(0.45, 0.82), 5: shift(0.5, 0.8), 6: shift(0.4, 0.72) };
+  const d = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, demo: true, reportName: name, plan });
   const lv = d.levels;
   for (let i = 13; i >= 0; i--) {
-    if (i === 9 || i === 4) continue; // 쉰 날
+    if (rest.includes(i)) continue; // 쉰 날
     const k = 13 - i; const p = k / 13;
     const pool = k < 3 ? [1, 2, 3] : k < 6 ? [2, 3, 5] : [3, 5, 6];
     const count = i === 0 ? 2 : 2 + Math.floor(rnd() * 3);
@@ -1220,6 +1473,17 @@ function demoData() {
   d.speakConf = { '초성 ㅅ↔ㅆ': 4, '종성 ㄹ↔없음': 2 };
   return d;
 }
+// 선생님 화면에서 보여 줄 예시 환자들
+function demoPatients() {
+  const mk = (stages, kind, amount, days) => ({ by: '김민정', stages, kind, amount, days, memo: '', at: Date.now() });
+  return [
+    demoData({ seed0: 7, name: '김소리', plan: mk([3, 5], 'm', 10, 5) }),
+    demoData({ seed0: 23, name: '이바다', boost: -0.12, rest: [12, 9, 7, 4, 2], plan: mk([2, 3], 'r', 3, 3) }),
+    demoData({ seed0: 101, name: '박하늘', boost: 0.08, rest: [11], plan: mk([3, 5, 6], 'm', 15, 6) }),
+    demoData({ seed0: 55, name: '최도윤', boost: -0.05, rest: [13, 12, 10, 6, 3] }),
+  ];
+}
+
 function loadDemo() {
   if (!data.demo && data.sessions.length) try { localStorage.setItem(BACKUP_KEY, JSON.stringify(data)); } catch {} // 내 기록은 따로 보관한다
   data = demoData(); persist();
@@ -1561,7 +1825,10 @@ function route() {
   document.body.classList.remove('in-play');
   const h = current;
   const m = h.match(/^#play\/(\d)$/);
+  const inv = h.match(/^#plan\/(.+)$/);
   if (m && STAGES[+m[1] - 1]?.ready) renderPlay(+m[1]);
+  else if (inv) renderPlanInvite(inv[1]);
+  else if (h === '#clinic') renderClinic();
   else if (h === '#voices') renderVoices();
   else if (h === '#progress') renderProgress();
   else if (h === '#report') renderReport();
