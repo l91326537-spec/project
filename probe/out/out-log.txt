@@ -1,0 +1,55 @@
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+[nltk_data] Downloading package averaged_perceptron_tagger to
+[nltk_data]     /home/runner/nltk_data...
+[nltk_data]   Unzipping taggers/averaged_perceptron_tagger.zip.
+[nltk_data] Downloading package averaged_perceptron_tagger_eng to
+[nltk_data]     /home/runner/nltk_data...
+[nltk_data]   Unzipping taggers/averaged_perceptron_tagger_eng.zip.
+[nltk_data] Downloading package cmudict to /home/runner/nltk_data...
+[nltk_data]   Unzipping corpora/cmudict.zip.
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/google/api_core/_python_version_support.py:223: FutureWarning: You are using a non-supported Python version (3.10.22). Google will not post any further updates to google.api_core supporting this Python version. Please upgrade to the latest Python version, or at least Python 3.11, and then update google.api_core.
+  warnings.warn(message, FutureWarning)
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/torch/nn/utils/weight_norm.py:145: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+load 4.4 sr 44100
+Collecting python-mecab-ko
+  Downloading python_mecab_ko-1.3.7-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.4 kB)
+Collecting python-mecab-ko-dic (from python-mecab-ko)
+  Downloading python_mecab_ko_dic-2.1.1.post2-py3-none-any.whl.metadata (1.4 kB)
+Downloading python_mecab_ko-1.3.7-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (577 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 577.1/577.1 kB 14.5 MB/s  0:00:00
+Downloading python_mecab_ko_dic-2.1.1.post2-py3-none-any.whl (34.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 34.5/34.5 MB 107.4 MB/s  0:00:00
+Installing collected packages: python-mecab-ko-dic, python-mecab-ko
+
+Successfully installed python-mecab-ko-1.3.7 python-mecab-ko-dic-2.1.1.post2
+
+[notice] A new release of pip is available: 26.2.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+Some weights of the model checkpoint at kykim/bert-kor-base were not used when initializing BertForMaskedLM: ['cls.seq_relationship.bias', 'cls.seq_relationship.weight']
+- This IS expected if you are initializing BertForMaskedLM from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertForMaskedLM from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+you have to install python-mecab-ko. install it...
+{'text': '쌀', 'heard': '사이', 'gen_s': 21.14, 'dur_s': 0.72, 'bytes': 4752}
+{'text': '살', 'heard': '살', 'gen_s': 0.44, 'dur_s': 0.73, 'bytes': 4752}
+{'text': '달', 'heard': '타이', 'gen_s': 0.41, 'dur_s': 0.66, 'bytes': 4320}
+{'text': '발', 'heard': '탈', 'gen_s': 0.41, 'dur_s': 0.66, 'bytes': 4320}
+{'text': '불', 'heard': '풀', 'gen_s': 0.36, 'dur_s': 0.6, 'bytes': 3888}
+{'text': '풀', 'heard': '풀', 'gen_s': 0.33, 'dur_s': 0.63, 'bytes': 4104}
+{'text': '뿔', 'heard': '풀', 'gen_s': 0.39, 'dur_s': 0.61, 'bytes': 4104}
+{'text': '물', 'heard': '뿔이', 'gen_s': 0.38, 'dur_s': 0.61, 'bytes': 3888}
+{'text': '감', 'heard': '컴', 'gen_s': 0.32, 'dur_s': 0.62, 'bytes': 4104}
+{'text': '김', 'heard': 'PIN', 'gen_s': 0.4, 'dur_s': 0.65, 'bytes': 4104}
+{'text': '곰', 'heard': '컴', 'gen_s': 0.33, 'dur_s': 0.62, 'bytes': 4104}
+{'text': '토끼', 'heard': '토피', 'gen_s': 0.43, 'dur_s': 0.81, 'bytes': 5184}
+{'text': '도끼', 'heard': '도피', 'gen_s': 0.43, 'dur_s': 0.8, 'bytes': 5184}
+{'text': '시장에서 쌀을 샀어요', 'heard': '시장에서 쌀을 샀어요.', 'gen_s': 0.68, 'dur_s': 2.06, 'bytes': 12744}
+{'text': '할머니가 전화하셨어요', 'heard': '할머니가 전화하셨어요.', 'gen_s': 0.67, 'dur_s': 2.23, 'bytes': 13608}
+{'text': '다음 정류장은 시청입니다', 'heard': '다음 정류장은 시청입니다.', 'gen_s': 0.79, 'dur_s': 2.47, 'bytes': 15120}
+{'text': '덜 맵게 해 주세요', 'heard': '덜 맵게 해주세요.', 'gen_s': 0.67, 'dur_s': 1.9, 'bytes': 11664}
+{'text': '안녕하세요', 'heard': '안녕하세요.', 'gen_s': 0.52, 'dur_s': 1.25, 'bytes': 7776}

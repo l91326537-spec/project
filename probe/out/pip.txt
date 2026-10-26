@@ -1,0 +1,5 @@
+faster-whisper           1.2.1
+melotts                  0.1.2
+torch                    2.14.1
+torchaudio               2.11.0
+transformers             4.27.4
