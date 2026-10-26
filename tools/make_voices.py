@@ -55,16 +55,18 @@ def rivals_of(groups):
     return {t: sorted(v) for t, v in out.items()}
 
 
-def finish(index, failed):
+def finish(index, failed, hide=()):
+    """failed: 만들지 못한 것. hide: 파일은 두되 앱 목록에서 뺄 것(확인에서 애매했던 음성은 앱이 기기 음성으로 들려준다)"""
     index = {t: v for t, v in index.items() if t not in failed and os.path.exists(os.path.join(WEB, v))}
     keep = {os.path.basename(v) for v in index.values()}
     for f in os.listdir(OUT):
         if f.endswith('.mp3') and f not in keep:
             os.remove(os.path.join(OUT, f))
+    shown = {t: v for t, v in index.items() if t not in hide}
     with open(os.path.join(OUT, 'index.json'), 'w', encoding='utf-8') as fp:
-        json.dump(index, fp, ensure_ascii=False, indent=0, sort_keys=True)
-    size = sum(os.path.getsize(os.path.join(OUT, f)) for f in os.listdir(OUT))
-    print(f'완료: {len(index)}개, 실패 {len(failed)}개, 전체 {size / 1e6:.1f}MB')
+        json.dump(shown, fp, ensure_ascii=False, indent=0, sort_keys=True)
+    size = sum(os.path.getsize(os.path.join(WEB, v)) for v in shown.values())
+    print(f'완료: 앱에 {len(shown)}개({size / 1e6:.1f}MB), 애매해서 뺀 것 {len(index) - len(shown)}개, 실패 {len(failed)}개')
     return 1 if failed else 0
 
 
@@ -207,27 +209,40 @@ def run_melo(a, texts, rivals):
 
     failed = []
     t0 = time.time()
+
+    def rank(r):
+        return (r['margin'] >= a.margin, r['exact'], r['margin'], r['sim'])
+
     for i, (t, path) in enumerate(todo):
         best = None
         short = len(norm(t)) <= 3  # 짧은 낱말이 헷갈리기 쉬워 빠르기도 바꿔 가며 더 여러 번 만든다
         tries = a.tries if short else max(2, a.tries // 3)
+        # 애매했던 음성을 다시 만들 때는 전에 써 본 시드를 건너뛴다(같은 시드는 같은 소리가 난다)
+        prev = qa.get(t) if os.path.exists(path) else None
+        base = prev.get('base', 0) + tries if prev and not prev.get('ok') else 0
         for k in range(tries):
             speed = round(a.speed + ([0, 0.1, -0.1, 0.05, -0.05, 0.15][k % 6] if short else 0), 2)
             try:
-                wav = make(t, 1000 * k + 7, speed)
+                wav = make(t, 1000 * (base + k) + 7, speed)
             except Exception as e:  # 드물게 합성이 실패하면 다음 시드로
                 print(f'  합성 오류: {t} ({e})', file=sys.stderr)
                 continue
             r = judge.check(t, resample(wav, 16000), rivals.get(t, []))
-            r['try'] = k + 1
+            r['try'] = base + k + 1
             r['speed'] = speed
-            score = (r['margin'] >= a.margin, r['exact'], r['margin'], r['sim'])
+            if base:
+                r['base'] = base
+            score = rank(r)
             if best is None or score > best[0]:
                 best = (score, wav, r)
             if r['margin'] >= a.margin and r['exact']:
                 break
         if best is None:
-            failed.append(t)
+            if not prev:
+                failed.append(t)
+            continue
+        if prev and best[0] <= rank(prev):  # 다시 만든 것이 전보다 낫지 않으면 전 파일을 둔다
+            prev['base'] = base
             continue
         mp3(best[1], path)
         best[2]['ok'] = best[2]['margin'] >= a.margin
@@ -241,7 +256,7 @@ def run_melo(a, texts, rivals):
     print(f'확인: {len(qa) - len(weak)}/{len(qa)}개가 다른 보기보다 정답에 가깝게 들림')
     for m, t, h in weak[:40]:
         print(f'  애매함: {t} → "{h}" (차이 {m})')
-    return finish(index, failed)
+    return finish(index, failed, hide={t for _, t, _ in weak})
 
 
 # ---------- Azure ----------

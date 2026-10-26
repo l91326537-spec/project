@@ -35,7 +35,7 @@ cd web && python3 -m http.server 8000
 기록과 녹음은 모두 사용자 기기(localStorage, IndexedDB)에만 저장됩니다.
 
 ## 다음 할 일
-- 음량 보정·좌우 귀 선택, 미리 만든 AI 음성, 고령자 편의(큰 글씨·음성 안내)
+- 음량 보정·좌우 귀 선택, 고령자 편의(큰 글씨·음성 안내)
 - 4·7단계(비슷한 소리 구별, 대화)
 
 훈련용이며 청력 검사나 진단을 대신하지 않습니다.
@@ -44,7 +44,7 @@ cd web && python3 -m http.server 8000
 - 문항은 `web/content.js`에 모여 있습니다. 한 줄(배열)이 한 문제의 보기 4개입니다.
 - `web/voice/index.json`(`{"글자": "voice/파일.mp3"}`)과 음성 파일이 있으면 기기 음성(TTS) 대신 그 파일을 씁니다. Claude 앱 화면처럼 기기 음성이 없는 곳에서도 소리가 나게 하려면 필요합니다.
 - 음성은 **MeloTTS(MIT 라이선스 오픈소스)**로 만듭니다. 키가 필요 없어서 `web/content.js`를 고친 PR마다 GitHub Actions(`음성 파일 만들기`)가 새 문항만 만들어 그 PR 브랜치에 커밋합니다. Actions 탭에서 직접 돌릴 수도 있습니다(`시험 삼아 앞의 몇 개만` 입력란으로 일부만 만들어 볼 수 있습니다).
-- 만든 음성은 **Whisper로 다시 들어 확인**합니다. 받아 적은 말이 정답보다 같은 문제의 다른 보기(예: 쌀↔살)에 더 가깝게 들리면 빠르기와 조건을 바꿔 다시 만들고(짧은 낱말은 최대 8번), 그래도 애매하면 `tools/voice_qa.json`에 남겨 로그에 알립니다. 한두 글자 낱말은 작은 Whisper 모델이 자주 잘못 받아 적어 큰 모델(medium)로 듣고, '3시'처럼 숫자로 적은 것은 '세 시'·'삼 시'로 읽어 견줍니다. Actions에서 `애매했던 음성도 다시 만들기`를 켜고 돌리면 애매했던 것만 다시 만듭니다.
+- 만든 음성은 **Whisper로 다시 들어 확인**합니다. 받아 적은 말이 정답보다 같은 문제의 다른 보기(예: 쌀↔살)에 더 가깝게 들리면 빠르기와 조건을 바꿔 다시 만들고(짧은 낱말은 최대 8번), 그래도 애매하면 `tools/voice_qa.json`에 남기고 `index.json`에서 뺍니다(앱은 그 문항을 기기 음성이나 가족 목소리로 들려주고, 기기 음성이 없는 곳에서는 음성 파일이 있는 문항을 골라 냅니다). 한두 글자 낱말은 작은 Whisper 모델이 자주 잘못 받아 적어 큰 모델(medium)로 듣고, '3시'처럼 숫자로 적은 것은 '세 시'·'삼 시'로 읽어 견줍니다. Actions에서 `애매했던 음성도 다시 만들기`를 켜고 돌리면 애매했던 것만 새 시드로 다시 만들고, 전보다 나을 때만 바꿉니다. 지금은 573개 중 547개가 확인을 통과했습니다.
 - 저장소 Settings > Secrets and variables > Actions에 `AZURE_SPEECH_KEY`와 `AZURE_SPEECH_REGION`(예: `koreacentral`)을 넣어 두면 대신 **Azure 음성 서비스(공식 API, 한국어 SunHi 음성)**를 씁니다.
 - 직접 만들려면 `pip install git+https://github.com/myshell-ai/MeloTTS.git faster-whisper lameenc && python -m unidic download` 뒤에 `python3 tools/make_voices.py`(node 필요). Azure로 만들려면 `AZURE_SPEECH_KEY=... AZURE_SPEECH_REGION=koreacentral python3 tools/make_voices.py --engine azure`(무료 F0 요금제는 1분에 20번까지라 전체를 처음 만들 때 30분쯤 걸립니다).
 - 파일 수 제한이 있는 곳(예: Claude 아티팩트)에 올릴 때는 `python3 tools/make_sprites.py OUT`으로 음성을 묶음 몇 개로 합칩니다(ffmpeg 필요). 앱은 index.json 값이 객체(`{s, t, d}`)면 묶음의 해당 구간을 재생합니다.
