@@ -92,7 +92,7 @@ h1 { font: 400 30px/1.25 var(--display); letter-spacing: -.01em; }
 .btn:disabled { opacity: .45; cursor: default; }
 
 .icon-btn {
-  flex: none; display: grid; place-items: center; width: 48px; height: 48px;
+  position: relative; flex: none; display: grid; place-items: center; width: 48px; height: 48px;
   border-radius: 14px; border: 0; background: var(--surface-2); color: var(--ink);
 }
 .icon-btn svg { width: 22px; height: 22px; }
@@ -218,6 +218,10 @@ h1 { font: 400 30px/1.25 var(--display); letter-spacing: -.01em; }
 .word-row.has .word-state { color: var(--good); }
 .rec-btn { background: var(--bad-soft); color: var(--bad); }
 .rec-btn.recording { background: var(--bad); color: #fff; animation: pulse 1s ease-in-out infinite; }
+.rec-btn.recording::after { /* 남은 녹음 시간 */
+  content: ""; position: absolute; left: 8px; right: 8px; bottom: 6px; height: 3px; border-radius: 2px;
+  background: #fff; transform-origin: left; animation: drain var(--dur) linear forwards;
+}
 
 /* ---------- 기록 ---------- */
 .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -281,6 +285,21 @@ h1 { font: 400 30px/1.25 var(--display); letter-spacing: -.01em; }
 }
 .pill svg { width: 20px; height: 20px; }
 .src { font-size: 14px; color: var(--muted); }
+.listen-window { display: block; width: min(260px, 70vw); height: 12px; border-radius: 999px; background: var(--warm-soft); overflow: hidden; }
+.listen-window i { display: block; height: 100%; background: var(--warm); transform-origin: left; animation: fill var(--dur) linear forwards; }
+#hint:has(.listen-window) { flex-direction: column; gap: 6px; }
+.choice .pic svg { width: 40px; height: 40px; }
+.choices.two .choice:first-child .pic { color: var(--accent); }
+.choices.two .choice:last-child .pic { color: var(--muted); }
+.compare { display: flex; flex-wrap: wrap; gap: 8px; }
+.compare .pill { flex: 1 1 140px; justify-content: center; color: var(--ink); border-color: transparent; }
+.empty { align-items: center; text-align: center; }
+.empty-orb { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); }
+.empty-orb svg { width: 34px; height: 34px; }
+.freq-list .acc-name small { margin-left: 4px; font-size: 12px; color: var(--muted); }
+.freq-list li { grid-template-columns: minmax(0, 9em) 1fr 3.6em; }
+.settings { padding-block: 16px; }
+html.big main, html.big .sheet, html.big .tabbar { zoom: 1.15; }
 
 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .choice {
@@ -369,6 +388,8 @@ h1 { font: 400 30px/1.25 var(--display); letter-spacing: -.01em; }
 @keyframes rise { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 @keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
