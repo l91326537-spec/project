@@ -4,7 +4,7 @@ from melo.api import TTS
 from faster_whisper import WhisperModel
 import lameenc
 
-WORDS = json.loads(sys.argv[1])  # {"쌀": "voice/....mp3", ...}
+WORDS = json.load(open(sys.argv[1], encoding='utf-8'))  # {"쌀": "voice/....mp3", ...}
 os.makedirs('probe/out', exist_ok=True)
 tts = TTS(language='KR', device='cpu')
 spk = tts.hps.data.spk2id['KR']; sr = tts.hps.data.sampling_rate
