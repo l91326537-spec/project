@@ -291,6 +291,7 @@ h1 { font: 400 30px/1.25 var(--display); letter-spacing: -.01em; }
 .choice .pic svg { width: 40px; height: 40px; }
 .choices.two .choice:first-child .pic { color: var(--accent); }
 .choices.two .choice:last-child .pic { color: var(--muted); }
+.start-box { display: flex; flex-direction: column; gap: 12px; }
 .compare { display: flex; flex-wrap: wrap; gap: 8px; }
 .compare .pill { flex: 1 1 140px; justify-content: center; color: var(--ink); border-color: transparent; }
 .empty { align-items: center; text-align: center; }
