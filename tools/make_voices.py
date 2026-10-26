@@ -21,11 +21,12 @@ OUT = os.path.join(WEB, 'voice')
 DUMP_JS = r"""
 const vm = require('vm'); const fs = require('fs');
 const ctx = {}; vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(process.argv[1], 'utf8') + ';this.W = WORD_SETS; this.S = SENTENCE_SETS;', ctx);
+vm.runInContext(fs.readFileSync(process.argv[1], 'utf8') + ';this.W = WORD_SETS; this.S = SENTENCE_SETS; this.N = NOISE_SCENES;', ctx);
 const hasBatchim = (w) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c <= 11171 && c % 28 !== 0; };
 const fill = (f, w) => f.replace('_{을}', w + (hasBatchim(w) ? '을' : '를')).replace('_{이}', w + (hasBatchim(w) ? '이' : '가'));
 const texts = new Set([...Object.values(ctx.W).flat(2), ...ctx.S[1].flat(), ...ctx.S[2].flat(), '안녕하세요']);
 for (const { frame, words } of ctx.S[3]) for (const w of words) texts.add(fill(frame, w));
+for (const sc of Object.values(ctx.N)) for (const t of [...sc.easy, ...sc.hard].flat()) texts.add(t);
 console.log(JSON.stringify([...texts]));
 """
 
