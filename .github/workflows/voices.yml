@@ -1,0 +1,50 @@
+# 문항(web/content.js)을 고친 PR에서 AI 음성 파일을 만들어 그 PR 브랜치에 올린다.
+# 작업 환경에서 음성 서버에 접속할 수 없어도 GitHub에서 대신 만든다. 이미 있는 파일은 건너뛴다.
+name: 음성 파일 만들기
+
+on:
+  pull_request:
+    paths: ['web/content.js', 'tools/make_voices.py', '.github/workflows/voices.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: voices-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  voices:
+    # 다른 사람 저장소에서 온 PR에는 올릴 권한이 없다
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install edge-tts
+      - id: gen
+        continue-on-error: true # 일부가 실패해도 만든 파일은 올린다
+        run: python3 tools/make_voices.py
+      - name: 바뀐 음성 파일 올리기
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add web/voice
+          if git diff --cached --quiet; then echo "바뀐 음성 파일 없음"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -m "AI 음성 파일 갱신"
+          git pull -q --rebase origin "$BRANCH"
+          git push origin "HEAD:$BRANCH"
+          # 봇이 올린 커밋은 배포를 다시 돌리지 않으므로 main이면 직접 배포한다
+          if [ "$BRANCH" = main ]; then gh workflow run pages.yml --ref main; fi
+      - if: steps.gen.outcome == 'failure'
+        run: echo "만들지 못한 음성이 있어요. 위 로그의 '실패' 줄을 확인하세요." && exit 1
