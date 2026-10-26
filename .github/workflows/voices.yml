@@ -45,13 +45,17 @@ jobs:
           python -m unidic download
       - id: gen
         continue-on-error: true # 일부가 실패해도 만든 파일은 올린다
-        run: python3 tools/make_voices.py --limit "${{ inputs.limit || 0 }}"
+        run: |
+          set -o pipefail  # tee를 거쳐도 실패를 놓치지 않게
+          python3 tools/make_voices.py --limit "${{ inputs.limit || 0 }}" 2>&1 | tee /tmp/voices.log
       - name: 바뀐 음성 파일 올리기
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           [ -d web/voice ] && git add -A web/voice
           [ -f tools/voice_qa.json ] && git add tools/voice_qa.json
+          # 실패했을 때는 이유를 브랜치에서 볼 수 있게 기록도 함께 올린다(성공하면 올리지 않는다)
+          if [ "${{ steps.gen.outcome }}" = failure ]; then tail -c 60000 /tmp/voices.log > tools/voice_log.txt; git add tools/voice_log.txt; fi
           if git diff --cached --quiet; then echo "바뀐 음성 파일 없음"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
