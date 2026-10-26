@@ -430,6 +430,12 @@ const STAGES = [
 
 const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
+// 기기 음성이 없는 곳(예: Claude 앱 화면)에서는 미리 만든 음성 파일이 있는 것 중에서 고른다
+const pickHeard = (a, say = (x) => x) => {
+  if (window.speechSynthesis) return pick(a);
+  const has = a.filter((x) => voicePack[say(x)]);
+  return pick(has.length ? has : a);
+};
 const today = () => new Date().toLocaleDateString('sv-SE');
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -1030,8 +1036,8 @@ async function renderSpeak() {
   const pool = SPEAK_MODES[mode].items();
   const picks = [];
   while (picks.length < SPEAK_N) {
-    let w = pick(pool); let focus = null;
-    if (mode === 'pair') { const t = pickTailored(WORD_SETS[3], (x) => x); if (t.focus) { focus = t.focus; w = pick(t.focus.pair); } }
+    let w = pickHeard(pool); let focus = null;
+    if (mode === 'pair') { const t = pickTailored(WORD_SETS[3], (x) => x); if (t.focus) { focus = t.focus; w = pickHeard(t.focus.pair); } }
     if (!picks.some((p) => p.w === w)) picks.push({ w, focus });
   }
   const results = []; const conf = {};
@@ -1937,7 +1943,7 @@ async function renderPlay(stage) {
   async function wordTrial() {
     const { item, focus } = pickTailored(WORD_SETS[level], (w) => w);
     const set = shuffle(item);
-    const target = focus ? pick(focus.pair) : pick(set);
+    const target = pickHeard(focus ? focus.pair : set);
     $('#answers').innerHTML = '';
     setQ('어떤 단어를 들었나요?', focusTag(focus) + replayBtn() + '<span class="src" id="src"></span>');
     $('#replay').onclick = replay(() => playWord(target));
@@ -1964,9 +1970,9 @@ async function renderPlay(stage) {
     if (keyword) {
       const t = pickTailored(SENTENCE_SETS[3], (it) => it.words);
       focus = t.focus;
-      frame = t.item.frame; opts = shuffle(t.item.words); target = focus ? pick(focus.pair) : pick(opts); say = fillFrame(frame, target);
+      frame = t.item.frame; opts = shuffle(t.item.words); target = pickHeard(focus ? focus.pair : opts, (w) => fillFrame(frame, w)); say = fillFrame(frame, target);
     } else {
-      opts = shuffle(pick(SENTENCE_SETS[level])); target = pick(opts); say = target;
+      opts = shuffle(pick(SENTENCE_SETS[level])); target = pickHeard(opts); say = target;
     }
     $('#answers').innerHTML = '';
     setQ(keyword ? '문장에서 어떤 낱말이 들렸나요?' : '어떤 문장을 들었나요?', focusTag(focus) + replayBtn() + '<span class="src" id="src"></span>');
@@ -1990,7 +1996,7 @@ async function renderPlay(stage) {
   async function noiseTrial() {
     const id = pick(Object.keys(NOISE_SCENES)); const sc = NOISE_SCENES[id];
     const pool = level === 1 ? sc.easy : level === 2 ? [...sc.easy, ...sc.hard] : sc.hard;
-    const opts = shuffle(pick(pool)); const target = pick(opts);
+    const opts = shuffle(pick(pool)); const target = pickHeard(opts);
     $('#answers').innerHTML = '';
     setQ(`${sc.name}에서 들린 말은?`, `<span class="chip scene">${sc.icon} ${sc.name} · 주변 소리 ${['', '작게', '보통', '크게'][level]}</span>` + replayBtn() + '<span class="src" id="src"></span>');
     const listen = () => withNoise(id, level, () => playWord(target));
