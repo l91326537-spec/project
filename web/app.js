@@ -38,6 +38,7 @@ const fresh = () => ({
   reportName: '',
   reportMemo: '',
   plan: null,            // 선생님이 보낸 숙제 {by, stages, kind, amount, days, memo, at}
+  checks: [],            // 월간 듣기 점검 {date, at, score, parts: {word: [맞힘, 문제 수], ...}, miss: [문제 번호]}
 });
 let data = Object.assign(fresh(), store.load());
 const persist = () => store.save(data);
@@ -561,6 +562,13 @@ function renderHome() {
       <button class="btn primary block" data-go="#play/${planNext(data)}">${ICON.play}숙제 ${planNext(data)}단계 하기</button>
     </section>`;
     })() : ''}
+    ${checkDue() ? `
+    <button class="report-link check-link" data-go="#check">
+      <span class="focus-ico">${ICON.ear}</span>
+      <span><b>${(data.checks || []).length ? '이달의 듣기 점검' : '첫 듣기 점검'}</b><small>${(data.checks || []).length
+        ? `지난 점검(${shortDate(data.checks[data.checks.length - 1].date)})에서 한 달이 지났어요. 같은 20문제로 얼마나 늘었는지 봐요`
+        : '같은 20문제를 달마다 풀어 얼마나 늘었는지 봐요. 5분쯤 걸려요'}</small></span>
+    </button>` : ''}
     ${weakTop(3).length ? `
     <section class="panel focus-card">
       <div class="focus-head">
@@ -806,6 +814,20 @@ function renderProgress() {
           <li><span class="weak-k">${esc(friendly(k))}</span><span class="weak-bar"><i style="width:${(100 * v) / weakMax}%"></i></span><b>${v}회</b></li>`).join('')}</ul>
         <p class="note">단어와 문장 속 낱말에서 틀린 답을 자모 단위로 비교했어요. 이 소리가 든 문제를 더 자주 내요.</p>`
         : '<p class="note">3단계를 하면 어떤 소리를 헷갈리는지 알려 드려요.</p>'}
+    </section>
+    <section class="panel check-panel">
+      <h2 class="panel-title">월간 듣기 점검 <span>같은 20문제</span></h2>
+      ${(data.checks || []).length ? (() => {
+        const cs = data.checks; const a = cs[0]; const b = cs[cs.length - 1];
+        return `${cs.length > 1 ? `<div class="check-compare">
+          <div><span>처음</span><b>${a.score}<small>점</small></b><em>${shortDate(a.date)}</em></div>
+          <i aria-hidden="true">→</i>
+          <div><span>최근</span><b>${b.score}<small>점</small></b><em>${shortDate(b.date)}</em></div>
+          <strong class="${b.score > a.score ? 'up' : ''}">${b.score > a.score ? '▲' : b.score < a.score ? '▼' : ''}${Math.abs(b.score - a.score)}점</strong>
+        </div>` : `<div class="check-compare one"><div><span>첫 점검</span><b>${b.score}<small>점</small></b><em>${shortDate(b.date)}</em></div></div>`}
+        <p class="note">${cs.length > 1 ? `${cs.length}번 점검했어요. ` : '이 점수가 앞으로 견줄 기준이에요. '}${checkDue() ? '한 달이 지나 다시 점검할 때예요.' : `다음 점검은 ${shortDate(new Date(new Date(b.date).getTime() + CHECK_EVERY * 86400000).toLocaleDateString('sv-SE'))}쯤이에요.`}</p>`;
+      })() : '<p class="note">아직 점검 기록이 없어요. 첫 점수가 앞으로 견줄 기준이 돼요.</p>'}
+      <button class="btn block${checkDue() ? ' primary' : ''}" data-go="#check">${ICON.ear}${(data.checks || []).length ? '지금 점검하기' : '첫 점검 하기'}</button>
     </section>
     <button class="report-link" data-go="#clinic">
       <span class="focus-ico">${ICON.target}</span>
@@ -1116,6 +1138,13 @@ function renderReport() {
     const [a, b] = k ? [avg(sp.slice(0, k)), avg(sp.slice(-k))] : [null, avg(sp)];
     lines.push(`따라 말하기를 <b>${sp.length}판</b> 했어요. 음성 인식이 알아들은 정도는 ${a == null ? `<b>${b}%</b>예요` : `${a}%에서 <b>${b}%</b>${b > a ? '로 올랐어요' : b < a ? '로 내려갔어요' : '로 같아요'}`}${topSp ? `. 말할 때는 ${esc(friendly(topSp[0]))} 소리가 자주 다르게 들렸어요` : ''}.`);
   }
+  const cs = data.checks || [];
+  if (cs.length) {
+    const a = cs[0]; const b = cs[cs.length - 1];
+    lines.unshift(cs.length > 1
+      ? `월간 듣기 점검(같은 20문제)은 <b>${a.score}점에서 ${b.score}점으로</b> ${b.score > a.score ? '올랐어요' : b.score < a.score ? '내려갔어요' : '같아요'}(${shortDate(a.date)} → ${shortDate(b.date)}, ${cs.length}회).`
+      : `월간 듣기 점검(같은 20문제) 첫 점수는 <b>${b.score}점</b>이에요(${shortDate(b.date)}). 다음 점검과 견줘 볼게요.`);
+  }
   const noise = rows.find((r) => r.st.n === 6);
   if (noise && noise.n) lines.push(`소음 속 듣기는 <b>레벨 ${noise.level}</b>에서 연습하고 있어요(최근 정답률 ${noise.recent}%).`);
 
@@ -1201,7 +1230,7 @@ function renderReport() {
         <h2 class="panel-title">치료사·보호자 메모</h2>
         <textarea id="memo" rows="4" placeholder="상담 내용, 다음 목표 등을 적어 두세요.">${esc(data.reportMemo || '')}</textarea>
       </section>
-      <p class="note center p-foot">소리길은 훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.</p>
+      <p class="note center p-foot">소리길은 훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.${Object.keys(tone).length ? ' 높낮이별 dB는 기기 음량 기준이라 청력 검사 결과와 같지 않아요.' : ''}</p>
     </article>
     <div class="actions no-print">
       <button class="btn primary" id="print">${ICON.print}인쇄·PDF</button>
@@ -1436,6 +1465,117 @@ function renderClinic() {
 }
 let clinicForm = null; // 화면을 다시 그려도 적던 값을 둔다
 
+/* ---------- 월간 듣기 점검 ---------- */
+
+const CHECK_EVERY = 30; // 며칠마다 권할지
+const CHECK_KIND = { word: '단어', sent: '문장', noise: '소음 속 문장' };
+const daysSince = (date) => Math.round((new Date(today()) - new Date(date)) / 86400000);
+const checkDue = () => { const c = (data.checks || []).slice(-1)[0]; return !c || daysSince(c.date) >= CHECK_EVERY; };
+const shortDate = (s) => `${+s.slice(5, 7)}월 ${+s.slice(8, 10)}일`;
+
+async function renderCheck() {
+  setNav('play');
+  const token = ++playToken;
+  const alive = () => token === playToken;
+  const prev = (data.checks || []).slice(-1)[0];
+  view.innerHTML = `
+    <div class="play">
+      <div class="play-top">
+        <button class="icon-btn" data-go="#home" aria-label="그만하고 나가기">${ICON.close}</button>
+        <div class="check-bar" aria-hidden="true"><i id="bar"></i></div>
+        <span class="lvl" id="count">20문제</span>
+      </div>
+      <p class="eyebrow center" id="part">이달의 듣기 점검</p>
+      <div class="stagebox">
+        <div class="orb idle" id="orb">${ICON.ear}</div>
+        <h1 class="q" id="q">한 달 동안 얼마나 늘었는지 봐요</h1>
+        <p class="lead center" id="hint">단어 8개, 문장 6개, 소음 속 문장 6개예요. 매번 같은 문제라 지난번과 그대로 견줄 수 있어요. 정답은 끝나고 알려 드려요.</p>
+      </div>
+      <div id="answers" class="start-box">
+        <button class="btn block" id="soundcheck">${ICON.speaker}소리 확인하기</button>
+        <button class="btn primary block" id="start">점검 시작 <small>5분쯤</small></button>
+        <p class="note center">${prev ? `지난 점검: ${shortDate(prev.date)} ${prev.score}점` : '처음 점검한 점수가 앞으로 견줄 기준이 돼요.'} 다시 듣기는 문제마다 한 번씩 할 수 있어요.</p>
+      </div>
+    </div>`;
+  const $ = (s) => view.querySelector(s);
+  $('#soundcheck').onclick = () => { unlockAudio(); playEnv('doorbell'); setTimeout(() => playWord('안녕하세요'), 1400); };
+  await new Promise((r) => { $('#start').onclick = () => { unlockAudio(); r(); }; });
+  if (!alive()) return;
+  const orb = $('#orb');
+  const parts = { word: [0, 0], sent: [0, 0], noise: [0, 0] };
+  const miss = [];
+
+  for (let i = 0; i < CHECK_ITEMS.length && alive(); i++) {
+    const it = CHECK_ITEMS[i];
+    const sc = it.kind === 'noise' ? NOISE_SCENES[it.scene] : null;
+    $('#bar').style.width = `${(100 * i) / CHECK_ITEMS.length}%`;
+    $('#count').textContent = `${i + 1}/${CHECK_ITEMS.length}`;
+    $('#part').textContent = `이달의 듣기 점검 · ${CHECK_KIND[it.kind]}`;
+    $('#q').textContent = sc ? `${sc.name}에서 들린 말은?` : it.kind === 'word' ? '어떤 단어를 들었나요?' : '어떤 문장을 들었나요?';
+    $('#hint').innerHTML = (sc ? `<span class="chip scene">${sc.icon} ${sc.name} · 주변 소리 보통</span>` : '') + `<button class="pill" id="replay">${ICON.speaker}한 번 더 듣기</button>`;
+    $('#answers').className = '';
+    $('#answers').innerHTML = '';
+    const listen = () => (sc ? withNoise(it.scene, 2, () => playWord(it.answer)) : playWord(it.answer)); // 소음은 늘 '보통'
+    let busy = true;
+    const playing = async () => { busy = true; orb.className = 'orb playing'; try { await listen(); } finally { busy = false; if (alive()) orb.className = 'orb idle'; } };
+    const replay = $('#replay');
+    replay.disabled = true;
+    replay.onclick = () => { if (busy) return; replay.disabled = true; replay.textContent = '다시 듣기를 썼어요'; playing(); };
+    await playing();
+    if (!alive()) return;
+    replay.disabled = false;
+    const box = $('#answers');
+    box.innerHTML = `<div class="choices ${it.kind === 'word' ? 'words' : 'sentences'}">${it.options.map((o, k) =>
+      `<button class="choice" data-k="${k}" style="--d:${k * 50}ms"><span class="label">${esc(o)}</span></button>`).join('')}</div>`;
+    const k = await new Promise((res) => box.querySelectorAll('.choice').forEach((b) => { b.onclick = () => res(+b.dataset.k); }));
+    if (!alive()) return;
+    box.querySelectorAll('.choice').forEach((b) => { b.disabled = true; });
+    box.querySelector(`[data-k="${k}"]`).classList.add('picked'); // 맞았는지는 끝에 알려 준다
+    if (stopNoise) stopNoise();
+    const ok = it.options[k] === it.answer;
+    parts[it.kind][1]++;
+    if (ok) parts[it.kind][0]++; else miss.push(i);
+    await wait(450);
+  }
+  if (!alive()) return;
+
+  const correct = parts.word[0] + parts.sent[0] + parts.noise[0];
+  const score = Math.round((100 * correct) / CHECK_ITEMS.length);
+  const first = (data.checks || [])[0];
+  data.checks = [...(data.checks || []), { date: today(), at: Date.now(), score, parts, miss }];
+  persist();
+  const next = new Date(); next.setDate(next.getDate() + CHECK_EVERY);
+  const diff = prev ? score - prev.score : null;
+  view.innerHTML = `
+    <div class="play result">
+      <p class="eyebrow center">이달의 듣기 점검</p>
+      <h1 class="q">${prev ? (diff > 0 ? `지난번보다 ${diff}점 올랐어요` : diff === 0 ? '지난번과 같은 점수예요' : '이번에는 조금 낮게 나왔어요') : '첫 점검을 마쳤어요'}</h1>
+      <div class="score"><b id="score">0</b><span>점</span></div>
+      <div class="result-chips">
+        <span class="chip">20문제 중 <b>${correct}</b>개 정답</span>
+        ${prev ? `<span class="chip">지난번 ${prev.score}점</span>` : ''}
+        ${first && first !== prev ? `<span class="chip">처음 ${first.score}점</span>` : ''}
+      </div>
+      <section class="panel">
+        <h2 class="panel-title">부분별 결과</h2>
+        <ul class="acc-list">${Object.entries(parts).map(([kind, [c, n]]) => `<li><span class="acc-name">${CHECK_KIND[kind]}</span>
+          <span class="acc-bar"><i style="width:${Math.round((100 * c) / n)}%"></i></span><span class="acc-val">${c}/${n}</span></li>`).join('')}</ul>
+        ${prev ? `<p class="note">지난번 부분별: ${Object.entries(prev.parts || {}).map(([kind, [c, n]]) => `${CHECK_KIND[kind]} ${c}/${n}`).join(', ')}</p>` : ''}
+      </section>
+      ${miss.length ? `<section class="panel">
+        <h2 class="panel-title">놓친 문제 다시 듣기 <span>조용할 때 소리</span></h2>
+        <div class="miss-list">${miss.map((i) => `<button class="pill" data-say="${i}">${ICON.speaker}${esc(CHECK_ITEMS[i].answer)}</button>`).join('')}</div>
+      </section>` : ''}
+      <p class="lead center">${diff != null && diff < 0 ? '컨디션이나 주변 소리에 따라 점수가 오르내릴 수 있어요. ' : ''}다음 점검은 <b>${shortDate(next.toLocaleDateString('sv-SE'))}</b>쯤 권해 드릴게요.</p>
+      <div class="actions">
+        <button class="btn primary" data-go="#progress">기록 보기</button>
+        <button class="btn" data-go="#home">소리길로</button>
+      </div>
+    </div>`;
+  countUp(view.querySelector('#score'), score);
+  view.querySelectorAll('[data-say]').forEach((b) => { b.onclick = () => playWord(CHECK_ITEMS[+b.dataset.say].answer); });
+}
+
 /* ---------- 시연용 예시 기록 ---------- */
 
 const BACKUP_KEY = 'sorigil.v1.backup';
@@ -1471,6 +1611,14 @@ function demoData(opts = {}) {
   d.focusLog = { '초성 ㅅ↔ㅆ': { n: 8, ok: 4 }, '초성 ㄱ↔ㅋ': { n: 6, ok: 5 }, '초성 ㄷ↔ㄸ': { n: 4, ok: 2 }, '종성 ㄴ↔ㅁ': { n: 3, ok: 3 } };
   d.speakLog = [62, 68, 71, 75, 80, 84].map((score, i) => { const t = new Date(); t.setDate(t.getDate() - 10 + i * 2); return { date: t.toLocaleDateString('sv-SE'), at: t.getTime(), mode: i < 3 ? 'word' : 'pair', n: SPEAK_N, score, asr: true }; });
   d.speakConf = { '초성 ㅅ↔ㅆ': 4, '종성 ㄹ↔없음': 2 };
+  // 한 달 간격 점검 세 번. 점수가 조금씩 오른다.
+  d.checks = [58, 29, 1].map((ago, k) => {
+    const t = new Date(); t.setDate(t.getDate() - ago);
+    const w = Math.max(2, Math.min(8, Math.round(4 + k + boost * 10 + rnd())));
+    const s2 = Math.max(1, Math.min(6, Math.round(3 + k + boost * 8)));
+    const n = Math.max(0, Math.min(6, Math.round(2 + k * 1.2 + boost * 8 + rnd())));
+    return { date: t.toLocaleDateString('sv-SE'), at: t.getTime(), score: Math.round((100 * (w + s2 + n)) / 20), parts: { word: [w, 8], sent: [s2, 6], noise: [n, 6] }, miss: [] };
+  });
   return d;
 }
 // 선생님 화면에서 보여 줄 예시 환자들
@@ -1829,6 +1977,7 @@ function route() {
   if (m && STAGES[+m[1] - 1]?.ready) renderPlay(+m[1]);
   else if (inv) renderPlanInvite(inv[1]);
   else if (h === '#clinic') renderClinic();
+  else if (h === '#check') renderCheck();
   else if (h === '#voices') renderVoices();
   else if (h === '#progress') renderProgress();
   else if (h === '#report') renderReport();
