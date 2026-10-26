@@ -35,4 +35,4 @@ cd web && python3 -m http.server 8000
 - 문항은 `web/content.js`에 모여 있습니다. 한 줄(배열)이 한 문제의 보기 4개입니다.
 - `web/voice/index.json`(`{"글자": "voice/파일.mp3"}`)과 음성 파일을 넣으면 기기 음성(TTS) 대신 그 파일을 씁니다. Claude 앱 화면처럼 기기 음성이 없는 곳에서도 소리가 나게 하려면 필요합니다.
 - 음성 파일은 `web/content.js`를 고친 PR을 올리면 GitHub Actions(`음성 파일 만들기`)가 새 문항만 만들어 그 PR 브랜치에 커밋합니다. Actions 탭에서 직접 돌릴 수도 있습니다.
-- 직접 만들려면 `python3 tools/make_voices.py`를 돌립니다(`pip install edge-tts`, node 필요, `speech.platform.bing.com` 접속 필요). 다시 돌리면 새 문항만 만들고 빠진 문항 파일은 지웁니다.
+- 직접 만들려면 `python3 tools/make_voices.py`를 돌립니다(`pip install edge-tts`, node·ffmpeg 필요, `speech.platform.bing.com` 접속 필요). 다시 돌리면 새 문항만 만들고 빠진 문항 파일은 지웁니다.

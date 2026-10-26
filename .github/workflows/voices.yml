@@ -29,7 +29,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install edge-tts
+      - run: pip install edge-tts && sudo apt-get install -y -qq --no-install-recommends ffmpeg
       - id: gen
         continue-on-error: true # 일부가 실패해도 만든 파일은 올린다
         run: python3 tools/make_voices.py

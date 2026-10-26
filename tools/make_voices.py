@@ -5,11 +5,13 @@
 - 결과: web/voice/<해시>.mp3, web/voice/index.json ({"글자": "voice/<해시>.mp3"})
 - 이미 만든 파일은 건너뛰므로 문항을 추가한 뒤 다시 돌리면 새 문항만 만든다.
 
-준비: pip install edge-tts, node (content.js를 읽는 데 씀)
+- 끝에 붙는 긴 무음은 0.15초만 남기고 자른다(말이 끝난 뒤 보기 버튼이 늦게 뜨지 않게).
+
+준비: pip install edge-tts, node (content.js를 읽는 데 씀), ffmpeg (무음 자르기)
 실행: python3 tools/make_voices.py [--voice ko-KR-SunHiNeural] [--rate -10%]
 네트워크: speech.platform.bing.com 접속이 필요하다. 프록시 환경에서는 HTTPS_PROXY를 자동으로 쓴다.
 """
-import argparse, asyncio, hashlib, json, os, subprocess, sys
+import argparse, asyncio, hashlib, json, os, shutil, subprocess, sys
 
 import edge_tts
 
@@ -35,11 +37,20 @@ def all_texts():
     return json.loads(out.stdout)
 
 
+def trim_tail(path):
+    tmp = path + '.tmp.mp3'
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', path,
+                    '-af', 'areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.15,areverse',
+                    '-c:a', 'libmp3lame', '-b:a', '48k', '-ar', '24000', '-ac', '1', tmp], check=True)
+    os.replace(tmp, path)
+
+
 async def make(text, path, voice, rate, proxy):
     for attempt in range(3):
         try:
             await edge_tts.Communicate(text, voice, rate=rate, proxy=proxy).save(path)
             if os.path.getsize(path) > 0:
+                await asyncio.to_thread(trim_tail, path)
                 return True
         except Exception as e:  # 일시적인 네트워크 오류는 다시 시도한다
             err = e
@@ -57,13 +68,15 @@ async def main():
     ap.add_argument('--jobs', type=int, default=4)
     a = ap.parse_args()
     proxy = os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')
+    if not shutil.which('ffmpeg'):
+        sys.exit('ffmpeg가 필요해요 (무음 자르기).')
     os.makedirs(OUT, exist_ok=True)
 
     texts = all_texts()
     index = {}
     todo = []
     for t in texts:
-        name = hashlib.sha1(f'{a.voice}|{a.rate}|{t}'.encode()).hexdigest()[:12] + '.mp3'
+        name = hashlib.sha1(f'{a.voice}|{a.rate}|trim|{t}'.encode()).hexdigest()[:12] + '.mp3'
         index[t] = f'voice/{name}'
         if not os.path.exists(os.path.join(OUT, name)):
             todo.append((t, os.path.join(OUT, name)))
