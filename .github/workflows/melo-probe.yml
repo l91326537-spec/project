@@ -1,0 +1,33 @@
+# 시험용: MeloTTS 한국어 음성 품질 확인(병합하지 않음)
+name: MeloTTS 시험
+on:
+  push:
+    branches: [ci/voices-open]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: 설치
+        run: |
+          pip install -q git+https://github.com/myshell-ai/MeloTTS.git faster-whisper lameenc 2>&1 | tail -5
+          python -m unidic download 2>&1 | tail -2
+      - name: 만들고 받아 적기
+        id: run
+        continue-on-error: true
+        run: python probe/melo_probe.py 2>&1 | tee probe/out-log.txt
+      - name: 결과 올리기
+        if: always()
+        run: |
+          mkdir -p probe/out; cp probe/out-log.txt probe/out/ 2>/dev/null || true
+          pip list 2>/dev/null | grep -iE "torch|transformers|melo|whisper" > probe/out/pip.txt || true
+          git add -f probe/out
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -m "MeloTTS 시험 결과" && git push origin HEAD:ci/voices-open || true
