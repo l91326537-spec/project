@@ -182,18 +182,28 @@ function pickVoice() {
 }
 if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
+// 미리 만든 음성 파일(voice/index.json: { 글자: 파일 경로 }). 없으면 빈 묶음으로 둔다.
+let voicePack = {};
+const voicePackReady = fetch('voice/index.json').then((r) => (r.ok ? r.json() : {})).then((j) => { voicePack = j || {}; }).catch(() => {});
+const canSpeak = () => !!window.speechSynthesis || Object.keys(voicePack).length > 0;
+
+function playUrl(url) {
+  const a = new Audio(url);
+  return new Promise((res) => { a.onended = a.onerror = res; a.play().catch(res); setTimeout(res, 8000); }).then(() => a.pause()); // 재생이 멈춰도 넘어간다
+}
+
 async function playWord(word) {
   if (data.preferFamily) {
     const blob = await voiceDb.get(word);
     if (blob) {
       const url = URL.createObjectURL(blob);
-      const a = new Audio(url);
-      await new Promise((res) => { a.onended = a.onerror = res; a.play().catch(res); setTimeout(res, 5000); }); // 재생이 멈춰도 5초 뒤엔 넘어간다
-      a.pause();
+      await playUrl(url);
       URL.revokeObjectURL(url);
       return 'family';
     }
   }
+  await voicePackReady;
+  if (voicePack[word]) { await playUrl(voicePack[word]); return 'pack'; }
   if (!window.speechSynthesis) return 'none';
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(word);
@@ -233,52 +243,8 @@ function contrasts(target, chosen) {
 
 /* ---------- 문항 ---------- */
 
-// 단계(level)가 오를수록 보기끼리 소리가 비슷해진다.
-const WORD_SETS = {
-  1: [ // 글자 수가 다른 단어
-    ['물', '우산', '바나나', '텔레비전'],
-    ['밥', '모자', '할머니', '냉장고'],
-    ['컵', '시계', '자동차', '아이스크림'],
-    ['눈', '신발', '강아지', '할아버지'],
-  ],
-  2: [ // 글자 수는 같고 소리가 다른 단어
-    ['사과', '우유', '모자', '가방'],
-    ['기차', '나무', '포도', '의자'],
-    ['수박', '안경', '연필', '거울'],
-    ['고양이', '비행기', '자전거', '전화기'],
-  ],
-  3: [ // 최소대립쌍: 한 소리만 다르다
-    ['살', '쌀', '달', '발'],
-    ['불', '풀', '뿔', '물'],
-    ['방', '빵', '밤', '반'],
-    ['공', '콩', '곰', '골'],
-    ['감', '김', '검', '곰'],
-    ['사다', '싸다', '자다', '차다'],
-  ],
-};
 const ALL_WORDS = [...new Set(Object.values(WORD_SETS).flat(2))];
 
-// 5단계 문장. 1: 서로 다른 생활 문장, 2: 한 낱말만 다른 문장, 3: 문장 속 헷갈리는 낱말 고르기
-const SENTENCE_SETS = {
-  1: [
-    ['물 좀 주세요', '오늘 날씨가 좋네요', '병원에 언제 가요?', '할머니가 전화하셨어요'],
-    ['밥 먹었어요?', '지금 몇 시예요?', '창문 좀 닫아 주세요', '내일 같이 산책해요'],
-    ['잘 잤어요?', '약 먹을 시간이에요', '텔레비전 소리 좀 줄여 주세요', '우리 버스 타고 가요'],
-  ],
-  2: [
-    ['물 좀 주세요', '밥 좀 주세요', '약 좀 주세요', '컵 좀 주세요'],
-    ['내일 병원에 가요', '내일 시장에 가요', '내일 학교에 가요', '내일 공원에 가요'],
-    ['아침에 사과를 먹었어요', '아침에 우유를 먹었어요', '아침에 포도를 먹었어요', '아침에 빵을 먹었어요'],
-    ['세 시에 만나요', '네 시에 만나요', '두 시에 만나요', '열 시에 만나요'],
-  ],
-  3: [ // {을}은 받침에 따라 을/를, {이}는 이/가로 바뀐다
-    { frame: '시장에서 _{을} 샀어요', words: ['쌀', '살', '달', '발'] },
-    { frame: '저기 _{이} 있어요', words: ['불', '풀', '뿔', '물'] },
-    { frame: '아이가 _{을} 좋아해요', words: ['빵', '방', '밤', '반'] },
-    { frame: '동생이 _{을} 찼어요', words: ['공', '콩', '곰', '골'] },
-    { frame: '할머니가 _{을} 주셨어요', words: ['감', '김', '검', '곰'] },
-  ],
-};
 const ALL_SENTENCES = [...new Set([...SENTENCE_SETS[1], ...SENTENCE_SETS[2]].flat())];
 const hasBatchim = (w) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c <= 11171 && c % 28 !== 0; };
 const fillFrame = (frame, w) => frame.replace('_{을}', w + (hasBatchim(w) ? '을' : '를')).replace('_{이}', w + (hasBatchim(w) ? '이' : '가'));
@@ -435,6 +401,7 @@ function renderHome() {
   view.querySelector('#big').onchange = (e) => { data.bigText = e.target.checked; persist(); applyTextSize(); };
 }
 
+let openGroup = 0; // 녹음한 뒤 다시 그려도 보던 묶음을 펼쳐 둔다
 async function renderVoices() {
   setNav('voices');
   const have = new Set(await voiceDb.keys());
@@ -443,7 +410,8 @@ async function renderVoices() {
     ['쉬운 단어', [...new Set(WORD_SETS[1].flat())]],
     ['같은 길이 단어', [...new Set(WORD_SETS[2].flat())]],
     ['헷갈리는 단어', [...new Set(WORD_SETS[3].flat())]],
-    ['생활 문장', ALL_SENTENCES],
+    ['생활 문장', [...new Set(SENTENCE_SETS[1].flat())]],
+    ['한 낱말만 다른 문장', [...new Set(SENTENCE_SETS[2].flat())]],
   ];
   const total = ALL_WORDS.length + ALL_SENTENCES.length;
   const pct = Math.round((100 * have.size) / total);
@@ -464,8 +432,9 @@ async function renderVoices() {
       ${canRec ? '<p class="note">녹음 버튼을 누르고 또박또박 읽어 주세요. 단어는 3초, 문장은 5초 뒤 저절로 멈춰요.</p>'
         : '<p class="note warn">이 화면에서는 녹음을 쓸 수 없어요. 최신 크롬이나 사파리에서 앱 주소를 직접 열어 주세요.</p>'}
     </section>
-    ${groups.map(([title, words]) => `
-      <h2 class="section-title">${title}</h2>
+    ${groups.map(([title, words], gi) => `
+      <details class="group" ${gi === openGroup ? 'open' : ''} data-g="${gi}">
+      <summary class="section-title">${title} <span>${words.filter((w) => have.has(w)).length} / ${words.length}</span></summary>
       <ul class="word-list">
         ${words.map((w) => `
           <li class="word-row ${have.has(w) ? 'has' : ''}" data-w="${esc(w)}">
@@ -475,7 +444,9 @@ async function renderVoices() {
             <button class="icon-btn rec-btn" data-act="rec" ${canRec ? '' : 'disabled'} aria-label="${esc(w)} 녹음">${ICON.mic}</button>
             ${have.has(w) ? `<button class="icon-btn" data-act="del" aria-label="${esc(w)} 녹음 지우기">${ICON.trash}</button>` : ''}
           </li>`).join('')}
-      </ul>`).join('')}`;
+      </ul>
+      </details>`).join('')}`;
+  view.querySelectorAll('details.group').forEach((d) => { d.ontoggle = () => { if (d.open) openGroup = +d.dataset.g; }; });
   view.querySelector('#pref').onchange = (e) => { data.preferFamily = e.target.checked; persist(); };
   view.querySelectorAll('.word-row button').forEach((b) => {
     b.onclick = async () => {
@@ -681,6 +652,7 @@ async function renderPlay(stage) {
         <button class="btn block" id="soundcheck">${ICON.speaker}소리 확인하기</button>
         <button class="btn primary block" id="start">시작하기</button>
         <p class="note center">초인종 소리와 "안녕하세요"가 들리면 준비 끝이에요. 안 들리면 휴대폰 음량과 무음 모드를 확인해 주세요.</p>
+        ${(stage === 3 || stage === 5) && !canSpeak() ? '<p class="note warn center" id="nospeech">이 화면에서는 AI 음성이 나오지 않아요. 크롬이나 삼성 인터넷 같은 브라우저에서 열어 주세요. 가족 목소리로 녹음한 단어는 여기서도 들려요.</p>' : ''}
       </div>
     </div>
     <div class="sheet" id="sheet" hidden>
@@ -812,7 +784,7 @@ async function renderPlay(stage) {
     $('#replay').onclick = replay(() => playWord(target));
     const src = await playing(playWord(target));
     if (!alive()) return false;
-    const label = { family: '가족 목소리', tts: 'AI 음성', 'tts-nokorean': '이 기기에는 한국어 음성이 없어 발음이 어색할 수 있어요', none: '이 브라우저는 음성을 지원하지 않아요' }[src];
+    const label = { family: '가족 목소리', pack: 'AI 음성', tts: 'AI 음성', 'tts-nokorean': '이 기기에는 한국어 음성이 없어 발음이 어색할 수 있어요', none: '이 화면에서는 AI 음성이 나오지 않아요' }[src];
     const srcEl = $('#src'); if (srcEl) srcEl.textContent = label;
     const ans = await ask(set.map((w) => [w]), set.indexOf(target), 'words');
     const ok = set[ans] === target;
@@ -839,7 +811,7 @@ async function renderPlay(stage) {
     $('#replay').onclick = replay(() => playWord(say));
     const src = await playing(playWord(say));
     if (!alive()) return false;
-    const srcEl = $('#src'); if (srcEl) srcEl.textContent = { family: '가족 목소리', tts: 'AI 음성' }[src] || '';
+    const srcEl = $('#src'); if (srcEl) srcEl.textContent = { family: '가족 목소리', pack: 'AI 음성', tts: 'AI 음성', none: '이 화면에서는 AI 음성이 나오지 않아요' }[src] || '';
     const ans = await ask(opts.map((w) => [w]), opts.indexOf(target), keyword ? 'words' : 'sentences');
     const ok = opts[ans] === target;
     if (!ok && keyword) for (const c of contrasts(target, opts[ans])) sessionConf[c] = (sessionConf[c] || 0) + 1;
