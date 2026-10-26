@@ -1,0 +1,5159 @@
+{
+"가게": {
+"heard": "가게",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "고기",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"가게를 잃어버렸어요": {
+"heard": "가게를 잃어버렸어요.",
+"sim": 100.0,
+"margin": 18.2,
+"rival": "가방을 잃어버렸어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"가난": {
+"heard": "가난",
+"sim": 100.0,
+"margin": 40.0,
+"rival": "가방",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"가난을 잃어버렸어요": {
+"heard": "가난을 잃어버렸어요.",
+"sim": 100.0,
+"margin": 9.1,
+"rival": "가방을 잃어버렸어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"가발": {
+"heard": "가발",
+"sim": 100.0,
+"margin": 20.0,
+"rival": "가방",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"가발을 잃어버렸어요": {
+"heard": "가발을 잃어버렸어요.",
+"sim": 100.0,
+"margin": 4.5,
+"rival": "가방을 잃어버렸어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"가방": {
+"heard": "가방",
+"sim": 100.0,
+"margin": 20.0,
+"rival": "가발",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"가방을 잃어버렸어요": {
+"heard": "가방을 잃어버렸어요.",
+"sim": 100.0,
+"margin": 4.5,
+"rival": "가발을 잃어버렸어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"가수": {
+"heard": "가수",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "의사",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"가을": {
+"heard": "가을",
+"sim": 100.0,
+"margin": 40.0,
+"rival": "겨울",
+"exact": true,
+"try": 5,
+"ok": true
+},
+"가지": {
+"heard": "같이",
+"sim": 60.0,
+"margin": 20.0,
+"rival": "차지",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"감": {
+"heard": "Come",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "김",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"감자": {
+"heard": "감자",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "양파",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"강아지": {
+"heard": "강아지",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "송아지",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"강아지가 자요": {
+"heard": "강아지가 자요.",
+"sim": 100.0,
+"margin": 30.8,
+"rival": "아기가 자요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"같이 시장 갈래요?": {
+"heard": "같이 시장 갈래요.",
+"sim": 100.0,
+"margin": 70.6,
+"rival": "영화 보러 갈까요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"개": {
+"heard": "게",
+"sim": 50.0,
+"margin": 50.0,
+"rival": "새",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"거기": {
+"heard": "거기",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "고기",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"거울": {
+"heard": "거울",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "떡",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"검": {
+"heard": "com",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "김",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"검사 결과는 내일 나와요": {
+"heard": "검사 결과는 내일 나와요.",
+"sim": 100.0,
+"margin": 77.8,
+"rival": "약국은 건물 일 층이에요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"겨울": {
+"heard": "겨울",
+"sim": 100.0,
+"margin": 40.0,
+"rival": "가을",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"경찰": {
+"heard": "경찰",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "의사",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"경찰서": {
+"heard": "경찰서",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "김치",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"계란": {
+"heard": "계란",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "빵",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"계산은 나가실 때 해 주세요": {
+"heard": "계산은 나가실 때 해주세요.",
+"sim": 100.0,
+"margin": 72.0,
+"rival": "물은 셀프예요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"고개": {
+"heard": "고개",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "고기",
+"exact": true,
+"try": 5,
+"ok": true
+},
+"고기": {
+"heard": "고피",
+"sim": 75.0,
+"margin": 25.0,
+"rival": "고개",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"고마워요": {
+"heard": "고마워요.",
+"sim": 100.0,
+"margin": 64.3,
+"rival": "보고 싶었어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"고양이": {
+"heard": "고양이",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "미용실",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"고양이가 자요": {
+"heard": "고양이가 자요.",
+"sim": 100.0,
+"margin": 38.5,
+"rival": "아기가 자요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"골": {
+"heard": "꿀",
+"sim": 33.3,
+"margin": 33.3,
+"rival": "콩",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"곰": {
+"heard": "쿰",
+"sim": 33.3,
+"margin": 0.0,
+"rival": "콩",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"공": {
+"heard": "쿵!",
+"sim": 33.3,
+"margin": -33.3,
+"rival": "콩",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"공깃밥 두 개 추가요": {
+"heard": "공기밥 2개 추가요.",
+"sim": 84.2,
+"margin": 10.5,
+"rival": "공깃밥 하나 추가요",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"공깃밥 하나 추가요": {
+"heard": "공기밥 하나 추가요.",
+"sim": 94.7,
+"margin": 21.1,
+"rival": "공깃밥 두 개 추가요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"공원": {
+"heard": "공원",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "병원",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"공을 들고 가요": {
+"heard": "공을 들고 가요.",
+"sim": 100.0,
+"margin": 6.7,
+"rival": "총을 들고 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"공휴일": {
+"heard": "공주일",
+"sim": 75.0,
+"margin": 25.0,
+"rival": "토요일",
+"exact": false,
+"try": 4,
+"ok": true
+},
+"구름": {
+"heard": "구름",
+"sim": 100.0,
+"margin": 60.0,
+"rival": "바람",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"국그릇": {
+"heard": "국룰",
+"sim": 50.0,
+"margin": 25.0,
+"rival": "숟가락",
+"exact": false,
+"try": 4,
+"ok": true
+},
+"국수": {
+"heard": "국수",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "떡국",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"굴": {
+"heard": "쿨",
+"sim": 66.7,
+"margin": 0.0,
+"rival": "줄",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"귤": {
+"heard": "퓨",
+"sim": 33.3,
+"margin": 33.3,
+"rival": "할인마트",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"금요일": {
+"heard": "금요일",
+"sim": 100.0,
+"margin": 37.5,
+"rival": "토요일",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"기": {
+"heard": "P",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "피",
+"exact": false,
+"try": 4,
+"ok": false
+},
+"기린": {
+"heard": "비린",
+"sim": 80.0,
+"margin": 80.0,
+"rival": "하마",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"기차": {
+"heard": "피자",
+"sim": 50.0,
+"margin": 0.0,
+"rival": "의자",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"기차를 타고 가요": {
+"heard": "비차를 타고 가요.",
+"sim": 93.3,
+"margin": 13.3,
+"rival": "버스를 타고 가요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"기차역": {
+"heard": "기차요",
+"sim": 71.4,
+"margin": 42.9,
+"rival": "휠체어",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"길에 달이 있어요": {
+"heard": "길에 달이 있어요.",
+"sim": 100.0,
+"margin": 5.9,
+"rival": "길에 들이 있어요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"길에 돌이 있어요": {
+"heard": "길에 돌이 있어요.",
+"sim": 100.0,
+"margin": 5.9,
+"rival": "길에 들이 있어요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"길에 둘이 있어요": {
+"heard": "길에 둘이 있어요.",
+"sim": 100.0,
+"margin": 5.9,
+"rival": "길에 들이 있어요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"길에 들이 있어요": {
+"heard": "비례들이 있어요.",
+"sim": 76.5,
+"margin": 5.9,
+"rival": "길에 둘이 있어요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"김": {
+"heard": "틴",
+"sim": 33.3,
+"margin": 0.0,
+"rival": "침",
+"exact": false,
+"try": 3,
+"ok": false
+},
+"김밥": {
+"heard": "빔다",
+"sim": 50.0,
+"margin": 50.0,
+"rival": "라면",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"김연희 님 들어오세요": {
+"heard": "비면이 닌 들어오세요",
+"sim": 72.7,
+"margin": 0.0,
+"rival": "김영미 님 들어오세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"김영미 님 들어오세요": {
+"heard": "비명미 님 들어오세요.",
+"sim": 86.4,
+"margin": 9.1,
+"rival": "김영희 님 들어오세요",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"김영수 님 들어오세요": {
+"heard": "비명수님 들어오세요.",
+"sim": 86.4,
+"margin": 9.1,
+"rival": "김영희 님 들어오세요",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"김영희 님 들어오세요": {
+"heard": "비명이 님 들어오세요.",
+"sim": 77.3,
+"margin": -4.5,
+"rival": "김영미 님 들어오세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"김치": {
+"heard": "김치",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "경찰서",
+"exact": true,
+"try": 4,
+"ok": true
+},
+"김치찌개 두 개 주세요": {
+"heard": "김치찌개 2개 주세요.",
+"sim": 89.5,
+"margin": 0.0,
+"rival": "김치찌개 세 개 주세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"김치찌개 세 개 주세요": {
+"heard": "김치찌개 3개 주세요.",
+"sim": 89.5,
+"margin": 0.0,
+"rival": "김치찌개 두 개 주세요",
+"exact": false,
+"try": 2,
+"ok": false
+},
+"깨": {
+"heard": "K",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "새",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"꽃": {
+"heard": "코",
+"sim": 33.3,
+"margin": 20.8,
+"rival": "손수건",
+"exact": false,
+"try": 5,
+"ok": true
+},
+"꿀": {
+"heard": "꿀",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "줄",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"나라": {
+"heard": "나라",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "나이",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"나무": {
+"heard": "나무",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "나이",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"나비": {
+"heard": "나비",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "나이",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"나이": {
+"heard": "나이",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "나비",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"난": {
+"heard": "난",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "눈",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"내리실 문은 오른쪽입니다": {
+"heard": "내리실문은 오른쪽입니다.",
+"sim": 100.0,
+"margin": 10.7,
+"rival": "내리실 문은 왼쪽입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"내리실 문은 왼쪽입니다": {
+"heard": "내리실문은 왼쪽입니다.",
+"sim": 100.0,
+"margin": 10.7,
+"rival": "내리실 문은 오른쪽입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"내일": {
+"heard": "내일",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "오늘",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"내일 같이 산책해요": {
+"heard": "내일 같이 산책해요.",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "지금 몇 시예요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"내일 공원에 가요": {
+"heard": "내일 공원에 가요.",
+"sim": 100.0,
+"margin": 11.8,
+"rival": "내일 병원에 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"내일 다시 오세요": {
+"heard": "내일 다시 오세요.",
+"sim": 100.0,
+"margin": 52.9,
+"rival": "물을 많이 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"내일 병원에 가요": {
+"heard": "내일 병원에 가요.",
+"sim": 100.0,
+"margin": 11.8,
+"rival": "내일 공원에 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"내일 시장에 가요": {
+"heard": "내일 시장에 가요.",
+"sim": 100.0,
+"margin": 31.2,
+"rival": "내일 학교에 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"내일 일찍 일어나요": {
+"heard": "내일 일찍 일어나요.",
+"sim": 100.0,
+"margin": 70.0,
+"rival": "이불 덮고 자요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"내일 학교에 가요": {
+"heard": "내일 학교에 가요.",
+"sim": 100.0,
+"margin": 31.2,
+"rival": "내일 시장에 가요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"냉면": {
+"heard": "냉년",
+"sim": 83.3,
+"margin": 70.8,
+"rival": "미용실",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"냉장고": {
+"heard": "냉장고",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "청소기",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"네 시에 만나요": {
+"heard": "4시에 만나요.",
+"sim": 84.6,
+"margin": 0.0,
+"rival": "세 시에 만나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"노란 옷을 입었어요": {
+"heard": "노란 옷을 입었어요",
+"sim": 100.0,
+"margin": 9.5,
+"rival": "파란 옷을 입었어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"논": {
+"heard": "돈",
+"sim": 66.7,
+"margin": 33.3,
+"rival": "눈",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"농부": {
+"heard": "농부",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "가수",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"눈": {
+"heard": "눈",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "논",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"눈이 와요": {
+"heard": "눈이 와요.",
+"sim": 100.0,
+"margin": 55.6,
+"rival": "비가 와요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"뉴스 좀 틀어 주세요": {
+"heard": "뉴스 좀 틀어주세요.",
+"sim": 100.0,
+"margin": 44.4,
+"rival": "소리 좀 키워 주세요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"님": {
+"heard": "린",
+"sim": 33.3,
+"margin": 0.0,
+"rival": "눈",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"다 같이 밥 먹어요": {
+"heard": "다 같이 밥 먹어요.",
+"sim": 100.0,
+"margin": 64.7,
+"rival": "여기 보고 웃어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"다리": {
+"heard": "다리",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "파리",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"다시 한 번 말해 주세요": {
+"heard": "다시 한 번 말해주세요.",
+"sim": 100.0,
+"margin": 42.9,
+"rival": "천천히 말해 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"다음 역에서 갈아타세요": {
+"heard": "다음역에서 갈아타세요.",
+"sim": 100.0,
+"margin": 68.0,
+"rival": "손잡이를 꼭 잡아 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"다음 정류장에서 내려요": {
+"heard": "다음 정류장에서 내려요",
+"sim": 100.0,
+"margin": 73.9,
+"rival": "표는 어디서 사요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"다음 정류장은 시장입니다": {
+"heard": "다음 정류장은 시장입니다.",
+"sim": 100.0,
+"margin": 7.1,
+"rival": "다음 정류장은 시청입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"다음 정류장은 시청입니다": {
+"heard": "다음 정류장은 시청입니다.",
+"sim": 100.0,
+"margin": 6.9,
+"rival": "다음 정류장은 신천입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"다음 정류장은 신천입니다": {
+"heard": "다음 정류장은 신천입니다.",
+"sim": 100.0,
+"margin": 3.4,
+"rival": "다음 정류장은 신촌입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"다음 정류장은 신촌입니다": {
+"heard": "다음 정류장은 신촌입니다.",
+"sim": 100.0,
+"margin": 3.4,
+"rival": "다음 정류장은 신천입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"다음 주에 다시 오세요": {
+"heard": "다음 주에 다시 오세요.",
+"sim": 100.0,
+"margin": 70.4,
+"rival": "약국은 건물 일 층이에요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"달": {
+"heard": "타이",
+"sim": 25.0,
+"margin": -25.0,
+"rival": "탈",
+"exact": false,
+"try": 2,
+"ok": false
+},
+"달력": {
+"heard": "달려",
+"sim": 83.3,
+"margin": 69.0,
+"rival": "휠체어",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"당": {
+"heard": "당",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "탕",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"당근": {
+"heard": "당근",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "양파",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"당이 넓어요": {
+"heard": "당이 넓어요.",
+"sim": 100.0,
+"margin": 8.3,
+"rival": "탕이 넓어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"더 맵게 해 주세요": {
+"heard": "더 맵게 해주세요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "덜 맵게 해 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"더 짜게 해 주세요": {
+"heard": "더 짜게 해주세요",
+"sim": 100.0,
+"margin": 6.7,
+"rival": "덜 짜게 해 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"더 필요한 거 있으세요?": {
+"heard": "더 필요한 거 있으세요?",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "맛있게 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"덜 맵게 해 주세요": {
+"heard": "덜 맵게 해주세요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "더 맵게 해 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"덜 짜게 해 주세요": {
+"heard": "덜 짜게 해주세요.",
+"sim": 100.0,
+"margin": 6.7,
+"rival": "더 짜게 해 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"도끼": {
+"heard": "도피",
+"sim": 75.0,
+"margin": 25.0,
+"rival": "토끼",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"도끼가 깡충 뛰어요": {
+"heard": "도끼가 깡충 뛰어요.",
+"sim": 100.0,
+"margin": 5.6,
+"rival": "토끼가 깡충 뛰어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"도서관": {
+"heard": "도서관",
+"sim": 100.0,
+"margin": 85.7,
+"rival": "지우개",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"돈": {
+"heard": "돈",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "택시",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"돌": {
+"heard": "톨",
+"sim": 66.7,
+"margin": 33.3,
+"rival": "들",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"동생": {
+"heard": "동생",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "엄마",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"동생이 골을 찼어요": {
+"heard": "동생이 고를 찼어요.",
+"sim": 90.5,
+"margin": 0.0,
+"rival": "동생이 공을 찼어요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"동생이 곰을 찼어요": {
+"heard": "동생이 곰을 찼어요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "동생이 공을 찼어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"동생이 공을 찼어요": {
+"heard": "동생이 공을 찼어요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "동생이 콩을 찼어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"동생이 콩을 찼어요": {
+"heard": "동생이 콩을 찼어요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "동생이 공을 찼어요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"동생한테 전화해요": {
+"heard": "동생한테 전화해요",
+"sim": 100.0,
+"margin": 30.0,
+"rival": "엄마한테 전화해요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"된장찌개 두 개 주세요": {
+"heard": "된장찌개 2개 주세요.",
+"sim": 90.0,
+"margin": 0.0,
+"rival": "된장찌개 세 개 주세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"된장찌개 세 개 주세요": {
+"heard": "된장찌개 3개 주세요.",
+"sim": 90.0,
+"margin": 0.0,
+"rival": "된장찌개 두 개 주세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"두 시에 만나요": {
+"heard": "2시에 만나요.",
+"sim": 84.6,
+"margin": 0.0,
+"rival": "세 시에 만나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"두 잔 주세요": {
+"heard": "두 잔 주세요.",
+"sim": 100.0,
+"margin": 35.7,
+"rival": "한 잔 더 주세요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"두께": {
+"heard": "두께",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "도끼",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"두께가 깡충 뛰어요": {
+"heard": "두께가 깡충 뛰어요.",
+"sim": 100.0,
+"margin": 11.1,
+"rival": "도끼가 깡충 뛰어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"둘": {
+"heard": "둘",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "들",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"뒤로 가세요": {
+"heard": "뒤로 가세요.",
+"sim": 100.0,
+"margin": 38.5,
+"rival": "앞으로 가세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"뒤로 조금만 들어가 주세요": {
+"heard": "뒤로 조금만 들어가 주세요.",
+"sim": 100.0,
+"margin": 68.0,
+"rival": "카드를 한 장만 대 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"드라마 시작했어요": {
+"heard": "드라마 시작했어요.",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "소리 좀 키워 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"드시고 가세요?": {
+"heard": "드시고 가세요.",
+"sim": 100.0,
+"margin": 73.9,
+"rival": "진동벨 울리면 오세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"들": {
+"heard": "들",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "둘",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"따뜻한 걸로 드릴까요?": {
+"heard": "따뜻한 걸로 드릴까요?",
+"sim": 100.0,
+"margin": 59.1,
+"rival": "영수증 드릴까요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"따뜻한 라떼 한 잔이요": {
+"heard": "따뜻한 라떼 한 잔이요",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "따뜻한 아메리카노 한 잔이요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"따뜻한 아메리카노 한 잔이요": {
+"heard": "따뜻한 아메리카노 한 잔이요",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "아이스 아메리카노 한 잔이요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"딸": {
+"heard": "다해",
+"sim": 25.0,
+"margin": -25.0,
+"rival": "달",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"땅": {
+"heard": "땅",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "탕",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"땅이 넓어요": {
+"heard": "땅이 넓어요.",
+"sim": 100.0,
+"margin": 8.3,
+"rival": "탕이 넓어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"떡": {
+"heard": "더",
+"sim": 33.3,
+"margin": 13.3,
+"rival": "거울",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"떡국": {
+"heard": "도쿄",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "라면",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"뜨거우니까 조심하세요": {
+"heard": "뜨거우니까 조심하세요",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "맛있게 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"라면": {
+"heard": "라면",
+"sim": 100.0,
+"margin": 87.5,
+"rival": "손수건",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"마당에 개가 있어요": {
+"heard": "마단의 개가 있어요.",
+"sim": 88.9,
+"margin": 5.6,
+"rival": "마당에 새가 있어요",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"마당에 깨가 있어요": {
+"heard": "마다니에 깨가 있어요.",
+"sim": 89.5,
+"margin": 5.3,
+"rival": "마당에 새가 있어요",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"마당에 배가 있어요": {
+"heard": "마다니에 배가 있어요.",
+"sim": 89.5,
+"margin": 5.3,
+"rival": "마당에 새가 있어요",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"마당에 새가 있어요": {
+"heard": "마단의 새가 있어요.",
+"sim": 88.9,
+"margin": 5.6,
+"rival": "마당에 배가 있어요",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"만 원이에요": {
+"heard": "만 원이에요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "천 원이에요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"말": {
+"heard": "말",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "팔",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"말이 아파요": {
+"heard": "말이 아파요.",
+"sim": 100.0,
+"margin": 9.1,
+"rival": "팔이 아파요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"맛있게 드세요": {
+"heard": "맛있게 드세요.",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "더 필요한 거 있으세요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"망": {
+"heard": "망",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "장",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"맵게 해 드릴까요?": {
+"heard": "맵게 해드릴까요?",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "포장도 되나요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"머리": {
+"heard": "머리",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "파리",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"머리가 아파요": {
+"heard": "머리가 아파요.",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "배가 고파요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"몇 분이세요?": {
+"heard": "몇 분이세요?",
+"sim": 100.0,
+"margin": 68.8,
+"rival": "주문하시겠어요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"몇 시에 끝나요?": {
+"heard": "몇 시에 끝나요?",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "무슨 요일이에요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"모레": {
+"heard": "모래",
+"sim": 75.0,
+"margin": 55.0,
+"rival": "오늘",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"모자": {
+"heard": "모자",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "냉장고",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"모자를 써요": {
+"heard": "모자를 써요.",
+"sim": 100.0,
+"margin": 61.5,
+"rival": "장갑을 껴요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"목요일": {
+"heard": "목표 2",
+"sim": 50.0,
+"margin": 37.5,
+"rival": "월요일",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"목이 말라요": {
+"heard": "목이 말라요.",
+"sim": 100.0,
+"margin": 58.3,
+"rival": "머리가 아파요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"무": {
+"heard": "부",
+"sim": 50.0,
+"margin": 16.7,
+"rival": "물",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"무를 열어 주세요": {
+"heard": "물을 열어주세요.",
+"sim": 88.2,
+"margin": -11.8,
+"rival": "물을 열어 주세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"무슨 요일이에요?": {
+"heard": "무슨 요일이에요?",
+"sim": 100.0,
+"margin": 43.8,
+"rival": "오늘 며칠이에요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"묵": {
+"heard": "너",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "물",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"묵을 열어 주세요": {
+"heard": "목을 열어주세요.",
+"sim": 94.1,
+"margin": 5.9,
+"rival": "물을 열어 주세요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"문": {
+"heard": "뿐",
+"sim": 66.7,
+"margin": 33.3,
+"rival": "물",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"문 앞에 택배가 왔어요": {
+"heard": "문 앞에 택배가 왔어요.",
+"sim": 100.0,
+"margin": 77.3,
+"rival": "손 씻고 오세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"문 좀 닫아 주세요": {
+"heard": "문 좀 닫아주세요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "창문 좀 닫아 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"문 좀 열어 주세요": {
+"heard": "문 좀 열어주세요",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "창문 좀 열어 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"문을 열어 주세요": {
+"heard": "문을 열어주세요.",
+"sim": 100.0,
+"margin": 5.9,
+"rival": "물을 열어 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"문이 닫힙니다": {
+"heard": "문이 닫힙니다.",
+"sim": 100.0,
+"margin": 61.5,
+"rival": "내리실 문은 왼쪽입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"물": {
+"heard": "뿔이",
+"sim": 40.0,
+"margin": -20.0,
+"rival": "뿔",
+"exact": false,
+"try": 6,
+"ok": false
+},
+"물 좀 주세요": {
+"heard": "물 좀 주세요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "컵 좀 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"물약": {
+"heard": "물야",
+"sim": 83.3,
+"margin": 33.3,
+"rival": "알약",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"물은 셀프예요": {
+"heard": "물은 셀프예요.",
+"sim": 100.0,
+"margin": 68.8,
+"rival": "주문하시겠어요?",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"물을 많이 드세요": {
+"heard": "물을 많이 드세요.",
+"sim": 100.0,
+"margin": 52.9,
+"rival": "내일 다시 오세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"물을 열어 주세요": {
+"heard": "물을 열어주세요.",
+"sim": 100.0,
+"margin": 5.9,
+"rival": "문을 열어 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"미용실": {
+"heard": "미용실",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "고양이",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"바나나": {
+"heard": "바나나",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "복숭아",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"바다": {
+"heard": "바다",
+"sim": 100.0,
+"margin": 20.0,
+"rival": "바닥",
+"exact": true,
+"try": 5,
+"ok": true
+},
+"바닥": {
+"heard": "다다",
+"sim": 60.0,
+"margin": -15.0,
+"rival": "바다",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"바람": {
+"heard": "바람",
+"sim": 100.0,
+"margin": 40.0,
+"rival": "바다",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"바람이 불어요": {
+"heard": "바람이 불어요.",
+"sim": 100.0,
+"margin": 64.3,
+"rival": "비가 와요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"바보": {
+"heard": "바보",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "바지",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"바지": {
+"heard": "타지",
+"sim": 75.0,
+"margin": 0.0,
+"rival": "차지",
+"exact": false,
+"try": 4,
+"ok": false
+},
+"밖에 기가 와요": {
+"heard": "밖에 기가 와요.",
+"sim": 100.0,
+"margin": 7.7,
+"rival": "밖에 피가 와요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"밖에 비가 와요": {
+"heard": "밖에 비가 와요.",
+"sim": 100.0,
+"margin": 7.7,
+"rival": "밖에 피가 와요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"밖에 지가 와요": {
+"heard": "밖에 지가 와요.",
+"sim": 100.0,
+"margin": 7.7,
+"rival": "밖에 피가 와요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"밖에 피가 와요": {
+"heard": "밖에 피가 와요.",
+"sim": 100.0,
+"margin": 7.7,
+"rival": "밖에 지가 와요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"반": {
+"heard": "단",
+"sim": 66.7,
+"margin": 33.3,
+"rival": "빵",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"반이 맛있어요": {
+"heard": "단이 맛있어요.",
+"sim": 93.3,
+"margin": 6.7,
+"rival": "밥이 맛있어요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"발": {
+"heard": "탈",
+"sim": 66.7,
+"margin": 0.0,
+"rival": "팔",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"발이 맛있어요": {
+"heard": "다리 맛있어요.",
+"sim": 80.0,
+"margin": 0.0,
+"rival": "밥이 맛있어요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"발이 아파요": {
+"heard": "발이 아파요.",
+"sim": 100.0,
+"margin": 9.1,
+"rival": "팔이 아파요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"밤": {
+"heard": "밤",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "방",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"밤이 맛있어요": {
+"heard": "밤이 맛있어요.",
+"sim": 100.0,
+"margin": 6.7,
+"rival": "밥이 맛있어요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"밥": {
+"heard": "다",
+"sim": 33.3,
+"margin": 0.0,
+"rival": "밤",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"밥 먹었어요?": {
+"heard": "밥 먹었어요?",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "창문 좀 닫아 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"밥 좀 주세요": {
+"heard": "밥 좀 주세요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "컵 좀 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"밥그릇": {
+"heard": "답그릇",
+"sim": 87.5,
+"margin": 25.0,
+"rival": "국그릇",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"밥상": {
+"heard": "밥상",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "양말",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"밥이 맛있어요": {
+"heard": "밥이 맛있어요.",
+"sim": 100.0,
+"margin": 6.7,
+"rival": "밤이 맛있어요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"방": {
+"heard": "방",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "탕",
+"exact": true,
+"try": 4,
+"ok": true
+},
+"방이 넓어요": {
+"heard": "방이 넓어요.",
+"sim": 100.0,
+"margin": 8.3,
+"rival": "탕이 넓어요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"배": {
+"heard": "배",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "새",
+"exact": true,
+"try": 4,
+"ok": true
+},
+"배가 고파요": {
+"heard": "배가 고파요.",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "머리가 아파요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"버스": {
+"heard": "버스",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "택시",
+"exact": true,
+"try": 6,
+"ok": true
+},
+"버스를 타고 가요": {
+"heard": "버스를 타고 가요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "택시를 타고 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"벌": {
+"heard": "퍼를",
+"sim": 40.0,
+"margin": 0.0,
+"rival": "철",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"병아리": {
+"heard": "병아리",
+"sim": 100.0,
+"margin": 42.9,
+"rival": "송아지",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"병원": {
+"heard": "병원",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "공원",
+"exact": true,
+"try": 4,
+"ok": true
+},
+"병원에 언제 가요?": {
+"heard": "병원에 언제 가요?",
+"sim": 100.0,
+"margin": 78.3,
+"rival": "할머니가 전화하셨어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"보": {
+"heard": "포",
+"sim": 50.0,
+"margin": 50.0,
+"rival": "비",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"보고 싶었어요": {
+"heard": "보고 싶었어요.",
+"sim": 100.0,
+"margin": 64.3,
+"rival": "고마워요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"보청기": {
+"heard": "보청비",
+"sim": 85.7,
+"margin": 85.7,
+"rival": "할인마트",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"보호자분 계세요?": {
+"heard": "보호자분 계세요?",
+"sim": 100.0,
+"margin": 55.6,
+"rival": "어디가 불편하세요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"복숭아": {
+"heard": "복숭아",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "바나나",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"부": {
+"heard": "푸",
+"sim": 50.0,
+"margin": 50.0,
+"rival": "비",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"불": {
+"heard": "플리",
+"sim": 20.0,
+"margin": -20.0,
+"rival": "풀",
+"exact": false,
+"try": 2,
+"ok": false
+},
+"불 좀 꺼 주세요": {
+"heard": "불 좀 꺼주세요.",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "이불 덮고 자요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"비": {
+"heard": "p",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "피",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"비가 와요": {
+"heard": "비가 와요.",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "해가 떠요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"비누": {
+"heard": "비누",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "치약",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"비행기": {
+"heard": "비행기",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "전화기",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"빨간 옷을 입었어요": {
+"heard": "빨간 옷을 입었어요",
+"sim": 100.0,
+"margin": 13.6,
+"rival": "파란 옷을 입었어요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"빨대는 저쪽에 있어요": {
+"heard": "딸대는 저쪽에 있어요.",
+"sim": 95.5,
+"margin": 63.6,
+"rival": "사이즈는 어떻게 하세요?",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"빵": {
+"heard": "빵",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "방",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"빵에 굴을 발라요": {
+"heard": "빵에 굴을 발라요.",
+"sim": 100.0,
+"margin": 5.6,
+"rival": "빵에 줄을 발라요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"빵에 귤을 발라요": {
+"heard": "땅에 귤을 발라요.",
+"sim": 94.4,
+"margin": 5.6,
+"rival": "빵에 굴을 발라요",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"빵에 꿀을 발라요": {
+"heard": "빵에 꿀을 발라요.",
+"sim": 100.0,
+"margin": 5.6,
+"rival": "빵에 줄을 발라요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"빵에 줄을 발라요": {
+"heard": "빵에 줄을 발라요.",
+"sim": 100.0,
+"margin": 5.6,
+"rival": "빵에 꿀을 발라요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"뿔": {
+"heard": "뿔!",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "풀",
+"exact": true,
+"try": 4,
+"ok": true
+},
+"사과": {
+"heard": "사과",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "가방",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"사과 네 개 주세요": {
+"heard": "사과 4개 주세요.",
+"sim": 85.7,
+"margin": 0.0,
+"rival": "사과 세 개 주세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"사과 다섯 개 주세요": {
+"heard": "사과 5개 주세요.",
+"sim": 70.6,
+"margin": -15.1,
+"rival": "사과 세 개 주세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"사과 세 개 주세요": {
+"heard": "사과 3개 주세요.",
+"sim": 85.7,
+"margin": 0.0,
+"rival": "사과 네 개 주세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"사과 여섯 개 주세요": {
+"heard": "사과 6개 주세요.",
+"sim": 70.6,
+"margin": -15.1,
+"rival": "사과 세 개 주세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"사다": {
+"heard": "사다",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "차다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"사번 검사실로 들어오세요": {
+"heard": "4번 검사실로 들어오세요.",
+"sim": 92.3,
+"margin": 3.4,
+"rival": "삼번 검사실로 들어오세요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"사번 진료실로 들어오세요": {
+"heard": "4번 진료실로 들어오세요.",
+"sim": 92.3,
+"margin": 3.4,
+"rival": "삼번 진료실로 들어오세요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"사월에 만나요": {
+"heard": "4월에 만나요.",
+"sim": 85.7,
+"margin": 0.0,
+"rival": "유월에 만나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"사이다 두 개 추가요": {
+"heard": "사이다 2개 추가요.",
+"sim": 87.5,
+"margin": 12.5,
+"rival": "사이다 하나 추가요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"사이다 하나 추가요": {
+"heard": "사이다 하나 추가요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "사이다 두 개 추가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"사이즈는 어떻게 하세요?": {
+"heard": "사이즈는 어떻게 하세요?",
+"sim": 100.0,
+"margin": 68.2,
+"rival": "빨대는 저쪽에 있어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"사자": {
+"heard": "사자",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "하마",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"사진 찍어 줄게요": {
+"heard": "사진 찍어 줄게요.",
+"sim": 100.0,
+"margin": 70.6,
+"rival": "여기 보고 웃어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"사층에서 기다려요": {
+"heard": "4층에서 기다려요.",
+"sim": 88.2,
+"margin": 0.0,
+"rival": "이층에서 기다려요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"산": {
+"heard": "산",
+"sim": 100.0,
+"margin": 60.0,
+"rival": "시장",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"살": {
+"heard": "살",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "팔",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"살이 아파요": {
+"heard": "살이 아파요.",
+"sim": 100.0,
+"margin": 9.1,
+"rival": "팔이 아파요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"삼번 검사실로 들어오세요": {
+"heard": "3번 검사실로 들어오세요",
+"sim": 88.9,
+"margin": -3.4,
+"rival": "사번 검사실로 들어오세요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"삼번 진료실로 들어오세요": {
+"heard": "3번 지휴실로 들어오세요.",
+"sim": 77.8,
+"margin": -3.0,
+"rival": "사번 진료실로 들어오세요",
+"exact": false,
+"try": 3,
+"ok": false
+},
+"삼월에 만나요": {
+"heard": "3월에 만나요.",
+"sim": 80.0,
+"margin": -5.7,
+"rival": "유월에 만나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"삼천 원이에요": {
+"heard": "삼천 원이에요.",
+"sim": 100.0,
+"margin": 20.0,
+"rival": "천 원이에요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"삼층에서 기다려요": {
+"heard": "3층에서 기다려.",
+"sim": 72.2,
+"margin": -4.2,
+"rival": "이층에서 기다려요",
+"exact": false,
+"try": 3,
+"ok": false
+},
+"새": {
+"heard": "새",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "배",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"새벽": {
+"heard": "새벽",
+"sim": 100.0,
+"margin": 60.0,
+"rival": "저녁",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"생일 축하해요": {
+"heard": "생일 축하해요",
+"sim": 100.0,
+"margin": 72.2,
+"rival": "조심히 들어가세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"선글라스": {
+"heard": "선글라스",
+"sim": 100.0,
+"margin": 90.0,
+"rival": "양말",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"선풍기": {
+"heard": "선풍기",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "청소기",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"설": {
+"heard": "서울",
+"sim": 60.0,
+"margin": 20.0,
+"rival": "철",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"설탕 빼 주세요": {
+"heard": "설탕 빼주세요.",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "얼음 빼 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"세 시에 만나요": {
+"heard": "3시에 만나요.",
+"sim": 84.6,
+"margin": 0.0,
+"rival": "두 시에 만나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"세탁기": {
+"heard": "세탁기",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "선풍기",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"세탁소": {
+"heard": "세탁소",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "피아노",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"소리 좀 키워 주세요": {
+"heard": "소리 좀 피워주세요.",
+"sim": 94.1,
+"margin": 38.6,
+"rival": "뉴스 좀 틀어 주세요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"소방차": {
+"heard": "소방차",
+"sim": 100.0,
+"margin": 85.7,
+"rival": "이불",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"속": {
+"heard": "쏘",
+"sim": 33.3,
+"margin": 0.0,
+"rival": "송",
+"exact": false,
+"try": 2,
+"ok": false
+},
+"속을 깨끗이 씻어요": {
+"heard": "속을 깨끗이 씻어요.",
+"sim": 100.0,
+"margin": 5.0,
+"rival": "송을 깨끗이 씻어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"손": {
+"heard": "손",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "송",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"손 씻고 오세요": {
+"heard": "손 씻고 오세요.",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "어디 아파요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"손수건": {
+"heard": "손수건",
+"sim": 100.0,
+"margin": 87.5,
+"rival": "우체국",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"손을 깨끗이 씻어요": {
+"heard": "손을 깨끗이 씻어요.",
+"sim": 100.0,
+"margin": 5.0,
+"rival": "송을 깨끗이 씻어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"손잡이를 꼭 잡아 주세요": {
+"heard": "손잡이를 꼭 잡아주세요.",
+"sim": 100.0,
+"margin": 68.0,
+"rival": "다음 역에서 갈아타세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"손주가 놀러 왔어요": {
+"heard": "손주가 놀러 왔어요",
+"sim": 100.0,
+"margin": 63.2,
+"rival": "여기 보고 웃어요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"솜": {
+"heard": "쏨",
+"sim": 66.7,
+"margin": 33.3,
+"rival": "송",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"솜을 깨끗이 씻어요": {
+"heard": "숨을 깨끗이 씻어요.",
+"sim": 95.0,
+"margin": 5.0,
+"rival": "송을 깨끗이 씻어요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"송": {
+"heard": "송",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "총",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"송아지": {
+"heard": "송아지",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "강아지",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"송을 깨끗이 씻어요": {
+"heard": "숨을 깨끗이 씻어요.",
+"sim": 90.0,
+"margin": -5.0,
+"rival": "솜을 깨끗이 씻어요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"송을 들고 가요": {
+"heard": "숨을 들고 가요.",
+"sim": 86.7,
+"margin": 6.7,
+"rival": "총을 들고 가요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"수건": {
+"heard": "수건",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "칫솔",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"수납은 일 층에서 하세요": {
+"heard": "수납은 1층에서 하세요.",
+"sim": 87.5,
+"margin": 55.7,
+"rival": "접수증 받아 가세요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"수박": {
+"heard": "수바",
+"sim": 80.0,
+"margin": 55.0,
+"rival": "차",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"수요일": {
+"heard": "수요일",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "화요일",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"숙제 다 했어요": {
+"heard": "숙제 다 했어요.",
+"sim": 100.0,
+"margin": 57.1,
+"rival": "엄마 나 왔어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"숟가락": {
+"heard": "숟가락",
+"sim": 100.0,
+"margin": 37.5,
+"rival": "젓가락",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"슈퍼마켓": {
+"heard": "슈퍼마켓",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "택시",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"시계": {
+"heard": "시계",
+"sim": 100.0,
+"margin": 90.9,
+"rival": "아이스크림",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"시럽 빼 주세요": {
+"heard": "시럽 빼주세요.",
+"sim": 100.0,
+"margin": 35.7,
+"rival": "설탕 빼 주세요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"시장": {
+"heard": "시장",
+"sim": 100.0,
+"margin": 60.0,
+"rival": "산",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"시장에서 달을 샀어요": {
+"heard": "시장에서 달을 샀어요.",
+"sim": 100.0,
+"margin": 4.5,
+"rival": "시장에서 쌀을 샀어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"시장에서 발을 샀어요": {
+"heard": "시장에서 발을 샀어요.",
+"sim": 100.0,
+"margin": 4.5,
+"rival": "시장에서 쌀을 샀어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"시장에서 살을 샀어요": {
+"heard": "시장에서 살을 샀어요.",
+"sim": 100.0,
+"margin": 4.5,
+"rival": "시장에서 쌀을 샀어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"시장에서 쌀을 샀어요": {
+"heard": "시장에서 쌀을 샀어요.",
+"sim": 100.0,
+"margin": 4.5,
+"rival": "시장에서 살을 샀어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"식사 후에 드세요": {
+"heard": "식사 후에 드세요",
+"sim": 100.0,
+"margin": 58.8,
+"rival": "하루에 세 번 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"신발": {
+"heard": "신발",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "눈",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"신발을 신어요": {
+"heard": "신발을 신어요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "양말을 신어요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"신분증 보여 주세요": {
+"heard": "신분증 보여주세요.",
+"sim": 100.0,
+"margin": 68.4,
+"rival": "보호자분 계세요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"심": {
+"heard": "심",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "침",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"싸다": {
+"heard": "쎄다",
+"sim": 75.0,
+"margin": 25.0,
+"rival": "차다",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"쌀": {
+"heard": "사이",
+"sim": 25.0,
+"margin": -25.0,
+"rival": "살",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"아기가 자요": {
+"heard": "아디가 자요?",
+"sim": 90.0,
+"margin": 20.8,
+"rival": "강아지가 자요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"아빠": {
+"heard": "아빠",
+"sim": 100.0,
+"margin": 60.0,
+"rival": "엄마",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아빠한테 전화해요": {
+"heard": "아빠한테 전화해요.",
+"sim": 100.0,
+"margin": 15.8,
+"rival": "엄마한테 전화해요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아이가 반을 좋아해요": {
+"heard": "아이가 반을 좋아해요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "아이가 방을 좋아해요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"아이가 밤을 좋아해요": {
+"heard": "아이가 밤을 좋아해요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "아이가 방을 좋아해요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아이가 방을 좋아해요": {
+"heard": "아이가 방을 좋아해요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "아이가 빵을 좋아해요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"아이가 빵을 좋아해요": {
+"heard": "아이가 빵을 좋아해요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "아이가 방을 좋아해요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아이스 라떼 한 잔이요": {
+"heard": "아이스라떼 한 잔이요.",
+"sim": 100.0,
+"margin": 30.8,
+"rival": "아이스 아메리카노 한 잔이요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아이스 아메리카노 한 잔이요": {
+"heard": "아이스 아메리카노 한 잔이요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "따뜻한 아메리카노 한 잔이요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아이스크림": {
+"heard": "아이스크림",
+"sim": 100.0,
+"margin": 90.9,
+"rival": "컵",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아침": {
+"heard": "아침",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "점심",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아침 아홉 시에 일어나요": {
+"heard": "아침 바흡시에 일어나요.",
+"sim": 91.3,
+"margin": 12.1,
+"rival": "아침 일곱 시에 일어나요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"아침 여덟 시에 일어나요": {
+"heard": "아침 8시에 일어나요.",
+"sim": 78.3,
+"margin": 0.0,
+"rival": "아침 여섯 시에 일어나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"아침 여섯 시에 일어나요": {
+"heard": "아침 6시에 일어나요.",
+"sim": 78.3,
+"margin": 0.0,
+"rival": "아침 여덟 시에 일어나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"아침 일곱 시에 일어나요": {
+"heard": "아침 7시에 일어나요.",
+"sim": 75.0,
+"margin": -3.3,
+"rival": "아침 여섯 시에 일어나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"아침에 빵을 먹었어요": {
+"heard": "아침에 빵을 먹었어요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "아침에 사과를 먹었어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아침에 사과를 먹었어요": {
+"heard": "아침에 사과를 먹었어요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "아침에 포도를 먹었어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아침에 우유를 먹었어요": {
+"heard": "아침에 우유를 먹었어요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "아침에 포도를 먹었어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아침에 포도를 먹었어요": {
+"heard": "아침에 포도를 먹었어요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "아침에 우유를 먹었어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"아파트": {
+"heard": "아파트",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "휴대폰",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"안경": {
+"heard": "안녕!",
+"sim": 83.3,
+"margin": 50.0,
+"rival": "연필",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"안경 어디 뒀어요?": {
+"heard": "안녕 어디 떴어요?",
+"sim": 82.4,
+"margin": 47.1,
+"rival": "열쇠 챙겼어요?",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"안녕하세요": {
+"heard": "안녕하세요.",
+"sim": 100.0,
+"margin": 100.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"ok": true
+},
+"안방": {
+"heard": "안당",
+"sim": 83.3,
+"margin": 53.3,
+"rival": "할인마트",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"알람 맞춰 놨어요": {
+"heard": "알람 맞춰놨어요.",
+"sim": 100.0,
+"margin": 77.8,
+"rival": "불 좀 꺼 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"알약": {
+"heard": "아리아",
+"sim": 33.3,
+"margin": 16.7,
+"rival": "주사",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"앞으로 가세요": {
+"heard": "앞으로 가세요.",
+"sim": 100.0,
+"margin": 31.2,
+"rival": "왼쪽으로 가세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"약": {
+"heard": "야",
+"sim": 66.7,
+"margin": 38.1,
+"rival": "고양이",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"약 먹을 시간이에요": {
+"heard": "약 먹을 시간이에요.",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "잘 잤어요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"약 좀 주세요": {
+"heard": "약 좀 주세요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "컵 좀 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"약국은 건물 일 층이에요": {
+"heard": "약국은 건물 1층이에요.",
+"sim": 88.9,
+"margin": 64.9,
+"rival": "다음 주에 다시 오세요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"약은 식전에 드세요": {
+"heard": "약은 식전에 드세요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "약은 식후에 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"약은 식후에 드세요": {
+"heard": "약은 치쿠에 드세요.",
+"sim": 84.2,
+"margin": 5.3,
+"rival": "약은 아침에 드세요",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"약은 아침에 드세요": {
+"heard": "약은 아침에 드세요.",
+"sim": 100.0,
+"margin": 23.8,
+"rival": "약은 자기 전에 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"약은 자기 전에 드세요": {
+"heard": "약은 자기 전에 드세요.",
+"sim": 100.0,
+"margin": 19.0,
+"rival": "약은 식전에 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"양말": {
+"heard": "양말",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "치마",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"양말을 신어요": {
+"heard": "양말을 신어요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "신발을 신어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"양파": {
+"heard": "양파",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "오이",
+"exact": true,
+"try": 6,
+"ok": true
+},
+"어디 아파요?": {
+"heard": "어디 아파요?",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "손 씻고 오세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"어디가 불편하세요?": {
+"heard": "어디가 불편하세요?",
+"sim": 100.0,
+"margin": 55.6,
+"rival": "보호자분 계세요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"어제": {
+"heard": "어제",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "모레",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"언니": {
+"heard": "언니",
+"sim": 100.0,
+"margin": 60.0,
+"rival": "엄마",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"언니한테 전화해요": {
+"heard": "언니한테 전화해요.",
+"sim": 100.0,
+"margin": 15.8,
+"rival": "엄마한테 전화해요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"언제 와요?": {
+"heard": "언제 와요?",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "오늘 며칠이에요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"얼음 빼 주세요": {
+"heard": "얼음 빼주세요.",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "우유 빼 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"엄마": {
+"heard": "엄마",
+"sim": 100.0,
+"margin": 60.0,
+"rival": "언니",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"엄마 나 왔어요": {
+"heard": "엄마, 나 왔어요.",
+"sim": 100.0,
+"margin": 57.1,
+"rival": "숙제 다 했어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"엄마한테 전화해요": {
+"heard": "엄마한테 전화해요.",
+"sim": 100.0,
+"margin": 15.8,
+"rival": "언니한테 전화해요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"엘리베이터": {
+"heard": "엘리베이터",
+"sim": 100.0,
+"margin": 90.9,
+"rival": "안경",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"여기 반찬 더 주세요": {
+"heard": "여기 반찬 더 주세요.",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "저쪽 자리에 앉으세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"여기 보고 웃어요": {
+"heard": "여기 보고 웃어요.",
+"sim": 100.0,
+"margin": 63.2,
+"rival": "손주가 놀러 왔어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"여기 앉으세요": {
+"heard": "여기 앉으세요.",
+"sim": 100.0,
+"margin": 72.0,
+"rival": "뒤로 조금만 들어가 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"여기 자리 있어요?": {
+"heard": "여기 자리 있어요.",
+"sim": 100.0,
+"margin": 46.7,
+"rival": "케이크도 있어요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"여름": {
+"heard": "여름",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "겨울",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"여우": {
+"heard": "여우",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "하마",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"연고": {
+"heard": "연고",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "알약",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"연필": {
+"heard": "연필",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "안경",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"열 시에 만나요": {
+"heard": "10시에 만나요.",
+"sim": 78.6,
+"margin": -6.0,
+"rival": "세 시에 만나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"열쇠 챙겼어요?": {
+"heard": "열쇠 챙겼어요.",
+"sim": 100.0,
+"margin": 64.7,
+"rival": "지갑 놓고 왔어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"영수증 드릴까요?": {
+"heard": "영수증 드릴까요?",
+"sim": 100.0,
+"margin": 59.1,
+"rival": "따뜻한 걸로 드릴까요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"영수증 주세요": {
+"heard": "영수증 주세요.",
+"sim": 100.0,
+"margin": 56.2,
+"rival": "커피 한 잔 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"영화 보러 갈까요?": {
+"heard": "영화 보러 갈까요?",
+"sim": 100.0,
+"margin": 70.6,
+"rival": "같이 시장 갈래요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘": {
+"heard": "오늘",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "어제",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘 김이 바빠요": {
+"heard": "오늘 비니 바빠요",
+"sim": 81.2,
+"margin": 0.0,
+"rival": "오늘 침이 바빠요",
+"exact": false,
+"try": 2,
+"ok": false
+},
+"오늘 날씨가 좋네요": {
+"heard": "오늘 날씨가 좋네요",
+"sim": 100.0,
+"margin": 73.7,
+"rival": "물 좀 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘 달을 만났어요": {
+"heard": "오늘 달을 만났어요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "오늘 탈을 만났어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘 딸을 만났어요": {
+"heard": "오늘 딸을 만났어요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "오늘 탈을 만났어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘 말을 만났어요": {
+"heard": "오늘 말을 만났어요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "오늘 탈을 만났어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘 며칠이에요?": {
+"heard": "오늘 며칠이에요?",
+"sim": 100.0,
+"margin": 43.8,
+"rival": "무슨 요일이에요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘 심이 바빠요": {
+"heard": "오늘 심이 바빠요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "오늘 침이 바빠요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘 저녁은 뭐 먹을까요?": {
+"heard": "오늘 저녁은 뭐 먹을까요?",
+"sim": 100.0,
+"margin": 76.0,
+"rival": "어디 아파요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘 짐이 바빠요": {
+"heard": "오늘 짐이 바빠요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "오늘 침이 바빠요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"오늘 침이 바빠요": {
+"heard": "오늘 침이 바빠요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "오늘 짐이 바빠요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"오늘 탈을 만났어요": {
+"heard": "오늘 탈을 만났어요.",
+"sim": 100.0,
+"margin": 4.8,
+"rival": "오늘 말을 만났어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘 학교 재밌었어요": {
+"heard": "오늘 학교 재미있었어요.",
+"sim": 91.7,
+"margin": 58.3,
+"rival": "엄마 나 왔어요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"오늘은 목요일이에요": {
+"heard": "오늘은 목요일이에요.",
+"sim": 100.0,
+"margin": 9.1,
+"rival": "오늘은 토요일이에요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘은 월요일이에요": {
+"heard": "오늘은 월요일이에요.",
+"sim": 100.0,
+"margin": 13.6,
+"rival": "오늘은 화요일이에요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘은 좀 추워요": {
+"heard": "오늘은 좀 추워요.",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "창문을 열어 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘은 토요일이에요": {
+"heard": "오늘은 토요일이에요.",
+"sim": 100.0,
+"margin": 9.1,
+"rival": "오늘은 목요일이에요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오늘은 화요일이에요": {
+"heard": "오늘은 화요일이에요.",
+"sim": 100.0,
+"margin": 9.5,
+"rival": "오늘은 토요일이에요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오렌지": {
+"heard": "오렌지",
+"sim": 100.0,
+"margin": 85.7,
+"rival": "토마토",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오렌지주스": {
+"heard": "오렌지 주스",
+"sim": 100.0,
+"margin": 81.8,
+"rival": "편의점",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오른쪽으로 가세요": {
+"heard": "오른쪽으로 가세요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "왼쪽으로 가세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오리": {
+"heard": "오리",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "유리",
+"exact": true,
+"try": 5,
+"ok": true
+},
+"오리를 그렸어요": {
+"heard": "오리를 그렸어요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "유리를 그렸어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"오월에 만나요": {
+"heard": "5월에 만나요.",
+"sim": 85.7,
+"margin": 0.0,
+"rival": "유월에 만나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"오이": {
+"heard": "우이",
+"sim": 75.0,
+"margin": 55.0,
+"rival": "양파",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"오천 원이에요": {
+"heard": "5,000원이에요.",
+"sim": 64.3,
+"margin": -4.9,
+"rival": "천 원이에요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"오층에서 기다려요": {
+"heard": "5층에서 기다려요.",
+"sim": 88.2,
+"margin": 0.0,
+"rival": "이층에서 기다려요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"옷": {
+"heard": "오",
+"sim": 66.7,
+"margin": 50.0,
+"rival": "토마토",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"와이파이 비밀번호가 뭐예요?": {
+"heard": "와이파이 비밀번호가 뭐예요?",
+"sim": 100.0,
+"margin": 69.2,
+"rival": "여기 자리 있어요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"왕": {
+"heard": "왕",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "장",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"왼쪽으로 가세요": {
+"heard": "왼쪽으로 가세요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "오른쪽으로 가세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"요리": {
+"heard": "요리",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "유리",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"요리를 그렸어요": {
+"heard": "요리를 그렸어요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "유리를 그렸어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"우리": {
+"heard": "우리",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "유리",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"우리 버스 타고 가요": {
+"heard": "우리 버스 타고 가요.",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "텔레비전 소리 좀 줄여 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"우리를 그렸어요": {
+"heard": "우리를 그렸어요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "유리를 그렸어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"우산": {
+"heard": "우산",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "물",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"우산 챙겨 가세요": {
+"heard": "우산 챙겨 가세요.",
+"sim": 100.0,
+"margin": 68.8,
+"rival": "밖에 비가 와요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"우유": {
+"heard": "우유",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "택시",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"우유 빼 주세요": {
+"heard": "우유 빼주세요.",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "얼음 빼 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"우체국": {
+"heard": "우체구",
+"sim": 85.7,
+"margin": 71.4,
+"rival": "도서관",
+"exact": false,
+"try": 3,
+"ok": true
+},
+"운동화": {
+"heard": "운동화",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "크리스마스",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"월요일": {
+"heard": "월요일",
+"sim": 100.0,
+"margin": 37.5,
+"rival": "화요일",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"유리": {
+"heard": "유리",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "우리",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"유리를 그렸어요": {
+"heard": "유리를 그렸어요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "우리를 그렸어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"유월에 만나요": {
+"heard": "2월에 만나요.",
+"sim": 85.7,
+"margin": 0.0,
+"rival": "오월에 만나요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"음식 나왔습니다": {
+"heard": "음식 나왔습니다.",
+"sim": 100.0,
+"margin": 85.7,
+"rival": "뜨거우니까 조심하세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"의사": {
+"heard": "뵈사",
+"sim": 50.0,
+"margin": 25.0,
+"rival": "가수",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"의자": {
+"heard": "의자",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "기차",
+"exact": true,
+"try": 4,
+"ok": true
+},
+"이 버스 시청 가요?": {
+"heard": "이 버스 시청 가요.",
+"sim": 100.0,
+"margin": 73.3,
+"rival": "표는 어디서 사요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이 버스 종점까지 가요?": {
+"heard": "이 버스 종정까지 가요.",
+"sim": 95.0,
+"margin": 65.8,
+"rival": "카드를 한 장만 대 주세요",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"이 약은 이틀에 한 번 드세요": {
+"heard": "이 약은 이틀에 한 번 드세요.",
+"sim": 100.0,
+"margin": 25.9,
+"rival": "이 약은 하루 한 번 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이 약은 하루 두 번 드세요": {
+"heard": "이 약은 하루 두 번 드세요.",
+"sim": 100.0,
+"margin": 8.7,
+"rival": "이 약은 하루 세 번 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이 약은 하루 세 번 드세요": {
+"heard": "이 약은 하루 세 번 드세요.",
+"sim": 100.0,
+"margin": 8.7,
+"rival": "이 약은 하루 두 번 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이 약은 하루 한 번 드세요": {
+"heard": "이 약은 하루 한 번 드세요.",
+"sim": 100.0,
+"margin": 12.5,
+"rival": "이 약은 하루 세 번 드세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이 층에서 내리세요": {
+"heard": "2층에서 내리세요.",
+"sim": 88.2,
+"margin": 60.5,
+"rival": "오른쪽으로 가세요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"이거 얼마예요?": {
+"heard": "이거 얼마예요?",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "화장실이 어디예요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이름을 불러 드릴게요": {
+"heard": "이름을 불러드릴게요.",
+"sim": 100.0,
+"margin": 77.3,
+"rival": "접수는 어디서 해요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이번 역은 동대문입니다": {
+"heard": "이번 역은 동대문입니다.",
+"sim": 100.0,
+"margin": 19.2,
+"rival": "이번 역은 동묘앞입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이번 역은 동묘앞입니다": {
+"heard": "이번 역은 동료화 P입니다.",
+"sim": 84.6,
+"margin": 3.8,
+"rival": "이번 역은 동대문입니다",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"이번 역은 서울역입니다": {
+"heard": "이번 역은 서울역입니다.",
+"sim": 100.0,
+"margin": 65.4,
+"rival": "환승입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이번 역은 종로삼가입니다": {
+"heard": "이번 역은 종로 상가입니다.",
+"sim": 96.4,
+"margin": 7.1,
+"rival": "이번 역은 종로오가입니다",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"이번 역은 종로오가입니다": {
+"heard": "이번 역은 종로호가입니다.",
+"sim": 96.3,
+"margin": 7.0,
+"rival": "이번 역은 종로삼가입니다",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"이불": {
+"heard": "이불",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "비",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"이불 덮고 자요": {
+"heard": "입을 덮고 자요.",
+"sim": 80.0,
+"margin": 45.0,
+"rival": "내일 일찍 일어나요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"이층에서 기다려요": {
+"heard": "2층에서 기다려요.",
+"sim": 88.2,
+"margin": 0.0,
+"rival": "오층에서 기다려요",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"일요일": {
+"heard": "일요일",
+"sim": 100.0,
+"margin": 37.5,
+"rival": "토요일",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"자다": {
+"heard": "자다",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "차다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"자동차": {
+"heard": "자동차",
+"sim": 100.0,
+"margin": 90.9,
+"rival": "아이스크림",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"자리": {
+"heard": "자리",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "파리",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"자전거": {
+"heard": "자전거",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "전화기",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"작은 걸로 주세요": {
+"heard": "작은 걸로 주세요.",
+"sim": 100.0,
+"margin": 23.5,
+"rival": "큰 걸로 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"잘 잤어요?": {
+"heard": "잘 잤어요.",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "약 먹을 시간이에요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"잠시 앉아서 기다리세요": {
+"heard": "잠시 앉아서 기다리세요.",
+"sim": 100.0,
+"margin": 63.6,
+"rival": "접수증 받아 가세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"잠시만 기다려 주세요": {
+"heard": "잠시만 기다려 주세요.",
+"sim": 100.0,
+"margin": 70.0,
+"rival": "접수는 어디서 해요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"장": {
+"heard": "장",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "방",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"장갑": {
+"heard": "장가",
+"sim": 83.3,
+"margin": 50.0,
+"rival": "양말",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"장갑을 껴요": {
+"heard": "장갑을 펴요.",
+"sim": 92.3,
+"margin": 48.6,
+"rival": "양말을 신어요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"장미": {
+"heard": "장미",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "가을",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"저기 물이 있어요": {
+"heard": "저기 물이 있어요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "저기 풀이 있어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"저기 불이 있어요": {
+"heard": "저기 불이 있어요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "저기 풀이 있어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"저기 뿔이 있어요": {
+"heard": "저기 뿌리 있어요.",
+"sim": 87.5,
+"margin": 6.2,
+"rival": "저기 풀이 있어요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"저기 풀이 있어요": {
+"heard": "저기 풀이 있어요.",
+"sim": 100.0,
+"margin": 6.2,
+"rival": "저기 뿔이 있어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"저녁": {
+"heard": "전혀.",
+"sim": 40.0,
+"margin": 6.7,
+"rival": "점심",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"저쪽 자리에 앉으세요": {
+"heard": "저쪽 자리에 앉으세요.",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "포장도 되나요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"적립 카드 있으세요?": {
+"heard": "정립 카드 있으세요?",
+"sim": 94.7,
+"margin": 63.2,
+"rival": "주문 도와드릴게요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"전화": {
+"heard": "전화",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "피아노",
+"exact": true,
+"try": 5,
+"ok": true
+},
+"전화기": {
+"heard": "전화기",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "자전거",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"절": {
+"heard": "서울",
+"sim": 40.0,
+"margin": -20.0,
+"rival": "설",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"점심": {
+"heard": "점심",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "저녁",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"점심 먹으러 가요": {
+"heard": "점심 먹으러 가요.",
+"sim": 100.0,
+"margin": 70.6,
+"rival": "주말에 뭐 해요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"점심에 국수 먹어요": {
+"heard": "점심에 국수 먹어요.",
+"sim": 100.0,
+"margin": 19.0,
+"rival": "점심에 떡국 먹어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"점심에 김밥 먹어요": {
+"heard": "점심에 김밥 먹어요.",
+"sim": 100.0,
+"margin": 23.8,
+"rival": "점심에 국수 먹어요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"점심에 떡국 먹어요": {
+"heard": "점심에 떡국 먹어요.",
+"sim": 100.0,
+"margin": 19.0,
+"rival": "점심에 국수 먹어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"점심에 라면 먹어요": {
+"heard": "점심에 라면 먹어요",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "점심에 국수 먹어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"접수는 어디서 해요?": {
+"heard": "접수는 어디서 해요?",
+"sim": 100.0,
+"margin": 68.4,
+"rival": "처방전 여기 있어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"접수증 받아 가세요": {
+"heard": "접수증 받아가세요.",
+"sim": 100.0,
+"margin": 63.6,
+"rival": "잠시 앉아서 기다리세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"젓가락": {
+"heard": "젓가락",
+"sim": 100.0,
+"margin": 37.5,
+"rival": "숟가락",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"조금 피곤해요": {
+"heard": "조금 피곤해요.",
+"sim": 100.0,
+"margin": 64.3,
+"rival": "배가 고파요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"조심히 들어가세요": {
+"heard": "조심히 들어가세요.",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "보고 싶었어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"종": {
+"heard": "총",
+"sim": 66.7,
+"margin": -33.3,
+"rival": "총",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"종을 들고 가요": {
+"heard": "종을 들고 가요.",
+"sim": 100.0,
+"margin": 6.7,
+"rival": "총을 들고 가요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"주말에 뭐 해요?": {
+"heard": "주말에 뭐 해요?",
+"sim": 100.0,
+"margin": 70.6,
+"rival": "점심 먹으러 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"주문 도와드릴게요": {
+"heard": "주문 도와드릴게요.",
+"sim": 100.0,
+"margin": 68.4,
+"rival": "적립 카드 있으세요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"주문하시겠어요?": {
+"heard": "주문하시겠어요?",
+"sim": 100.0,
+"margin": 68.8,
+"rival": "물은 셀프예요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"주사": {
+"heard": "주사",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "물약",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"줄": {
+"heard": "줄",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "꿀",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"지": {
+"heard": "시",
+"sim": 50.0,
+"margin": 0.0,
+"rival": "피",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"지갑 놓고 왔어요": {
+"heard": "지갑 놓고 왔어요.",
+"sim": 100.0,
+"margin": 64.7,
+"rival": "열쇠 챙겼어요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"지금 몇 시예요?": {
+"heard": "지금 몇 시예요?",
+"sim": 100.0,
+"margin": 78.6,
+"rival": "밥 먹었어요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"지우개": {
+"heard": "치우게",
+"sim": 66.7,
+"margin": 52.4,
+"rival": "도서관",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"지하철을 타고 가요": {
+"heard": "지하철을 타고 가요.",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "기차를 타고 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"진동벨 울리면 오세요": {
+"heard": "진동벨 울리면 오세요.",
+"sim": 100.0,
+"margin": 73.9,
+"rival": "드시고 가세요?",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"짐": {
+"heard": "침",
+"sim": 66.7,
+"margin": -33.3,
+"rival": "침",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"집": {
+"heard": "치",
+"sim": 33.3,
+"margin": 19.0,
+"rival": "휠체어",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"쭉 가다가 왼쪽이에요": {
+"heard": "쭉 가다가 왼쪽이에요.",
+"sim": 100.0,
+"margin": 76.2,
+"rival": "횡단보도 건너세요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"차": {
+"heard": "차",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "수박",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"차다": {
+"heard": "차다",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "자다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"차지": {
+"heard": "차지",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "바지",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"창문": {
+"heard": "창문",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "산",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"창문 좀 닫아 주세요": {
+"heard": "창문 좀 닫아주세요",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "문 좀 닫아 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"창문 좀 열어 주세요": {
+"heard": "창문 좀 열어주세요",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "문 좀 열어 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"창문을 열어 주세요": {
+"heard": "창문을 열어주세요.",
+"sim": 100.0,
+"margin": 70.0,
+"rival": "우산 챙겨 가세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"채널 좀 돌려 주세요": {
+"heard": "채널 좀 돌려주세요.",
+"sim": 100.0,
+"margin": 47.4,
+"rival": "뉴스 좀 틀어 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"책": {
+"heard": "칠",
+"sim": 33.3,
+"margin": 33.3,
+"rival": "휴대폰",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"처방전 여기 있습니다": {
+"heard": "처방전 여기 있습니다.",
+"sim": 100.0,
+"margin": 81.5,
+"rival": "약국은 건물 일 층이에요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"처방전 여기 있어요": {
+"heard": "처방전 여기 있어요.",
+"sim": 100.0,
+"margin": 68.4,
+"rival": "접수는 어디서 해요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"처음 오셨어요?": {
+"heard": "처음 오셨어요?",
+"sim": 100.0,
+"margin": 73.7,
+"rival": "신분증 보여 주세요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"천 원이에요": {
+"heard": "천 원이에요.",
+"sim": 100.0,
+"margin": 14.3,
+"rival": "오천 원이에요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"천천히 말해 주세요": {
+"heard": "천천히 말해주세요.",
+"sim": 100.0,
+"margin": 42.9,
+"rival": "다시 한 번 말해 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"철": {
+"heard": "차월",
+"sim": 40.0,
+"margin": 20.0,
+"rival": "절",
+"exact": false,
+"try": 6,
+"ok": true
+},
+"청소기": {
+"heard": "청소기",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "선풍기",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"총": {
+"heard": "총",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "종",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"총을 들고 가요": {
+"heard": "총을 들고 가요.",
+"sim": 100.0,
+"margin": 6.7,
+"rival": "종을 들고 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"출입문 앞을 비워 주세요": {
+"heard": "출입문 앞을 비워주세요.",
+"sim": 100.0,
+"margin": 84.6,
+"rival": "이번 역은 서울역입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"치마": {
+"heard": "치마",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "양말",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"치약": {
+"heard": "치아",
+"sim": 60.0,
+"margin": 26.7,
+"rival": "칫솔",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"친구랑 놀다 올게요": {
+"heard": "친구랑 놀다 올게요.",
+"sim": 100.0,
+"margin": 70.0,
+"rival": "엄마 나 왔어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"침": {
+"heard": "침",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "짐",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"칫솔": {
+"heard": "칫솔",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "치약",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"카드로 계산할게요": {
+"heard": "카드로 계산할게요.",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "커피 한 잔 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"카드를 한 장만 대 주세요": {
+"heard": "카드를 한 장만 대주세요",
+"sim": 100.0,
+"margin": 68.0,
+"rival": "뒤로 조금만 들어가 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"커피 한 잔 주세요": {
+"heard": "커피 한 잔 주세요.",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "포장해 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"컴퓨터": {
+"heard": "컴퓨터",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "이불",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"컵": {
+"heard": "call",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "자동차",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"컵 좀 주세요": {
+"heard": "컵 좀 주세요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "밥 좀 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"케이크도 있어요?": {
+"heard": "케이크도 있어요.",
+"sim": 100.0,
+"margin": 46.7,
+"rival": "여기 자리 있어요?",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"코": {
+"heard": "cool",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "양말",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"콩": {
+"heard": "쿵",
+"sim": 66.7,
+"margin": 33.3,
+"rival": "공",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"크리스마스": {
+"heard": "크리스마스",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "운동화",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"큰 걸로 주세요": {
+"heard": "큰 걸로 주세요.",
+"sim": 100.0,
+"margin": 23.5,
+"rival": "작은 걸로 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"타실 문은 오른쪽입니다": {
+"heard": "탈실문은 오른쪽입니다.",
+"sim": 96.3,
+"margin": 10.6,
+"rival": "내리실 문은 오른쪽입니다",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"타실 문은 왼쪽입니다": {
+"heard": "탈실문은 왼쪽입니다.",
+"sim": 96.0,
+"margin": 11.4,
+"rival": "타실 문은 오른쪽입니다",
+"exact": false,
+"try": 2,
+"ok": true
+},
+"탈": {
+"heard": "탈",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "말",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"탕": {
+"heard": "탕",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "방",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"탕이 넓어요": {
+"heard": "탕이 넓어요.",
+"sim": 100.0,
+"margin": 8.3,
+"rival": "방이 넓어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"택시": {
+"heard": "택시",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "트럭",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"택시 좀 불러 주세요": {
+"heard": "택시 좀 불러주세요.",
+"sim": 100.0,
+"margin": 78.9,
+"rival": "표는 어디서 사요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"택시를 타고 가요": {
+"heard": "택시를 타고 가요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "버스를 타고 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"텔레비전": {
+"heard": "텔레비전",
+"sim": 100.0,
+"margin": 90.0,
+"rival": "우산",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"텔레비전 소리 좀 줄여 주세요": {
+"heard": "텔레비전 소리 좀 줄여주세요.",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "우리 버스 타고 가요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"토기": {
+"heard": "토피",
+"sim": 75.0,
+"margin": 0.0,
+"rival": "토끼",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"토기가 깡충 뛰어요": {
+"heard": "토기가 깡충 뛰어요.",
+"sim": 100.0,
+"margin": 5.6,
+"rival": "토끼가 깡충 뛰어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"토끼": {
+"heard": "토끼",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "토기",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"토끼가 깡충 뛰어요": {
+"heard": "토끼가 깡충 뛰어요.",
+"sim": 100.0,
+"margin": 5.6,
+"rival": "토기가 깡충 뛰어요",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"토마토": {
+"heard": "토마토",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "옷",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"토요일": {
+"heard": "토요일",
+"sim": 100.0,
+"margin": 37.5,
+"rival": "일요일",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"트럭": {
+"heard": "틀어",
+"sim": 40.0,
+"margin": 20.0,
+"rival": "택시",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"파란 옷을 입었어요": {
+"heard": "타란 옷을 입었어요.",
+"sim": 95.2,
+"margin": 4.8,
+"rival": "노란 옷을 입었어요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"파리": {
+"heard": "다리",
+"sim": 75.0,
+"margin": -25.0,
+"rival": "다리",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"팔": {
+"heard": "타이",
+"sim": 25.0,
+"margin": 0.0,
+"rival": "살",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"팔이 아파요": {
+"heard": "팔이 아파요.",
+"sim": 100.0,
+"margin": 9.1,
+"rival": "살이 아파요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"편의점": {
+"heard": "편의점",
+"sim": 100.0,
+"margin": 81.8,
+"rival": "오렌지주스",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"포도": {
+"heard": "포도",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "의자",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"포장도 되나요?": {
+"heard": "포장도 되나요?",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "저쪽 자리에 앉으세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"포장해 주세요": {
+"heard": "포장해주세요",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "커피 한 잔 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"표는 어디서 사요?": {
+"heard": "표는 어디서 사요?",
+"sim": 100.0,
+"margin": 73.3,
+"rival": "이 버스 시청 가요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"풀": {
+"heard": "풀",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "뿔",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"피": {
+"heard": "p",
+"sim": 0.0,
+"margin": 0.0,
+"rival": "지",
+"exact": false,
+"try": 1,
+"ok": false
+},
+"피아노": {
+"heard": "피아노",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "세탁소",
+"exact": true,
+"try": 6,
+"ok": true
+},
+"하늘": {
+"heard": "하늘",
+"sim": 100.0,
+"margin": 80.0,
+"rival": "바람",
+"exact": true,
+"try": 3,
+"ok": true
+},
+"하루에 세 번 드세요": {
+"heard": "하루에 세 번 드세요.",
+"sim": 100.0,
+"margin": 58.8,
+"rival": "식사 후에 드세요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"하마": {
+"heard": "하마",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "사자",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"하얀 옷을 입었어요": {
+"heard": "하얀 옷을 입었어요.",
+"sim": 100.0,
+"margin": 14.3,
+"rival": "파란 옷을 입었어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"학교": {
+"heard": "학교",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "시장",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"한 잔 더 주세요": {
+"heard": "한 잔 더 주세요",
+"sim": 100.0,
+"margin": 35.7,
+"rival": "두 잔 주세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"할머니": {
+"heard": "할머니",
+"sim": 100.0,
+"margin": 85.7,
+"rival": "밥",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"할머니가 감을 주셨어요": {
+"heard": "할머니가 감을 주셨어요.",
+"sim": 100.0,
+"margin": 4.2,
+"rival": "할머니가 김을 주셨어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"할머니가 검을 주셨어요": {
+"heard": "할머니가 거물 주셨어요.",
+"sim": 87.5,
+"margin": 4.2,
+"rival": "할머니가 김을 주셨어요",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"할머니가 곰을 주셨어요": {
+"heard": "할머니가 곰을 주셨어요.",
+"sim": 100.0,
+"margin": 4.2,
+"rival": "할머니가 김을 주셨어요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"할머니가 김을 주셨어요": {
+"heard": "할머니가 김을 주셨어요.",
+"sim": 100.0,
+"margin": 4.2,
+"rival": "할머니가 곰을 주셨어요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"할머니가 자요": {
+"heard": "할머니가 자요.",
+"sim": 100.0,
+"margin": 38.5,
+"rival": "아기가 자요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"할머니가 전화하셨어요": {
+"heard": "할머니가 전화하셨어요.",
+"sim": 100.0,
+"margin": 78.3,
+"rival": "오늘 날씨가 좋네요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"할아버지": {
+"heard": "할아버지",
+"sim": 100.0,
+"margin": 44.4,
+"rival": "강아지",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"할인마트": {
+"heard": "할인 마트",
+"sim": 100.0,
+"margin": 70.0,
+"rival": "안방",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"해가 떠요": {
+"heard": "해가 떠요.",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "비가 와요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"해바라기": {
+"heard": "해바라기",
+"sim": 100.0,
+"margin": 87.5,
+"rival": "창문",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"혈압 먼저 재고 오세요": {
+"heard": "혈압 먼저 재고 오세요.",
+"sim": 100.0,
+"margin": 70.8,
+"rival": "수납은 일 층에서 하세요",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"화요일": {
+"heard": "화요일",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "수요일",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"화장실 열쇠 주세요": {
+"heard": "화장실 열쇠 주세요.",
+"sim": 100.0,
+"margin": 76.9,
+"rival": "와이파이 비밀번호가 뭐예요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"화장실이 어디예요?": {
+"heard": "화장실이 어디예요?",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "이거 얼마예요?",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"환승입니다": {
+"heard": "환승입니다.",
+"sim": 100.0,
+"margin": 65.4,
+"rival": "이번 역은 서울역입니다",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"횡단보도 건너세요": {
+"heard": "횡단보도 건너세요.",
+"sim": 100.0,
+"margin": 68.4,
+"rival": "오른쪽으로 가세요",
+"exact": true,
+"try": 2,
+"ok": true
+},
+"휠체어": {
+"heard": "휴체요",
+"sim": 57.1,
+"margin": 28.6,
+"rival": "기차역",
+"exact": false,
+"try": 1,
+"ok": true
+},
+"휴대폰": {
+"heard": "휴대폰",
+"sim": 100.0,
+"margin": 85.7,
+"rival": "책",
+"exact": true,
+"try": 1,
+"ok": true
+},
+"휴대폰 좀 찾아 주세요": {
+"heard": "휴대폰 좀 찾아주세요.",
+"sim": 100.0,
+"margin": 81.0,
+"rival": "지갑 놓고 왔어요",
+"exact": true,
+"try": 1,
+"ok": true
+}
+}
