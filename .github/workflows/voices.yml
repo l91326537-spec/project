@@ -36,7 +36,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git add web/voice
+          [ -d web/voice ] && git add -A web/voice
           if git diff --cached --quiet; then echo "바뀐 음성 파일 없음"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -45,5 +45,5 @@ jobs:
           git push origin "HEAD:$BRANCH"
           # 봇이 올린 커밋은 배포를 다시 돌리지 않으므로 main이면 직접 배포한다
           if [ "$BRANCH" = main ]; then gh workflow run pages.yml --ref main; fi
-      - if: steps.gen.outcome == 'failure'
+      - if: always() && steps.gen.outcome == 'failure'
         run: echo "만들지 못한 음성이 있어요. 위 로그를 확인하세요. 키가 없다면 저장소 Secrets에 AZURE_SPEECH_KEY, AZURE_SPEECH_REGION을 넣어 주세요." && exit 1
