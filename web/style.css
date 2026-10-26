@@ -296,6 +296,9 @@ h1 { font: 400 30px/1.25 var(--display); letter-spacing: -.01em; }
 .choice .label { font-size: 18px; font-weight: 700; }
 .choices.words .label { font: 400 32px/1.15 var(--display); }
 .choices.two .choice { min-height: 120px; }
+.choices.sentences { grid-template-columns: 1fr; gap: 10px; }
+.choices.sentences .choice { min-height: 68px; align-items: flex-start; padding: 12px 18px; text-align: left; }
+.choices.sentences .label { font-size: 20px; }
 .choices.two .label { font: 400 24px/1.2 var(--display); }
 .choice.right { border-color: var(--good); background: var(--good-soft); box-shadow: 0 4px 0 var(--good); }
 .choice.wrong { border-color: var(--bad); background: var(--bad-soft); box-shadow: 0 4px 0 var(--bad); animation: shake .35s; }
