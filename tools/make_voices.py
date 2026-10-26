@@ -116,45 +116,84 @@ def sim(a, b):
     return max(0.0, 100.0 * (1 - prev[-1] / max(len(x), len(y))))
 
 
-class Judge:
-    """만든 음성을 Whisper로 받아 적고, 정답과 같은 문제의 다른 보기 중 무엇에 더 가깝게 들리는지 본다."""
+NATIVE = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열']
 
-    def __init__(self, size):
-        from faster_whisper import WhisperModel
-        self.m = WhisperModel(size, device='cpu', compute_type='int8')
+
+def sino(n):
+    """3000 → 삼천(Whisper가 숫자로 적은 것을 한글 읽기로 되돌리려고)"""
+    if n == 0:
+        return '영'
+    out = ''
+    for unit, name in [(10000, '만'), (1000, '천'), (100, '백'), (10, '십')]:
+        q, n = divmod(n, unit)
+        if q:
+            out += ('' if q == 1 else sino(q)) + name
+    return out + ('영일이삼사오육칠팔구'[n] if n else '')
+
+
+def readings(heard):
+    """받아 적은 글의 숫자를 고유어(세 시)와 한자어(삼 층) 두 가지로 읽어 본다."""
+    h = heard.replace(',', '')
+    out = {h}
+    out.add(re.sub(r'\d+', lambda m: NATIVE[int(m.group())] if 0 < int(m.group()) <= 10 else sino(int(m.group())), h))
+    out.add(re.sub(r'\d+', lambda m: sino(int(m.group())), h))
+    return out
+
+
+class Judge:
+    """만든 음성을 Whisper로 받아 적고, 정답과 같은 문제의 다른 보기 중 무엇에 더 가깝게 들리는지 본다.
+    한두 글자 낱말은 작은 모델이 자주 잘못 받아 적어(기존 마이크로소프트 음성도 마찬가지) 큰 모델로 듣는다."""
+
+    def __init__(self, small, big):
+        self.sizes = {'small': small, 'big': big}
+        self.models = {}
+
+    def model(self, kind):
+        if kind not in self.models:
+            from faster_whisper import WhisperModel
+            self.models[kind] = WhisperModel(self.sizes[kind], device='cpu', compute_type='int8')
+        return self.models[kind]
 
     def check(self, text, wav16, rivals):
-        segs, _ = self.m.transcribe(wav16, language='ko', beam_size=5)
+        m = self.model('big' if len(norm(text)) <= 2 else 'small')
+        segs, _ = m.transcribe(wav16, language='ko', beam_size=5)
         heard = ''.join(s.text for s in segs).strip()
-        own = sim(text, heard)
-        best = max(((sim(r, heard), r) for r in rivals), default=(0.0, None))
+        hs = readings(heard)
+        close = lambda t: max(sim(t, h) for h in hs)
+        own = close(text)
+        best = max(((close(r), r) for r in rivals), default=(0.0, None))
         return {'heard': heard, 'sim': round(own, 1), 'margin': round(own - best[0], 1) if best[1] else 100.0,
-                'rival': best[1], 'exact': norm(heard) == norm(text)}
+                'rival': best[1], 'exact': any(norm(h) == norm(text) for h in hs)}
 
 
 def run_melo(a, texts, rivals):
+    import math
     import numpy as np, torch, lameenc
+    from scipy.signal import resample_poly
     from melo.api import TTS
     tts = TTS(language='KR', device='cpu')
     spk = tts.hps.data.spk2id['KR']
     sr = tts.hps.data.sampling_rate
-    judge = Judge(a.whisper)
-    index, todo = plan(texts, f'melo|KR|{a.speed}')
-    if a.limit:  # 시험 삼아 일부만
-        todo = todo[:a.limit]
+    judge = Judge(a.whisper, a.whisper_short)
+    index, todo = plan(texts, f'melo2|KR|{a.speed}')
     qa = {}
     if os.path.exists(QA):
         with open(QA, encoding='utf-8') as fp:
             qa = {t: v for t, v in json.load(fp).items() if t in index}
+    if a.redo_weak:  # 확인에서 애매했던 것도 다시 만든다
+        have = {t for t, _ in todo}
+        todo += [(t, os.path.join(WEB, index[t])) for t in texts if t not in have and t in qa and not qa[t].get('ok')]
+    if a.limit:  # 시험 삼아 일부만
+        todo = todo[:a.limit]
     print(f'문항 {len(texts)}개, 새로 만들 것 {len(todo)}개', flush=True)
 
-    def resample(wav, to):
-        n = int(len(wav) * to / sr)
-        return np.interp(np.arange(n) * (sr / to), np.arange(len(wav)), wav).astype(np.float32)
+    def resample(wav, to):  # 거르개를 거쳐 줄인다(그냥 건너뛰면 ㅅ·ㅆ 같은 높은 소리가 일그러진다)
+        g = math.gcd(sr, to)
+        return resample_poly(wav, to // g, sr // g).astype(np.float32)
 
-    def make(text, seed):
+    def make(text, seed, speed):
         torch.manual_seed(seed)
-        wav = np.asarray(tts.tts_to_file(text, spk, None, quiet=True, speed=a.speed), dtype=np.float32)
+        wav = np.asarray(tts.tts_to_file(text, spk, None, quiet=True, speed=speed), dtype=np.float32)
         loud = np.where(np.abs(wav) > 0.02 * np.max(np.abs(wav)))[0]
         pad = int(0.15 * sr)  # 앞뒤 무음 0.15초(말이 끝난 뒤 보기 버튼이 늦게 뜨지 않게)
         wav = wav[max(0, loud[0] - pad): loud[-1] + pad]
@@ -170,15 +209,18 @@ def run_melo(a, texts, rivals):
     t0 = time.time()
     for i, (t, path) in enumerate(todo):
         best = None
-        tries = a.tries if len(norm(t)) <= 3 else max(2, a.tries // 2)  # 짧은 낱말이 헷갈리기 쉽다
+        short = len(norm(t)) <= 3  # 짧은 낱말이 헷갈리기 쉬워 빠르기도 바꿔 가며 더 여러 번 만든다
+        tries = a.tries if short else max(2, a.tries // 3)
         for k in range(tries):
+            speed = round(a.speed + ([0, 0.1, -0.1, 0.05, -0.05, 0.15][k % 6] if short else 0), 2)
             try:
-                wav = make(t, 1000 * k + 7)
+                wav = make(t, 1000 * k + 7, speed)
             except Exception as e:  # 드물게 합성이 실패하면 다음 시드로
                 print(f'  합성 오류: {t} ({e})', file=sys.stderr)
                 continue
             r = judge.check(t, resample(wav, 16000), rivals.get(t, []))
             r['try'] = k + 1
+            r['speed'] = speed
             score = (r['margin'] >= a.margin, r['exact'], r['margin'], r['sim'])
             if best is None or score > best[0]:
                 best = (score, wav, r)
@@ -265,9 +307,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--engine', choices=['melo', 'azure'], default='azure' if os.environ.get('AZURE_SPEECH_KEY') else 'melo')
     ap.add_argument('--speed', type=float, default=0.9)  # melo: 청능훈련용으로 조금 천천히
-    ap.add_argument('--tries', type=int, default=6)  # melo: 짧은 낱말을 다시 만들어 볼 횟수(문장은 절반)
+    ap.add_argument('--tries', type=int, default=8)  # melo: 짧은 낱말을 다시 만들어 볼 횟수(문장은 3분의 1)
     ap.add_argument('--margin', type=float, default=1.0)  # melo: 정답이 다른 보기보다 이만큼(닮은 정도 점수) 더 가깝게 들려야 통과
-    ap.add_argument('--whisper', default='small')  # melo: 확인에 쓸 Whisper 크기
+    ap.add_argument('--whisper', default='small')  # melo: 문장 확인에 쓸 Whisper 크기
+    ap.add_argument('--whisper-short', default='medium')  # melo: 한두 글자 낱말 확인에 쓸 Whisper 크기
+    ap.add_argument('--redo-weak', action='store_true')  # melo: 확인에서 애매했던 음성도 다시 만든다
     ap.add_argument('--limit', type=int, default=0)  # melo: 시험 삼아 새 문항 중 앞의 몇 개만 만든다
     ap.add_argument('--voice', default='ko-KR-SunHiNeural')  # azure
     ap.add_argument('--rate', default='-10%')  # azure
