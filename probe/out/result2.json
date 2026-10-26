@@ -1,0 +1,288 @@
+{
+ "쌀": {
+  "ref": {
+   "small": "쎄",
+   "medium": "쎄"
+  },
+  "base": {
+   "small": "사이",
+   "medium": "사에"
+  },
+  "dot": {
+   "small": "사회",
+   "medium": "사에"
+  },
+  "clean": {
+   "small": "사이",
+   "medium": "사이"
+  },
+  "slow": {
+   "small": "사이",
+   "medium": "사에"
+  }
+ },
+ "살": {
+  "ref": {
+   "small": "살",
+   "medium": "살"
+  },
+  "base": {
+   "small": "살",
+   "medium": "살"
+  },
+  "dot": {
+   "small": "살",
+   "medium": "살"
+  },
+  "clean": {
+   "small": "살",
+   "medium": "살"
+  },
+  "slow": {
+   "small": "사회",
+   "medium": "살"
+  }
+ },
+ "달": {
+  "ref": {
+   "small": "탈",
+   "medium": "달"
+  },
+  "base": {
+   "small": "탈",
+   "medium": "달"
+  },
+  "dot": {
+   "small": "탈",
+   "medium": "달"
+  },
+  "clean": {
+   "small": "탈",
+   "medium": "달"
+  },
+  "slow": {
+   "small": "탈",
+   "medium": "달"
+  }
+ },
+ "발": {
+  "ref": {
+   "small": "발",
+   "medium": "달"
+  },
+  "base": {
+   "small": "탈",
+   "medium": "탈"
+  },
+  "dot": {
+   "small": "탈",
+   "medium": "달"
+  },
+  "clean": {
+   "small": "탈",
+   "medium": "달"
+  },
+  "slow": {
+   "small": "탈",
+   "medium": "달"
+  }
+ },
+ "불": {
+  "ref": {
+   "small": "플리",
+   "medium": "불"
+  },
+  "base": {
+   "small": "풀",
+   "medium": "불"
+  },
+  "dot": {
+   "small": "뿌!",
+   "medium": "불"
+  },
+  "clean": {
+   "small": "풀",
+   "medium": "불"
+  },
+  "slow": {
+   "small": "풀",
+   "medium": "불"
+  }
+ },
+ "풀": {
+  "ref": {
+   "small": "퓨",
+   "medium": "풀"
+  },
+  "base": {
+   "small": "풀",
+   "medium": "풀"
+  },
+  "dot": {
+   "small": "풀",
+   "medium": "풀"
+  },
+  "clean": {
+   "small": "툴",
+   "medium": "풀"
+  },
+  "slow": {
+   "small": "쿨",
+   "medium": "풀"
+  }
+ },
+ "뿔": {
+  "ref": {
+   "small": "뿌",
+   "medium": "불"
+  },
+  "base": {
+   "small": "풀",
+   "medium": "풀"
+  },
+  "dot": {
+   "small": "풀",
+   "medium": "풀"
+  },
+  "clean": {
+   "small": "불",
+   "medium": "풀"
+  },
+  "slow": {
+   "small": "풀",
+   "medium": "풀"
+  }
+ },
+ "물": {
+  "ref": {
+   "small": "물",
+   "medium": "물"
+  },
+  "base": {
+   "small": "뿔",
+   "medium": "물"
+  },
+  "dot": {
+   "small": "물",
+   "medium": "물"
+  },
+  "clean": {
+   "small": "뿔",
+   "medium": "물"
+  },
+  "slow": {
+   "small": "뿔",
+   "medium": "물"
+  }
+ },
+ "감": {
+  "ref": {
+   "small": "감",
+   "medium": "감"
+  },
+  "base": {
+   "small": "컴",
+   "medium": "Come"
+  },
+  "dot": {
+   "small": "컴",
+   "medium": "감"
+  },
+  "clean": {
+   "small": "컴",
+   "medium": "감"
+  },
+  "slow": {
+   "small": "컴",
+   "medium": "감"
+  }
+ },
+ "김": {
+  "ref": {
+   "small": "김",
+   "medium": "김"
+  },
+  "base": {
+   "small": "PIN",
+   "medium": "김"
+  },
+  "dot": {
+   "small": "Pim",
+   "medium": "빔"
+  },
+  "clean": {
+   "small": "Pim",
+   "medium": "빔"
+  },
+  "slow": {
+   "small": "Pim",
+   "medium": "힘"
+  }
+ },
+ "곰": {
+  "ref": {
+   "small": "쿵",
+   "medium": "꿈"
+  },
+  "base": {
+   "small": "쿰",
+   "medium": "콤"
+  },
+  "dot": {
+   "small": "컴",
+   "medium": "코믹마트"
+  },
+  "clean": {
+   "small": "컴",
+   "medium": "콤"
+  },
+  "slow": {
+   "small": "컴",
+   "medium": "곰"
+  }
+ },
+ "토끼": {
+  "ref": {
+   "small": "토끼",
+   "medium": "토끼"
+  },
+  "base": {
+   "small": "토끼",
+   "medium": "토끼"
+  },
+  "dot": {
+   "small": "토피",
+   "medium": "토피"
+  },
+  "clean": {
+   "small": "토끼",
+   "medium": "토키"
+  },
+  "slow": {
+   "small": "토피",
+   "medium": "토피"
+  }
+ },
+ "도끼": {
+  "ref": {
+   "small": "도끼",
+   "medium": "도끼"
+  },
+  "base": {
+   "small": "도피",
+   "medium": "도피"
+  },
+  "dot": {
+   "small": "도피",
+   "medium": "도피"
+  },
+  "clean": {
+   "small": "도피",
+   "medium": "도피"
+  },
+  "slow": {
+   "small": "도피",
+   "medium": "도피"
+  }
+ }
+}
