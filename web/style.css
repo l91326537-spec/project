@@ -209,6 +209,11 @@ h1 { font: 400 30px/1.25 var(--display); letter-spacing: -.01em; }
 .switch input:checked + .switch-ui::after { transform: translateX(20px); }
 .switch input:focus-visible + .switch-ui { outline: 3px solid var(--warm); outline-offset: 2px; }
 
+.group > summary { list-style: none; cursor: pointer; padding: 6px 2px; align-items: center; }
+.group > summary::-webkit-details-marker { display: none; }
+.group > summary::after { content: ""; margin-left: auto; width: 10px; height: 10px; border-right: 3px solid var(--muted); border-bottom: 3px solid var(--muted); transform: rotate(45deg); transition: transform .2s; }
+.group[open] > summary::after { transform: rotate(-135deg); }
+.group[open] > summary { margin-bottom: 8px; }
 .word-list { list-style: none; margin: 0; padding: 6px 14px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
 .word-row { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .word-row:last-child { border-bottom: 0; }
