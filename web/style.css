@@ -469,6 +469,50 @@ html.big main, html.big .sheet, html.big .tabbar { zoom: 1.15; }
 .status.warn { background: var(--warm-soft); color: color-mix(in srgb, var(--warm) 70%, var(--ink)); }
 @media (max-width: 380px) { .rtable { font-size: 14px; } .rtable th, .rtable td { padding: 7px 2px; } }
 
+/* 선생님 숙제 */
+.plan-card { gap: 12px; }
+.plan-card .panel-title span { font-size: 14px; color: var(--muted); font-weight: 500; }
+.plan-bars { display: flex; flex-direction: column; gap: 10px; }
+.plan-bar { display: grid; grid-template-columns: minmax(96px, auto) 1fr; align-items: center; gap: 10px; }
+.plan-lab { font-size: 15px; color: var(--muted); }
+.plan-lab b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.field-label { margin: 2px 0 -4px; font-size: 16px; font-weight: 700; color: var(--muted); }
+.field { flex-wrap: wrap; }
+.field textarea {
+  flex: none; width: 100%; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line);
+  background: var(--surface); color: var(--ink); font: 400 17px var(--body); line-height: 1.6; resize: vertical;
+}
+.stage-pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.stage-pick button {
+  min-height: 44px; padding: 8px 12px; border: 0; border-radius: 14px; background: var(--surface);
+  font-size: 15px; font-weight: 700; color: var(--muted);
+}
+.stage-pick button.on { background: var(--accent); color: var(--accent-ink); }
+.two-col { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 420px) { .two-col { grid-template-columns: 1.3fr 1fr; } }
+.amount { display: flex; gap: 6px; flex: 1; min-width: 0; }
+.amount input { width: 100%; }
+.amount select {
+  padding: 12px 10px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface);
+  color: var(--ink); font: 700 16px var(--body);
+}
+.field input[type="number"] { width: 100%; }
+.plan-out { display: grid; grid-template-columns: 1fr; gap: 14px; align-items: start; margin-top: 4px; }
+@media (min-width: 460px) { .plan-out { grid-template-columns: 148px 1fr; } }
+.qr-box { padding: 10px; border-radius: 18px; background: #fff; box-shadow: var(--shadow); }
+.qr { display: block; width: 100%; height: auto; stroke: none; } /* 앱 전체 svg 규칙(선 그리기)을 끈다 */
+.plan-sum { display: flex; flex-direction: column; gap: 8px; }
+.plan-sum p { margin: 0; font-size: 16px; }
+.link-box {
+  width: 100%; min-width: 0; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line);
+  background: var(--surface-2); color: var(--muted); font: 400 13px var(--body); text-overflow: ellipsis;
+}
+label.btn { white-space: nowrap; }
+.scroll-x { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
+.patients { min-width: 540px; }
+.patients .weak-cell { white-space: normal; max-width: 150px; font-size: 14px; }
+.chip.demo.sm { display: inline-block; margin-left: 6px; padding: 1px 7px; font-size: 11px; vertical-align: 1px; }
+
 @page { size: A4; margin: 12mm; }
 @media print {
   :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
