@@ -38,6 +38,7 @@ const fresh = () => ({
   reportName: '',
   reportMemo: '',
   plan: null,            // 선생님이 보낸 숙제 {by, stages, kind, amount, days, memo, at}
+  tip: 0,                // 다음에 보여 줄 생활 듣기 요령 번호
   checks: [],            // 월간 듣기 점검 {date, at, score, parts: {word: [맞힘, 문제 수], ...}, miss: [문제 번호]}
 });
 let data = Object.assign(fresh(), store.load());
@@ -468,6 +469,7 @@ const ICON = {
   doc: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',
   mic2: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>',
   print: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3h10v6M7 17H4v-7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v7h-3"/><rect x="7" y="14" width="10" height="7"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>',
   heart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
 };
 const stars = (n) => `<span class="stars" aria-label="레벨 ${n}/3">${[1, 2, 3].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
@@ -886,6 +888,13 @@ function renderProgress() {
       })() : '<p class="note">아직 점검 기록이 없어요. 첫 점수가 앞으로 견줄 기준이 돼요.</p>'}
       <button class="btn block${checkDue() ? ' primary' : ''}" data-go="#check">${ICON.ear}${(data.checks || []).length ? '지금 점검하기' : '첫 점검 하기'}</button>
     </section>
+    <details class="group tips-all">
+      <summary class="section-title">생활 듣기 요령 <span>${LISTEN_TIPS.length}장</span></summary>
+      <section class="panel">
+        <p class="note">한 판을 마칠 때마다 한 장씩 보여 드려요. 듣기 연습과 함께 생활에서 써 보세요.</p>
+        <ol class="tip-list">${LISTEN_TIPS.map((t) => `<li><b>${t.t}</b><span>${t.b}</span>${t.say ? `<em>“${t.say}”</em>` : ''}</li>`).join('')}</ol>
+      </section>
+    </details>
     <button class="report-link" data-go="#clinic">
       <span class="focus-ico">${ICON.target}</span>
       <span><b>선생님용 화면</b><small>숙제를 내고 여러 사람의 기록을 한 줄씩 모아 봐요</small></span>
@@ -1799,6 +1808,8 @@ async function renderPlay(stage) {
   for (const [k, v] of Object.entries(sessionConf)) data.confusions[k] = (data.confusions[k] || 0) + v;
   const goal = goalOf(); const before = goalNow();
   data.sessions.push({ date: today(), stage, level, score, correct, total: TRIALS, at: Date.now(), sec: Math.round((Date.now() - startedAt) / 1000) });
+  const tipNo = (data.tip || 0) % LISTEN_TIPS.length; const tip = LISTEN_TIPS[tipNo];
+  data.tip = tipNo + 1;
   persist();
   const after = goalNow();
   const justMet = before < goal.amount && after >= goal.amount;
@@ -1849,6 +1860,17 @@ async function renderPlay(stage) {
         <button class="btn primary" data-go="#play/${stage}">한 판 더</button>
         <button class="btn" data-go="#home">소리길로</button>`}
       </div>
+      <section class="panel tip-card">
+        <div class="focus-head">
+          <span class="focus-ico">${ICON.bulb}</span>
+          <div>
+            <p class="eyebrow">생활 듣기 요령 ${tipNo + 1}/${LISTEN_TIPS.length}</p>
+            <h2 class="panel-title">${tip.t}</h2>
+          </div>
+        </div>
+        <p class="tip-body">${tip.b}</p>
+        ${tip.say ? `<p class="tip-say">“${tip.say}”</p>` : ''}
+      </section>
     </div>`;
   countUp(view.querySelector('#score'), score);
   const bar = view.querySelector('.goal-bar i');
