@@ -23,7 +23,7 @@ const store = {
 };
 let data = Object.assign({
   sessions: [],          // {date, stage, score, correct, total, level}
-  levels: { 1: 1, 2: 1, 3: 1 },
+  levels: { 1: 1, 2: 1, 3: 1, 5: 1 },
   minDb: null,           // 1단계에서 들린 가장 작은 소리(dB, 기준 대비)
   confusions: {},        // '초성 ㅅ↔ㅆ': 횟수
   preferFamily: true,
@@ -187,7 +187,7 @@ async function playWord(word) {
   const u = new SpeechSynthesisUtterance(word);
   u.lang = 'ko-KR'; u.rate = 0.85;
   if (koVoice) u.voice = koVoice;
-  await new Promise((res) => { u.onend = u.onerror = res; speechSynthesis.speak(u); setTimeout(res, 4000); });
+  await new Promise((res) => { u.onend = u.onerror = res; speechSynthesis.speak(u); setTimeout(res, 3000 + word.length * 250); }); // 문장은 길어서 기다리는 시간을 늘린다
   return koVoice ? 'tts' : 'tts-nokorean';
 }
 
@@ -245,6 +245,31 @@ const WORD_SETS = {
   ],
 };
 const ALL_WORDS = [...new Set(Object.values(WORD_SETS).flat(2))];
+
+// 5단계 문장. 1: 서로 다른 생활 문장, 2: 한 낱말만 다른 문장, 3: 문장 속 헷갈리는 낱말 고르기
+const SENTENCE_SETS = {
+  1: [
+    ['물 좀 주세요', '오늘 날씨가 좋네요', '병원에 언제 가요?', '할머니가 전화하셨어요'],
+    ['밥 먹었어요?', '지금 몇 시예요?', '창문 좀 닫아 주세요', '내일 같이 산책해요'],
+    ['잘 잤어요?', '약 먹을 시간이에요', '텔레비전 소리 좀 줄여 주세요', '우리 버스 타고 가요'],
+  ],
+  2: [
+    ['물 좀 주세요', '밥 좀 주세요', '약 좀 주세요', '컵 좀 주세요'],
+    ['내일 병원에 가요', '내일 시장에 가요', '내일 학교에 가요', '내일 공원에 가요'],
+    ['아침에 사과를 먹었어요', '아침에 우유를 먹었어요', '아침에 포도를 먹었어요', '아침에 빵을 먹었어요'],
+    ['세 시에 만나요', '네 시에 만나요', '두 시에 만나요', '열 시에 만나요'],
+  ],
+  3: [ // {을}은 받침에 따라 을/를, {이}는 이/가로 바뀐다
+    { frame: '시장에서 _{을} 샀어요', words: ['쌀', '살', '달', '발'] },
+    { frame: '저기 _{이} 있어요', words: ['불', '풀', '뿔', '물'] },
+    { frame: '아이가 _{을} 좋아해요', words: ['빵', '방', '밤', '반'] },
+    { frame: '동생이 _{을} 찼어요', words: ['공', '콩', '곰', '골'] },
+    { frame: '할머니가 _{을} 주셨어요', words: ['감', '김', '검', '곰'] },
+  ],
+};
+const ALL_SENTENCES = [...new Set([...SENTENCE_SETS[1], ...SENTENCE_SETS[2]].flat())];
+const hasBatchim = (w) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c <= 11171 && c % 28 !== 0; };
+const fillFrame = (frame, w) => frame.replace('_{을}', w + (hasBatchim(w) ? '을' : '를')).replace('_{이}', w + (hasBatchim(w) ? '이' : '가'));
 const ENV_POOLS = { 1: 2, 2: 3, 3: 4 }; // 단계별 보기 수
 const TONES = [500, 1000, 2000, 4000];
 
@@ -253,7 +278,7 @@ const STAGES = [
   { n: 2, name: '환경음', desc: '생활 소리를 맞혀요', ready: true },
   { n: 3, name: '단어', desc: '들은 단어를 골라요', ready: true },
   { n: 4, name: '비슷한 소리 구별', desc: '같은지 다른지 가려요' },
-  { n: 5, name: '문장', desc: '짧은 문장을 알아들어요' },
+  { n: 5, name: '문장', desc: '생활 문장을 알아들어요', ready: true },
   { n: 6, name: '소음 속 듣기', desc: '시끄러운 곳에서 들어요' },
   { n: 7, name: '대화', desc: '묻고 답하며 들어요' },
 ];
@@ -345,7 +370,7 @@ function renderHome() {
     const q = pts[i - 1]; const my = (q.y + p.y) / 2;
     return `C${q.x} ${my} ${p.x} ${my} ${p.x} ${p.y}`;
   }).join(' ');
-  const readyEnd = pts[STAGES.filter((s) => s.ready).length - 1].y;
+  const readyEnd = pts[Math.max(...STAGES.filter((s) => s.ready).map((s) => s.n)) - 1].y;
 
   view.innerHTML = `
     <section class="hero">
@@ -398,8 +423,10 @@ async function renderVoices() {
     ['쉬운 단어', [...new Set(WORD_SETS[1].flat())]],
     ['같은 길이 단어', [...new Set(WORD_SETS[2].flat())]],
     ['헷갈리는 단어', [...new Set(WORD_SETS[3].flat())]],
+    ['생활 문장', ALL_SENTENCES],
   ];
-  const pct = Math.round((100 * have.size) / ALL_WORDS.length);
+  const total = ALL_WORDS.length + ALL_SENTENCES.length;
+  const pct = Math.round((100 * have.size) / total);
   view.innerHTML = `
     <header class="page-head">
       <p class="eyebrow">가족 목소리</p>
@@ -407,14 +434,14 @@ async function renderVoices() {
       <p class="lead">가족이 단어를 읽어 녹음하면 3단계 문제를 그 목소리로 들려드려요.</p>
     </header>
     <section class="panel">
-      <div class="meter-row"><span>녹음한 단어</span><b>${have.size} / ${ALL_WORDS.length}</b></div>
+      <div class="meter-row"><span>녹음한 단어</span><b>${have.size} / ${total}</b></div>
       <div class="meter"><i style="width:${pct}%"></i></div>
       <label class="switch" for="pref">
         <input type="checkbox" id="pref" ${data.preferFamily ? 'checked' : ''}>
         <span class="switch-ui" aria-hidden="true"></span>
         녹음이 있으면 가족 목소리로 듣기
       </label>
-      ${canRec ? '<p class="note">녹음 버튼을 누르고 단어를 또박또박 읽어 주세요. 3초 뒤 저절로 멈춰요.</p>'
+      ${canRec ? '<p class="note">녹음 버튼을 누르고 또박또박 읽어 주세요. 단어는 3초, 문장은 5초 뒤 저절로 멈춰요.</p>'
         : '<p class="note warn">이 화면에서는 녹음을 쓸 수 없어요. 최신 크롬이나 사파리에서 앱 주소를 직접 열어 주세요.</p>'}
     </section>
     ${groups.map(([title, words]) => `
@@ -454,7 +481,7 @@ async function recordWord(word, btn) {
   btn.classList.add('recording'); btn.setAttribute('aria-label', '녹음 멈추기');
   document.querySelectorAll('.word-row button').forEach((x) => { if (x !== btn) x.disabled = true; });
   rec.start();
-  const timer = setTimeout(() => rec.state === 'recording' && rec.stop(), 3000); // 단어 하나는 3초면 충분
+  const timer = setTimeout(() => rec.state === 'recording' && rec.stop(), word.length > 4 ? 5000 : 3000); // 단어는 3초, 문장은 5초
   await done;
   clearTimeout(timer);
   stream.getTracks().forEach((t) => t.stop());
@@ -549,7 +576,7 @@ function renderProgress() {
   const reset = view.querySelector('#reset');
   reset.onclick = () => {
     if (reset.dataset.confirm) {
-      data = { sessions: [], levels: { 1: 1, 2: 1, 3: 1 }, minDb: null, confusions: {}, preferFamily: data.preferFamily };
+      data = { sessions: [], levels: { 1: 1, 2: 1, 3: 1, 5: 1 }, minDb: null, confusions: {}, preferFamily: data.preferFamily };
       persist(); renderProgress(); toast('기록을 지웠어요.');
     } else { reset.dataset.confirm = '1'; reset.textContent = '한 번 더 누르면 지워져요'; reset.classList.add('danger'); }
   };
@@ -573,6 +600,7 @@ async function renderPlay(stage) {
     1: ['소리가 들리면 알려 주세요', '삐 소리가 날 수도, 안 날 수도 있어요. 조용한 곳에서 해 주세요.'],
     2: ['무슨 소리인지 맞혀 보세요', '생활 속 소리를 들려드려요. 몇 번이든 다시 들을 수 있어요.'],
     3: ['들은 단어를 골라 주세요', '레벨이 오를수록 비슷한 소리가 나와요.'],
+    5: ['들은 문장을 골라 주세요', '생활 속 문장을 들려드려요. 레벨 3에서는 문장 속 낱말 하나를 맞혀요.'],
   }[stage];
 
   view.innerHTML = `
@@ -612,7 +640,8 @@ async function renderPlay(stage) {
     let ok;
     if (stage === 1) ok = await toneTrial();
     else if (stage === 2) ok = await envTrial();
-    else ok = await wordTrial();
+    else if (stage === 3) ok = await wordTrial();
+    else ok = await sentenceTrial();
     if (!alive()) return;
     results.push(ok);
     dots[i].classList.remove('now'); dots[i].classList.add(ok ? 'good' : 'bad');
@@ -712,6 +741,31 @@ async function renderPlay(stage) {
     const why = ok ? '' : contrasts(target, set[ans]).filter((c) => c !== '단어 길이').join(', ');
     feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `"${esc(target)}"였어요.` : `정답은 "${esc(target)}"예요.${why ? ` <span class="why">${esc(why)}</span>` : ''}`);
     if (!ok) await playWord(target); // 틀리면 정답을 한 번 더 들려준다
+    return ok;
+  }
+
+  // 5단계: 문장 고르기. 레벨 3은 문장 속 낱말을 고르게 해 취약음 분석에 넣는다.
+  async function sentenceTrial() {
+    const keyword = level >= 3;
+    let say; let opts; let target;
+    if (keyword) {
+      const item = pick(SENTENCE_SETS[3]);
+      opts = shuffle(item.words); target = pick(opts); say = fillFrame(item.frame, target);
+    } else {
+      opts = shuffle(pick(SENTENCE_SETS[level])); target = pick(opts); say = target;
+    }
+    $('#answers').innerHTML = '';
+    setQ(keyword ? '문장에서 어떤 낱말이 들렸나요?' : '어떤 문장을 들었나요?', replayBtn() + '<span class="src" id="src"></span>');
+    $('#replay').onclick = replay(() => playWord(say));
+    const src = await playing(playWord(say));
+    if (!alive()) return false;
+    const srcEl = $('#src'); if (srcEl) srcEl.textContent = { family: '가족 목소리', tts: 'AI 음성' }[src] || '';
+    const ans = await ask(opts.map((w) => [w]), opts.indexOf(target), keyword ? 'words' : 'sentences');
+    const ok = opts[ans] === target;
+    if (!ok && keyword) for (const c of contrasts(target, opts[ans])) sessionConf[c] = (sessionConf[c] || 0) + 1;
+    const why = !ok && keyword ? contrasts(target, opts[ans]).join(', ') : '';
+    feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `"${esc(say)}"` : `들린 문장은 "${esc(say)}"예요.${why ? ` <span class="why">${esc(why)}</span>` : ''}`);
+    if (!ok) await playWord(say);
     return ok;
   }
 
