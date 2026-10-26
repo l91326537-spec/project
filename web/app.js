@@ -68,6 +68,14 @@ function audio() {
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;
 }
+// 사용자 터치 안에서 바로 불러야 한다. 휴대폰 브라우저는 터치 밖에서 시작한 소리를 막는다.
+function unlockAudio() {
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {} // 아이폰 무음 스위치가 켜져 있어도 들리게
+  const c = audio();
+  const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, 22050); s.connect(c.destination); s.start(0);
+  if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance('')); // iOS 사파리는 터치 안에서 한 번 말해야 이후 음성이 나온다
+  setTimeout(() => { if (c.state !== 'running') toast('소리가 막혀 있어요. 휴대폰 음량과 무음 모드를 확인하고 화면을 한 번 더 눌러 주세요.'); }, 600);
+}
 const dbToGain = (db) => Math.pow(10, db / 20);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -669,7 +677,11 @@ async function renderPlay(stage) {
         <h1 class="q" id="q">${intro[0]}</h1>
         <p class="lead center" id="hint">${intro[1]}</p>
       </div>
-      <div id="answers"><button class="btn primary block" id="start">시작하기</button></div>
+      <div id="answers" class="start-box">
+        <button class="btn block" id="soundcheck">${ICON.speaker}소리 확인하기</button>
+        <button class="btn primary block" id="start">시작하기</button>
+        <p class="note center">초인종 소리와 "안녕하세요"가 들리면 준비 끝이에요. 안 들리면 휴대폰 음량과 무음 모드를 확인해 주세요.</p>
+      </div>
     </div>
     <div class="sheet" id="sheet" hidden>
       <div class="sheet-msg"><span class="sheet-icon"></span><div><b id="sheet-title"></b><p id="sheet-text"></p></div></div>
@@ -677,9 +689,8 @@ async function renderPlay(stage) {
       <button class="btn block" id="next">다음</button>
     </div>`;
   const $ = (s) => view.querySelector(s);
-  await new Promise((r) => { $('#start').onclick = r; });
-  audio(); // 사용자 터치로 오디오를 깨운다
-  if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance('')); // iOS 사파리는 터치 안에서 한 번 말해야 이후 음성이 나온다
+  $('#soundcheck').onclick = () => { unlockAudio(); playEnv('doorbell'); setTimeout(() => playWord('안녕하세요'), 1400); };
+  await new Promise((r) => { $('#start').onclick = () => { unlockAudio(); r(); }; });
 
   const orb = $('#orb');
   const setOrb = (mode, icon) => { orb.className = `orb ${mode}`; if (icon) orb.innerHTML = icon; };
@@ -788,7 +799,7 @@ async function renderPlay(stage) {
     const ok = ids[ans] === target;
     feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `${ENV_SOUNDS[target].name} 소리였어요.` : `정답은 ${ENV_SOUNDS[target].name}이에요. 두 소리를 비교해 들어 보세요.`,
       ok ? null : [[`정답: ${ENV_SOUNDS[target].name}`, () => playEnv(target)], [`고른 것: ${ENV_SOUNDS[ids[ans]].name}`, () => playEnv(ids[ans])]]);
-    if (!ok) await playEnv(target);
+    if (!ok) await replayAnswer(() => playEnv(target));
     return ok;
   }
 
@@ -809,7 +820,7 @@ async function renderPlay(stage) {
     const why = ok ? '' : contrasts(target, set[ans]).filter((c) => c !== '단어 길이').join(', ');
     feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `"${esc(target)}"였어요.` : `정답은 "${esc(target)}"예요.${why ? ` <span class="why">${esc(why)}</span>` : ''}`,
       ok ? null : [[`정답: ${target}`, () => playWord(target)], [`고른 것: ${set[ans]}`, () => playWord(set[ans])]]);
-    if (!ok) await playWord(target); // 틀리면 정답을 한 번 더 들려준다
+    if (!ok) await replayAnswer(() => playWord(target)); // 틀리면 정답을 한 번 더 들려준다
     return ok;
   }
 
@@ -836,7 +847,7 @@ async function renderPlay(stage) {
     const chosenSay = keyword ? fillFrame(frame, opts[ans]) : opts[ans];
     feedback(ok, ok ? '정답이에요' : '아쉬워요', ok ? `"${esc(say)}"` : `들린 문장은 "${esc(say)}"예요.${why ? ` <span class="why">${esc(why)}</span>` : ''}`,
       ok ? null : [['정답 문장', () => playWord(say)], ['고른 문장', () => playWord(chosenSay)]]);
-    if (!ok) await playWord(say);
+    if (!ok) await replayAnswer(() => playWord(say));
     return ok;
   }
 
@@ -876,6 +887,12 @@ async function renderPlay(stage) {
     cmp.hidden = !compare;
     cmp.querySelectorAll('button').forEach((b) => { b.onclick = replay(compare[+b.dataset.k][1]); });
     sh.hidden = false;
+  }
+  // 정답을 다시 들려주는 동안에는 '다음'을 잠가 두어, 누른 것이 사라지지 않게 한다
+  async function replayAnswer(fn) {
+    const btn = $('#next');
+    btn.disabled = true;
+    try { await playing(fn()); } finally { btn.disabled = false; }
   }
   function nextTap(last) {
     const sh = $('#sheet'); const btn = $('#next');
