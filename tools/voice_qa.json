@@ -6760,15 +6760,15 @@
 "speed": 0.9,
 "ok": true
 },
-"좋아. 열두 시에 역 앞에서 만나자": {
-"heard": "좋아. 12시에 여가 앞에서 만나자.",
-"sim": 78.1,
-"margin": -5.9,
+"좋아. 열두 시에 지하철역 앞에서 만나자": {
+"heard": "좋아. 12시에 지하철역 앞에서 만나자.",
+"sim": 86.8,
+"margin": 2.8,
 "rival": null,
 "exact": false,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": true
 },
 "좋아요. 저는 물냉면이요": {
 "heard": "좋아요. 저는 물냉면이요.",
@@ -8165,15 +8165,15 @@
 "speed": 0.9,
 "ok": true
 },
-"할머니, 할머니!": {
-"heard": "할머니",
-"sim": 50.0,
-"margin": -34.0,
+"할머니, 잠깐만요!": {
+"heard": "할머니, 잠깐 만요.",
+"sim": 100.0,
+"margin": 16.0,
 "rival": null,
-"exact": false,
+"exact": true,
 "try": 1,
 "speed": 0.9,
-"ok": false
+"ok": true
 },
 "할머니가 감을 주셨어요": {
 "heard": "할머니가 감을 주셨어요.",
