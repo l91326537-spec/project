@@ -21,6 +21,11 @@ const GATE_STUCK = 0.7;  // 2주 넘게 넘지 못한 관문은 그 뒤 이만�
 const STUCK_DAYS = 14;
 const GATE_TRIES = 3;    // 관문은 하루 세 번까지
 const TODAY_N = 3;       // 오늘의 연습 판 수
+const NREC_SEC = 60;     // 소음 기록 재기: 1분 동안
+const NREC_START = 12;   // 말소리가 소음보다 12dB 큰 데서 시작해
+const NREC_STEP = 2;     // 3번 연달아 맞히면 소음을 2dB 키우고, 틀리면 2dB 줄인다
+const RETEST_AGO = 14;   // 2주 전에 틀린 문제를 다시 낸다
+const RETEST_N = 10;
 const view = document.getElementById('view');
 
 /* ---------- 저장 ---------- */
@@ -37,7 +42,9 @@ const store = {
 const fresh = () => ({
   sessions: [],          // 칸 한 판: {date, cell, for?, correct, total, at, sec}. for: 한 칸 아래로 내려 푼 판이면 원래 칸
   gates: [],             // 관문 도전: {ch, date, at, correct, total, pass, sec}
-  misses: [],            // 틀린 문제(나중에 다시 내려고 남긴다): {date, at, cell, kind, answer, chose, options, say, scene?, snr?}
+  misses: [],            // 틀린 문제(나중에 다시 내려고 남긴다): {date, at, cell, kind, answer, chose, options, say, scene?, snr?, re?: {date, ok, chose}}
+  noiseRecs: [],         // 1분 소음 기록: {date, at, snr, n, correct}. snr이 낮을수록 더 시끄러운 곳에서 알아들은 것
+  retests: [],           // 그때 틀린 문제 다시 듣기: {date, at, n, correct}
   minDb: null,           // 소리 알아차리기에서 들린 가장 작은 소리(dB, 기준 대비)
   toneByFreq: {},        // 높낮이별로 들린 가장 작은 소리
   bigText: false,
@@ -62,7 +69,7 @@ function migrate(d) {
     const { stage, level, score, ...rest } = s;
     return { ...rest, cell };
   }).filter(Boolean);
-  for (const k of ['gates', 'misses', 'speakLog', 'checks']) if (!Array.isArray(d[k])) d[k] = [];
+  for (const k of ['gates', 'misses', 'speakLog', 'checks', 'noiseRecs', 'retests']) if (!Array.isArray(d[k])) d[k] = [];
   if (d.plan && !Array.isArray(d.plan.cells)) d.plan.cells = [...new Set((d.plan.stages || []).map((n) => PLAN_STAGE[n]).filter(Boolean))];
   if (d.plan && !d.plan.cells.length) d.plan = null;
   delete d.levels; delete d.tip; delete d.goal;
@@ -595,7 +602,32 @@ function reviewCell(d = data) {
 }
 const roundsOn = (date, d = data) => (d.sessions || []).filter((s) => s.date === date).length
   + (d.speakLog || []).filter((s) => s.date === date).length + (d.gates || []).filter((g) => g.date === date).length;
-const practiceDates = (d = data) => new Set([...(d.sessions || []), ...(d.speakLog || []), ...(d.gates || [])].map((s) => s.date));
+const practiceDates = (d = data) => new Set([...(d.sessions || []), ...(d.speakLog || []), ...(d.gates || []), ...(d.noiseRecs || []), ...(d.retests || [])].map((s) => s.date));
+// 그때 틀린 문제 다시 듣기: 2주 넘게 지났고 아직 다시 풀지 않은 문제. 같은 문제는 한 번만, 오래된 것부터.
+const missKey = (m) => `${m.kind}|${m.say || m.answer}`;
+function retestPool(d = data) {
+  const seen = new Set();
+  return (d.misses || []).filter((m) => {
+    if (m.re || !m.options || daysSince(m.date) < RETEST_AGO || seen.has(missKey(m))) return false;
+    seen.add(missKey(m)); return true;
+  });
+}
+// 소음 기록을 관문 소음과 같은 잣대의 생활 장면으로 읽는다
+function snrScene(snr) {
+  if (snr > 12) return '버스·병원 대기실(+12dB)보다 조용한 곳';
+  if (snr === 12) return '버스·병원 대기실(+12dB)만큼 시끄러운 곳';
+  if (snr > 5) return '버스·병원 대기실(+12dB)과 카페(+5dB) 사이';
+  if (snr === 5) return '카페(+5dB)만큼 시끄러운 곳';
+  if (snr > 0) return '카페(+5dB)와 식당 모임(0dB) 사이';
+  if (snr === 0) return '식당 모임(0dB)만큼 시끄러운 곳';
+  return '식당 모임(0dB)보다 시끄러운 곳';
+}
+const snrSay = (snr) => (snr > 0 ? `말소리가 소음보다 ${snr}dB 클 때까지` : snr === 0 ? '말소리와 소음이 같은 크기일 때까지' : `말소리가 소음보다 ${-snr}dB 작을 때까지`);
+// 처음과 지금 소음 기록의 차이. 낮아질수록 더 시끄러운 곳에서 알아들은 것
+function snrChange(a, b) {
+  const d = a - b;
+  return d > 0 ? { cls: 'up', text: `소음 ${d}dB 더 큰 곳까지` } : d < 0 ? { cls: 'down', text: `${-d}dB 조용한 곳까지` } : { cls: '', text: '처음과 같아요' };
+}
 // 통과까지 남은 것을 한 줄로
 function passHint(c) {
   const st = cellState(c);
@@ -636,6 +668,8 @@ const ICON = {
   print: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3h10v6M7 17H4v-7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v7h-3"/><rect x="7" y="14" width="10" height="7"/></svg>',
   bulb: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>',
   flag: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h12l-2.5 4.5L17 13H5"/></svg>',
+  redo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg>',
+  wave: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 7v10M21 12h0"/></svg>',
   walk: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8"/><path d="M10 21l2-6-2.5-2.5L11 8l3 3h3M9.5 12.5L7 14M14 15l2 6"/></svg>',
 };
 
@@ -725,6 +759,7 @@ function renderHome() {
     : step.gate ? `칸을 다 넘었어요. 관문 <b>'${GATES[step.gate].title}'</b>에 도전할 차례예요.`
     : `${ch.n}장까지 모두 넘었어요. ${chapterOf(7).name} 장은 곧 열려요.`;
   const cur = currentChapter();
+  const reN = data.retests.some((r) => r.date === today()) ? 0 : retestPool().length; // 하루 한 번만 권한다
 
   view.innerHTML = `
     <section class="hero">
@@ -768,6 +803,11 @@ function renderHome() {
       <span><b>${data.checks.length ? '이달의 듣기 점검' : '첫 듣기 점검'}</b><small>${data.checks.length
         ? `지난 점검(${shortDate(data.checks[data.checks.length - 1].date)})에서 한 달이 지났어요. 같은 20문제로 얼마나 늘었는지 봐요`
         : '같은 20문제를 달마다 풀어 얼마나 늘었는지 봐요. 5분쯤 걸려요'}</small></span>
+    </button>` : ''}
+    ${reN >= 3 ? `
+    <button class="report-link retest-link" data-go="#retest">
+      <span class="focus-ico">${ICON.redo}</span>
+      <span><b>그때 틀린 문제 다시 듣기</b><small>2주 넘게 지난 판에서 틀린 문제 ${Math.min(reN, RETEST_N)}개를 오늘 다시 들어 봐요</small></span>
     </button>` : ''}
     ${weakTop(3).length ? `
     <section class="panel focus-card">
@@ -870,6 +910,13 @@ function renderChapter(n) {
       <div class="focus-head"><span class="focus-ico">${ICON.flag}</span><div><p class="eyebrow">${n}장 관문</p><h2 class="panel-title">예약 전화</h2></div></div>
       <p class="note">전화 음질로 날짜와 시간을 듣고 말로 확인하는 관문이에요. 곧 열려요.</p>
     </section>`}
+    ${n === 5 || n === 6 ? (() => {
+      const r = data.noiseRecs[data.noiseRecs.length - 1];
+      return `<button class="report-link" data-go="#noise">
+      <span class="focus-ico">${ICON.wave}</span>
+      <span><b>1분 소음 기록 재기</b><small>${r ? `지난 기록 ${snrText(r.snr)}(${shortDate(r.date)}). ` : ''}카페 소음 속에서 어디까지 알아듣는지 1분 동안 재요</small></span>
+    </button>`;
+    })() : ''}
     <section class="panel mission">
       <div class="focus-head"><span class="focus-ico">${ICON.walk}</span><div><h2 class="panel-title">생활 미션</h2><p class="note">앱 밖에서 한 번 해 보세요. 확인하지 않아요.</p></div></div>
       <p class="tip-body">${c.mission}</p>
@@ -1094,6 +1141,28 @@ function renderProgress() {
       })() : '<p class="note">아직 점검 기록이 없어요. 첫 점수가 앞으로 견줄 기준이 돼요.</p>'}
       <button class="btn block${checkDue() ? ' primary' : ''}" data-go="#check">${ICON.ear}${data.checks.length ? '지금 점검하기' : '첫 점검 하기'}</button>
     </section>
+    <section class="panel check-panel nrec-panel">
+      <h2 class="panel-title">1분 소음 기록 <span>카페 소음</span></h2>
+      ${data.noiseRecs.length ? (() => {
+        const rs = data.noiseRecs; const a = rs[0]; const b = rs[rs.length - 1]; const ch = snrChange(a.snr, b.snr);
+        return `${rs.length > 1 ? `<div class="check-compare">
+          <div><span>처음</span><b>${snrText(a.snr)}</b><em>${shortDate(a.date)}</em></div>
+          <i aria-hidden="true">→</i>
+          <div><span>최근</span><b>${snrText(b.snr)}</b><em>${shortDate(b.date)}</em></div>
+          <strong class="${ch.cls}">${ch.text}</strong>
+        </div>` : `<div class="check-compare one"><div><span>첫 기록</span><b>${snrText(b.snr)}</b><em>${shortDate(b.date)}</em></div></div>`}
+        <p class="note">${ida(snrScene(b.snr))}. 숫자가 낮을수록 더 시끄러운 곳에서 알아들은 거예요.</p>`;
+      })() : '<p class="note">카페 소음 속에서 1분 동안 문장을 들어요. 알아들으면 소음이 커지고 놓치면 작아져서, 끝났을 때의 소음 크기가 기록이 돼요. 문장 칸(4장)을 해 본 뒤에 재면 좋아요.</p>'}
+      <button class="btn block" data-go="#noise">${ICON.wave}${data.noiseRecs.length ? '다시 재기' : '처음 재기'}</button>
+    </section>
+    ${data.retests.length ? (() => {
+      const n = data.retests.reduce((a, r) => a + r.n, 0); const k = data.retests.reduce((a, r) => a + r.correct, 0);
+      return `<section class="panel">
+      <h2 class="panel-title">그때 틀린 문제 다시 듣기</h2>
+      <p class="lead">2주 넘게 지나 다시 푼 ${n}문제 중 <b>${k}개</b>를 맞혔어요(${data.retests.length}번).</p>
+      <p class="note">못 맞힌 문제는 2주 뒤에 다시 나와요.</p>
+    </section>`;
+    })() : ''}
     <button class="report-link" data-go="#clinic">
       <span class="focus-ico">${ICON.target}</span>
       <span><b>선생님용 화면</b><small>숙제를 내고 여러 사람의 기록을 한 줄씩 모아 봐요</small></span>
@@ -1421,6 +1490,15 @@ function renderReport() {
       ? `월간 듣기 점검(같은 20문제)은 <b>${a.score}점에서 ${b.score}점으로</b> ${b.score > a.score ? '올랐어요' : b.score < a.score ? '내려갔어요' : '같아요'}(${shortDate(a.date)} → ${shortDate(b.date)}, ${cs.length}회).`
       : `월간 듣기 점검(같은 20문제) 첫 점수는 <b>${b.score}점</b>이에요(${shortDate(b.date)}). 다음 점검과 견줘 볼게요.`);
   }
+  const rs = data.noiseRecs || [];
+  if (rs.length) {
+    const a = rs[0]; const b = rs[rs.length - 1];
+    lines.splice(cs.length ? 1 : 0, 0, rs.length > 1 && a.snr !== b.snr
+      ? `1분 소음 기록(카페 소음)은 <b>${snrText(a.snr)}에서 ${snrText(b.snr)}로</b> ${a.snr > b.snr ? '낮아졌어요' : '높아졌어요'}(${shortDate(a.date)} → ${shortDate(b.date)}).${a.snr > b.snr ? ` 소음이 ${a.snr - b.snr}dB 더 커도 알아들어요.` : ''} 지금은 ${ida(snrScene(b.snr))}.`
+      : `1분 소음 기록(카페 소음)은 <b>${snrText(b.snr)}</b>예요(${shortDate(b.date)}). ${ida(snrScene(b.snr))}.`);
+  }
+  const rt = data.retests || [];
+  if (rt.length) lines.push(`2주 넘게 지나 다시 푼 틀린 문제 ${rt.reduce((a, r) => a + r.n, 0)}개 중 <b>${rt.reduce((a, r) => a + r.correct, 0)}개</b>를 맞혔어요.`);
 
   // 날마다 정답률 꺾은선(한 계열)
   const W = 340; const H = 170; const L = 38; const R = 34; const T = 14; const B = 24;
@@ -1613,6 +1691,7 @@ function patientRow(raw, name) {
     acc: ss.length ? accOf(ss.slice(-5)) : null,
     weak: Object.entries(d.confusions || {}).filter(([k]) => k !== '단어 길이').sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => friendly(k)),
     check: checks.length ? { first: checks[0].score, last: checks[checks.length - 1].score, n: checks.length } : null,
+    nrec: d.noiseRecs.length ? { first: d.noiseRecs[0].snr, last: d.noiseRecs[d.noiseRecs.length - 1].snr, n: d.noiseRecs.length } : null,
   };
 }
 
@@ -1659,18 +1738,19 @@ function renderClinic() {
       </div>
       <div class="scroll-x">
         <table class="rtable patients">
-          <thead><tr><th>이름</th><th>마지막</th><th>이번 주</th><th>지금</th><th>넘은 관문</th><th>최근 정답</th><th>약한 소리</th><th>월 점검</th></tr></thead>
+          <thead><tr><th>이름</th><th>마지막</th><th>이번 주</th><th>지금</th><th>넘은 관문</th><th>최근 정답</th><th>약한 소리</th><th>월 점검</th><th>소음 기록</th></tr></thead>
           <tbody>${clinicRows.length ? clinicRows.map((r) => `
             <tr><th scope="row">${esc(r.name)}${r.demo ? '<span class="chip demo sm">예시</span>' : ''}</th>
               <td>${dayName(r.last)}</td>
               <td class="${r.planDays && r.week >= r.planDays ? 'up' : ''}">${r.week}${r.planDays ? `/${r.planDays}일` : '일'}</td>
               <td>${r.ch}장 <small>${esc(r.now)}</small></td><td>${r.gates}개</td><td>${r.acc == null ? '–' : `${r.acc}%`}</td>
               <td class="weak-cell">${r.weak.length ? r.weak.map((w) => esc(w)).join(', ') : '–'}</td>
-              <td class="${r.check && r.check.last > r.check.first ? 'up' : r.check && r.check.last < r.check.first ? 'down' : ''}">${r.check ? (r.check.n > 1 ? `${r.check.first}→${r.check.last}` : `${r.check.last}`) : '–'}</td></tr>`).join('')
-            : '<tr><td colspan="8" class="center note">목록이 비어 있어요. 기록 파일을 열어 주세요.</td></tr>'}</tbody>
+              <td class="${r.check && r.check.last > r.check.first ? 'up' : r.check && r.check.last < r.check.first ? 'down' : ''}">${r.check ? (r.check.n > 1 ? `${r.check.first}→${r.check.last}` : `${r.check.last}`) : '–'}</td>
+              <td class="${r.nrec && r.nrec.last < r.nrec.first ? 'up' : r.nrec && r.nrec.last > r.nrec.first ? 'down' : ''}">${r.nrec ? (r.nrec.n > 1 ? `${snrText(r.nrec.first)}→${snrText(r.nrec.last)}` : snrText(r.nrec.last)) : '–'}</td></tr>`).join('')
+            : '<tr><td colspan="9" class="center note">목록이 비어 있어요. 기록 파일을 열어 주세요.</td></tr>'}</tbody>
         </table>
       </div>
-      <p class="note">'지금'은 오르는 장과 연습 중인 칸, '최근 정답'은 최근 5판 정답률이에요. '이번 주'는 이번 주(월요일부터) 연습한 날수이고, 숙제가 있으면 계획 일수와 함께 보여 줘요.</p>
+      <p class="note">'지금'은 오르는 장과 연습 중인 칸, '최근 정답'은 최근 5판 정답률이에요. '이번 주'는 이번 주(월요일부터) 연습한 날수이고, 숙제가 있으면 계획 일수와 함께 보여 줘요. '소음 기록'은 1분 소음 기록의 처음→최근이고 낮을수록 더 시끄러운 곳에서 알아들은 거예요.</p>
     </section>
     <button class="btn ghost block" data-go="#progress">기록으로 돌아가기</button>`;
 
@@ -1864,11 +1944,35 @@ function demoData(opts = {}) {
   const START = { 1: 0.78, 2: 0.72, 3: 0.56, 4: 0.6, 5: 0.52, 6: 0.45 }; // 칸에 처음 들어섰을 때 정답률
   const GSTART = { 1: 0.86, 2: 0.78, 3: 0.72, 4: 0.68, 5: 0.66, 6: 0.6 };
   const played = {}; const tried = {};
+  const at = (a) => a[Math.floor(rnd() * a.length)];
+  const two = (a) => { const i = Math.floor(rnd() * a.length); const k = (i + 1 + Math.floor(rnd() * (a.length - 1))) % a.length; return [a[i], a[k]]; };
+  const heard = (t) => !Object.keys(voicePack).length || !!voicePack[t]; // 음성 파일이 있는 문제만(기기 음성이 없는 곳에서도 다시 들을 수 있게)
+  // 틀린 문제 한 개를 그 칸의 문항에서 만든다
+  const fakeMiss = (c) => {
+    if (c.kind === 'env') {
+      const ids = (c.pool || Object.keys(ENV_SOUNDS)).map((x) => [rnd(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1]).slice(0, c.n);
+      const [a, b] = two(ids);
+      return { kind: 'env', answer: a, chose: b, options: ids, label: ENV_SOUNDS[a].name, choseLabel: ENV_SOUNDS[b].name };
+    }
+    if (c.kind === 'word' || (c.kind === 'sent' && c.level < 3) || c.kind === 'noise') {
+      const sc = c.kind === 'noise' && NOISE_SCENES[c.scene];
+      const set = at(c.kind === 'word' ? c.sets() : sc ? [...sc.easy, ...sc.hard] : SENTENCE_SETS[c.level]);
+      const [a, b] = two(set);
+      if (!heard(a)) return null;
+      return { kind: c.kind, answer: a, chose: b, options: set, say: a, ...(sc ? { scene: c.scene, snr: c.snr } : {}), label: a, choseLabel: b };
+    }
+    if (c.kind === 'sent') {
+      const it = at(SENTENCE_SETS[3]); const [a, b] = two(it.words); const say = fillFrame(it.frame, a);
+      return heard(say) ? { kind: 'frame', answer: a, chose: b, options: it.words, say, frame: it.frame, label: say, choseLabel: b } : null;
+    }
+    return null;
+  };
   const listen = (id, date, j, forId) => {
     const c = CELL[id]; const k = played[id] = (played[id] || 0) + 1;
     const p = c.kind === 'tone' ? 0.92 : Math.min(0.97, START[c.ch] + boost + 0.06 * (k - 1) + (rnd() - 0.5) * 0.2);
     const correct = Math.max(2, Math.min(10, Math.round(p * 10)));
     d.sessions.push({ date, cell: id, ...(forId ? { for: forId } : {}), correct, total: TRIALS, j, sec: 140 + Math.floor(rnd() * 110) });
+    for (let m = 0; m < Math.min(2, TRIALS - correct); m++) { const x = fakeMiss(c); if (x) d.misses.push({ date, j, cell: id, ...x }); }
   };
   const speak = (id, date, j) => {
     const k = played[id] = (played[id] || 0) + 1;
@@ -1907,13 +2011,14 @@ function demoData(opts = {}) {
   // 날짜를 오늘 쪽으로 옮기고 시각을 붙인다
   const shift = Math.round((new Date(`${today()}T12:00:00`) - new Date(`${lastDay}T12:00:00`)) / 86400000) - idle;
   const hours = {};
-  for (const x of [...d.sessions, ...d.speakLog, ...d.gates]) {
+  for (const x of [...d.sessions, ...d.speakLog, ...d.gates, ...d.misses]) {
     x.date = addDays(x.date, shift);
     const h = hours[x.date] ?? (hours[x.date] = 9 + Math.floor(rnd() * 10));
     x.at = new Date(`${x.date}T${String(h).padStart(2, '0')}:${String(Math.floor(rnd() * 20)).padStart(2, '0')}:00`).getTime() + x.j * 420000;
     delete x.j;
   }
-  for (const l of [d.sessions, d.speakLog, d.gates]) l.sort((a, b) => a.at - b.at);
+  for (const l of [d.sessions, d.speakLog, d.gates, d.misses]) l.sort((a, b) => a.at - b.at);
+  d.misses = d.misses.slice(-300);
   // 나이 들며 생기는 난청처럼 높은 소리일수록 덜 들리는 모양
   d.toneByFreq = { 500: -50, 1000: -45, 2000: -35, 4000: -20 }; d.minDb = -50;
   d.confusions = { '초성 ㅅ↔ㅆ': 9, '초성 ㄱ↔ㅋ': 6, '초성 ㄷ↔ㄸ': 5, '종성 ㄴ↔ㅁ': 4, '중성 ㅓ↔ㅗ': 3 };
@@ -1929,6 +2034,21 @@ function demoData(opts = {}) {
     const date = addDays(today(), -ago);
     return { date, at: new Date(`${date}T20:00:00`).getTime(), score: Math.round((100 * (w + s2 + n)) / 20), parts: { word: [w, 8], sent: [s2, 6], noise: [n, 6] }, miss: [] };
   });
+  // 4장 문장까지 온 사람만 1분 소음 기록을 쟀다. 2주쯤 간격으로 2dB씩 낮아진다.
+  if (to >= 4) {
+    const s0 = 18 - 2 * to - (boost > 0 ? 2 : 0);
+    d.noiseRecs = [Math.round(span * 0.6), Math.round(span * 0.3), 2].filter((ago, i, a) => a.indexOf(ago) === i && ago >= 1).map((ago, i, a) => {
+      const date = addDays(today(), -ago);
+      return { date, at: new Date(`${date}T20:30:00`).getTime(), snr: s0 + 2 * (a.length - 1 - i), n: 11 + Math.floor(rnd() * 4), correct: 8 + Math.floor(rnd() * 3) };
+    });
+  }
+  // 6일 전에 그때 틀린 문제를 한 번 다시 풀었다
+  const pool = span >= 20 ? retestPool(d).filter((m) => daysSince(m.date) >= RETEST_AGO + 6).slice(0, RETEST_N) : [];
+  if (pool.length === RETEST_N) {
+    const date = addDays(today(), -6);
+    pool.forEach((m, i) => { const ok = i % 3 !== 1; m.re = { date, ok, chose: ok ? m.answer : m.chose }; });
+    d.retests = [{ date, at: new Date(`${date}T19:00:00`).getTime(), n: RETEST_N, correct: pool.filter((m) => m.re.ok).length, sec: 150 }];
+  }
   return d;
 }
 // 선생님 화면에서 보여 줄 예시 환자들
@@ -1951,6 +2071,193 @@ function clearDemo() {
   try { back = JSON.parse(localStorage.getItem(BACKUP_KEY)); localStorage.removeItem(BACKUP_KEY); } catch {}
   data = migrate(Object.assign(fresh(), back || { preferFamily: data.preferFamily, bigText: data.bigText }));
   persist();
+}
+
+/* ---------- 1분 소음 기록 ---------- */
+
+// 카페 소음을 1분 동안 계속 틀어 두고 문장을 하나씩 들려준다. 처음에는 맞힐 때마다,
+// 한 번 틀린 뒤로는 3번 연달아 맞혀야 소음을 2dB 키우고, 틀리면 2dB 줄인다(정답률 약 79%에 머무는 방식).
+// 1분이 끝났을 때의 소음 크기가 기록이다.
+async function renderNoiseRec() {
+  setNav('play');
+  const token = ++playToken;
+  const alive = () => token === playToken;
+  const rs = data.noiseRecs; const last = rs[rs.length - 1];
+  const pool = Object.values(NOISE_SCENES).flatMap((sc) => [...sc.easy, ...sc.hard]);
+  const extra = canSpeak() ? '' : '<p class="note warn center">이 화면에서는 AI 음성이 나오지 않아요. 크롬이나 삼성 인터넷 같은 브라우저에서 열어 주세요.</p>';
+  view.innerHTML = playShell('#progress', '1분 소음 기록', '카페 소음 속에서 1분',
+    `알아들으면 소음이 점점 커지고, 놓치면 작아져요. 1분이 끝났을 때의 소음 크기가 기록이에요.${last ? ` 지난 기록은 <b>${snrText(last.snr)}</b>(${shortDate(last.date)})예요.` : ''}`, startBox(false, extra));
+  $('#pnum').textContent = `${NREC_SEC}초`;
+  await waitStart(false, alive);
+  if (!alive()) return;
+
+  const c = audio(); const buf = sceneBuffer(c, 'cafe');
+  const src = c.createBufferSource(); src.buffer = buf; src.loop = true;
+  const g = c.createGain(); g.gain.value = 0;
+  src.connect(g); g.connect(c.destination);
+  if (stopNoise) stopNoise();
+  stopNoise = () => { try { src.stop(); } catch {} stopNoise = null; };
+  src.start(c.currentTime, Math.random() * buf.duration);
+  const setLevel = (snr) => { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(noiseGain(snr), t + 0.4); };
+
+  let level = NREC_START; let run = 0; let missed = false; let n = 0; let correct = 0;
+  const endAt = performance.now() + NREC_SEC * 1000;
+  const tick = () => {
+    const left = Math.max(0, Math.ceil((endAt - performance.now()) / 1000));
+    $('#pnum').textContent = left ? `남은 시간 ${left}초` : '시간 끝 · 이 문제까지';
+    $('#pbar').style.width = `${100 - (100 * left) / NREC_SEC}%`;
+  };
+  const timer = setInterval(() => { if (alive()) tick(); else clearInterval(timer); }, 250);
+  tick();
+  const orb = $('#orb');
+  try {
+    while (alive() && performance.now() < endAt) {
+      const opts = shuffle(pick(pool)); const target = pickHeard(opts);
+      $('#answers').innerHTML = '';
+      $('#q').textContent = '들린 말은?';
+      $('#hint').innerHTML = `<span class="chip scene">☕ 카페 소음 · ${snrText(level)}</span>`;
+      setLevel(level);
+      await wait(700);
+      if (!alive()) return;
+      orb.className = 'orb playing';
+      await playWord(target);
+      if (!alive()) return;
+      orb.className = 'orb idle';
+      const ans = await ask(opts.map((w) => [w]), opts.indexOf(target), 'sentences');
+      const ok = opts[ans] === target;
+      n++; if (ok) correct++;
+      if (ok) { run++; if (!missed || run >= 3) { level -= NREC_STEP; run = 0; } } else { missed = true; run = 0; level += NREC_STEP; }
+      level = Math.max(-10, Math.min(20, level));
+      await wait(700);
+    }
+  } finally {
+    clearInterval(timer);
+    const t = c.currentTime;
+    g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + 0.5);
+    try { src.stop(t + 0.6); } catch {}
+  }
+  if (!alive()) return;
+
+  const first = rs[0];
+  data.noiseRecs.push({ date: today(), at: Date.now(), snr: level, n, correct });
+  persist();
+  const ch = first && snrChange(first.snr, level);
+  const acts = roundActions('#progress', true, '다시 재기');
+  view.innerHTML = `
+    <div class="play result">
+      <p class="eyebrow center">1분 소음 기록 · 카페 소음</p>
+      <h1 class="q">내 소음 기록 ${snrText(level)}</h1>
+      <p class="lead center">${snrSay(level)} 알아들었어요. ${ida(snrScene(level))}.</p>
+      <section class="panel check-panel">
+        ${first ? `<div class="check-compare">
+          <div><span>처음</span><b>${snrText(first.snr)}</b><em>${shortDate(first.date)}</em></div>
+          <i aria-hidden="true">→</i>
+          <div><span>오늘</span><b>${snrText(level)}</b><em>${shortDate(today())}</em></div>
+          <strong class="${ch.cls}">${ch.text}</strong>
+        </div>` : '<p class="note">첫 기록이에요. 이 숫자가 앞으로 견줄 기준이 돼요.</p>'}
+        <p class="note">1분 동안 ${n}문제 중 ${correct}개 맞혔어요. 숫자가 낮을수록 더 시끄러운 곳에서 알아들은 거예요.</p>
+      </section>
+      <div class="actions">${acts.html}</div>
+    </div>`;
+  acts.bind();
+}
+
+/* ---------- 그때 틀린 문제 다시 듣기 ---------- */
+
+// 2주 넘게 지난 판에서 틀린 문제를 그때와 같은 보기, 같은 소음으로 다시 내고, 그때 고른 답과 오늘 고른 답을 나란히 보여 준다.
+const missLabel = (m, x) => (m.kind === 'env' ? ENV_SOUNDS[x].name : x);
+const missSay = (m, x) => (m.kind === 'frame' ? fillFrame(m.frame, x) : m.kind === 'sent' || m.kind === 'noise' || m.kind === 'word' ? x : null);
+function missPlay(m, x = m.answer, noisy = true) {
+  if (m.kind === 'env') return () => playEnv(x);
+  const say = () => playWord(missSay(m, x));
+  return m.kind === 'noise' && noisy ? () => withNoise(m.scene, m.snr, say) : say;
+}
+async function renderRetest() {
+  setNav('play');
+  const token = ++playToken;
+  const alive = () => token === playToken;
+  const items = retestPool().slice(0, RETEST_N);
+  if (!items.length) {
+    view.innerHTML = `
+      <header class="page-head"><p class="eyebrow">그때 틀린 문제 다시 듣기</p><h1>다시 들을 문제가 아직 없어요</h1></header>
+      <section class="panel"><p class="lead">판에서 틀린 문제는 2주가 지나면 여기서 다시 나와요. 그때 고른 답과 오늘 고른 답을 나란히 보여 드려요.</p>
+      <button class="btn primary block" data-go="#home">지도로</button></section>`;
+    return;
+  }
+  const extra = canSpeak() ? '' : '<p class="note warn center">이 화면에서는 AI 음성이 나오지 않아요. 크롬이나 삼성 인터넷 같은 브라우저에서 열어 주세요.</p>';
+  view.innerHTML = playShell('#home', '그때 틀린 문제 다시 듣기', `${items.length}문제를 다시 들어요`,
+    `${shortDate(items[0].date)}부터 2주 넘게 지난 판에서 틀린 문제예요. 그때와 같은 보기로 내고, 끝나면 그때 고른 답과 오늘 고른 답을 나란히 보여 드려요.`, startBox(false, extra));
+  $('#pnum').textContent = `${items.length}문제`;
+  await waitStart(false, alive);
+  if (!alive()) return;
+  const startedAt = Date.now();
+  const orb = $('#orb');
+  let busy = false;
+  const playing = async (p) => { busy = true; orb.className = 'orb playing'; try { return await p; } finally { busy = false; if (alive()) orb.className = 'orb idle'; } };
+  const out = [];
+  for (let i = 0; i < items.length && alive(); i++) {
+    const m = items[i];
+    $('#pnum').textContent = `${i + 1}번째 / ${items.length}문제`;
+    $('#pbar').style.width = `${(100 * i) / items.length}%`;
+    $('#answers').innerHTML = '';
+    $('#q').textContent = m.kind === 'env' ? '무슨 소리일까요?' : m.kind === 'frame' ? '문장에서 어떤 낱말이 들렸나요?' : '어떤 말을 들었나요?';
+    $('#hint').innerHTML = (m.kind === 'noise' ? `<span class="chip scene">${SCENE_NAME[m.scene]} 소음 · ${snrText(m.snr)}</span>` : '') + replayBtn();
+    const listen = missPlay(m);
+    $('#replay').onclick = () => { if (!busy) playing(listen()); };
+    await playing(listen());
+    if (!alive()) return;
+    const opts = shuffle(m.options);
+    const layout = m.kind === 'env' ? (opts.length === 2 ? 'two' : '') : opts.some((w) => w.length > 5) ? 'sentences' : 'words';
+    const ans = await ask(opts.map((x) => (m.kind === 'env' ? [ENV_SOUNDS[x].name, ENV_SOUNDS[x].icon] : [x])), opts.indexOf(m.answer), layout);
+    out.push({ m, ok: opts[ans] === m.answer, chose: opts[ans] });
+    await wait(900);
+  }
+  if (!alive()) return;
+
+  const correct = out.filter((x) => x.ok).length;
+  for (const { m, ok, chose } of out) {
+    for (const x of data.misses) if (!x.re && missKey(x) === missKey(m)) x.re = { date: today(), ok, chose };
+  }
+  // 오늘도 놓친 문제는 2주 뒤에 다시 나오게 새로 남긴다
+  const again = out.filter((x) => !x.ok).map(({ m, chose }) => {
+    const { re, date, at, ...rest } = m;
+    return { ...rest, date: today(), at: Date.now(), chose, choseLabel: missLabel(m, chose) };
+  });
+  data.misses = [...data.misses, ...again].slice(-300);
+  data.retests.push({ date: today(), at: Date.now(), n: out.length, correct, sec: Math.round((Date.now() - startedAt) / 1000) });
+  persist();
+
+  const acts = roundActions('#home', false);
+  view.innerHTML = `
+    <div class="play result">
+      <p class="eyebrow center">그때 틀린 문제 다시 듣기</p>
+      <h1 class="q">그때 틀린 ${out.length}문제 중 오늘 ${correct}개 맞혔어요</h1>
+      <p class="lead center">${correct < out.length ? '못 맞힌 문제는 2주 뒤에 다시 나와요.' : '이번에 다시 푼 문제는 모두 맞혔어요.'}</p>
+      <section class="panel miss-panel">
+        <h2 class="panel-title">그때와 오늘</h2>
+        <ul class="miss-rows">${out.map(({ m, ok, chose }, i) => `
+          <li><span class="miss-a">${esc(m.kind === 'frame' ? m.say : missLabel(m, m.answer))}</span>
+            <span class="then-now">
+              <span>${shortDate(m.date)}: <b>${esc(missLabel(m, m.chose))}</b> 고름</span>
+              <span class="${ok ? 'ok' : ''}">오늘: ${ok ? `${ICON.check}맞힘` : `<b>${esc(missLabel(m, chose))}</b> 고름`}</span>
+            </span>
+            <span class="miss-btns">
+              <button class="pill" data-m="${i}" data-k="0">${ICON.speaker}정답</button>
+              ${m.kind === 'noise' ? `<button class="pill alt" data-m="${i}" data-k="1">${ICON.speaker}소음 속에서</button>` : ''}
+            </span></li>`).join('')}
+        </ul>
+      </section>
+      <div class="actions">${acts.html}</div>
+    </div>`;
+  acts.bind();
+  let rbusy = false;
+  view.querySelectorAll('[data-m]').forEach((b) => {
+    b.onclick = async () => {
+      if (rbusy) return; rbusy = true; b.classList.add('busy');
+      const m = out[+b.dataset.m].m;
+      try { await missPlay(m, m.answer, b.dataset.k === '1')(); } finally { rbusy = false; b.classList.remove('busy'); }
+    };
+  });
 }
 
 /* ---------- 칸 한 판 ---------- */
@@ -2518,6 +2825,8 @@ function route() {
   else if (h === '#progress') renderProgress();
   else if (h === '#report') renderReport();
   else if (h === '#speak') renderSpeak(null);
+  else if (h === '#noise') renderNoiseRec();
+  else if (h === '#retest') renderRetest();
   else renderHome();
   window.scrollTo(0, 0);
 }
