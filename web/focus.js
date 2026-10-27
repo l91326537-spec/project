@@ -67,7 +67,15 @@ const rateLine = (text) => {
 const focusRuns = (cat, lv) => (data.focusRuns || []).filter((r) => r.cat === cat && (lv == null || r.lv === lv));
 const bestRun = (cat, lv) => focusRuns(cat, lv).reduce((b, r) => (!b || r.correct > b.correct ? r : b), null);
 const levelPassed = (cat, lv) => focusRuns(cat, lv).some((r) => r.correct >= FOCUS_PASS);
-const nextLevel = (cat) => { for (let lv = 1; lv <= 10; lv++) if (!levelPassed(cat, lv)) return lv; return 10; };
+// 권하는 단계: 사용자 유형의 시작 단계부터 아직 넘지 못한 첫 단계. 그 단계에서 두 번 연달아 절반도 못 맞혔으면
+// 한 단계 아래를 한 번 권한다(정답률이 50% 아래로 자주 떨어지면 지쳐서 그만두기 쉽다).
+const nextLevel = (cat) => {
+  let lv = whoOf().focus[cat] || 1;
+  while (lv < 10 && levelPassed(cat, lv)) lv++;
+  const recent = focusRuns(cat).slice(-2);
+  if (lv > 1 && recent.length === 2 && recent.every((r) => r.lv === lv && r.correct < FOCUS_N / 2)) return lv - 1;
+  return lv;
+};
 const noiseCfg = () => data.focusNoise || (data.focusNoise = { on: false, scene: 'cafe' });
 
 /* ---------- 소리 ---------- */
@@ -129,7 +137,7 @@ function renderFocusHome() {
         <span class="cat-ico" aria-hidden="true">${c.icon}</span>
         <span><b>${c.name}</b><small>${c.about}</small>
           <span class="ch-bar" aria-hidden="true"><i style="width:${passed * 10}%"></i></span>
-          <small>${passed ? `10단계 중 ${passed}단계 통과 · 다음은 ${nextLevel(k)}단계` : '1단계부터 시작해요'}</small></span>
+          <small>${passed ? `10단계 중 ${passed}단계 통과 · 다음은 ${nextLevel(k)}단계` : `${nextLevel(k)}단계부터 시작해요`}</small></span>
       </button>`;
     }).join('')}
     </div>
@@ -137,7 +145,7 @@ function renderFocusHome() {
       <span class="focus-ico">${ICON.doc}</span>
       <span><b>단어장</b><small>장소별 낱말을 눌러 듣고 틈틈이 풀어 봐요</small></span>
     </button>
-    <p class="note center">단계: 1~2 왕초보 · 3~4 초보 · 5~7 중급 · 8~9 고수 · 10 초고수</p>`;
+    <p class="note center">단계: 1~2 왕초보 · 3~4 초보 · 5~7 중급 · 8~9 고수 · 10 초고수${whoOf().name ? `<br>${whoOf().name}에 맞춰 권하는 단계부터 보여 드려요.` : ''}</p>`;
 }
 
 function renderFocusCat(cat) {
@@ -157,7 +165,7 @@ function renderFocusCat(cat) {
       <li class="cell-row ${passed ? 'done' : ''}${lv === rec && !passed ? ' now' : ''}">
         <span class="cell-id">${lv}</span>
         <span class="cell-text"><b>${lv}단계 <i class="tag">${FOCUS_TIERS[lv]}</i></b><small>${c.desc[lv]}</small>
-          <em>${best ? `최고 ${best.correct}/${FOCUS_N}${g ? ` · ${g}등급` : ''}` : lv === rec ? '여기부터 해 보세요' : '아직 도전 전'}</em></span>
+          <em>${best ? `최고 ${best.correct}/${FOCUS_N}${g ? ` · ${g}등급` : ''}` : lv === rec ? '여기부터 해 보세요' : lv < (whoOf().focus[cat] || 1) ? '건너뛰어도 되는 단계' : '아직 도전 전'}</em></span>
         ${g ? `<span class="grade g${g}" aria-label="${g}등급">${g}</span>` : ''}
         <button class="icon-btn play-btn" data-go="#focus/${cat}/${lv}" aria-label="${lv}단계 열기">${ICON.play}</button>
       </li>`;
