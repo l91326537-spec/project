@@ -57,6 +57,9 @@ const fresh = () => ({
   reportMemo: '',
   plan: null,            // 선생님이 보낸 숙제 {by, cells, kind, amount, days, memo, at}. cells의 'g5'는 5장 관문
   checks: [],            // 월간 듣기 점검 {date, at, score, parts: {word: [맞힘, 문제 수], ...}, miss: [문제 번호]}
+  focusRuns: [],         // 집중 연습 도전: {cat: 'word'|'sound'|'sent', lv, date, at, correct, total, noise, sec}
+  itemStats: {},         // 문제로 나온 말마다 [나온 횟수, 맞힌 횟수]
+  focusNoise: { on: false, scene: 'cafe' }, // 집중 연습·단어장 소음 모드
 });
 // 단계·레벨로 적던 옛 기록을 칸으로 옮긴다(옛 숙제 링크의 단계 번호도 같은 표로 읽는다)
 const STAGE_CELL = { 1: ['1-1', '1-1', '1-1'], 2: ['1-2', '2-1', '2-1'], 3: ['1-3', '2-2', '3-1'], 5: ['4-1', '4-2', '4-3'], 6: ['5-1', '5-3', '6-1'] };
@@ -69,7 +72,8 @@ function migrate(d) {
     const { stage, level, score, ...rest } = s;
     return { ...rest, cell };
   }).filter(Boolean);
-  for (const k of ['gates', 'misses', 'speakLog', 'checks', 'noiseRecs', 'retests']) if (!Array.isArray(d[k])) d[k] = [];
+  for (const k of ['gates', 'misses', 'speakLog', 'checks', 'noiseRecs', 'retests', 'focusRuns']) if (!Array.isArray(d[k])) d[k] = [];
+  if (!d.itemStats || typeof d.itemStats !== 'object') d.itemStats = {};
   if (d.plan && !Array.isArray(d.plan.cells)) d.plan.cells = [...new Set((d.plan.stages || []).map((n) => PLAN_STAGE[n]).filter(Boolean))];
   if (d.plan && !d.plan.cells.length) d.plan = null;
   delete d.levels; delete d.tip; delete d.goal;
@@ -357,9 +361,11 @@ const canSpeak = () => !!window.speechSynthesis || Object.keys(voicePack).length
 
 // 관문의 여러 사람 대화: 같은 음성을 낮거나 높게 바꿔 다른 사람처럼 들려준다(빠르기도 함께 바뀐다).
 const VOICE_RATE = { low: 0.86, high: 1.1 };
-function playUrl(url, rate = 1) {
+// speed: 높낮이는 그대로 두고 빠르기만 바꾼다(집중 연습 뒤 단계 문장)
+function playUrl(url, rate = 1, speed = 1) {
   const a = new Audio(url);
   if (rate !== 1) { a.preservesPitch = a.webkitPreservesPitch = a.mozPreservesPitch = false; a.defaultPlaybackRate = a.playbackRate = rate; }
+  if (speed !== 1) a.defaultPlaybackRate = a.playbackRate = rate * speed;
   return new Promise((res) => { a.onended = a.onerror = res; a.play().catch(res); setTimeout(res, 8000); }).then(() => a.pause()); // 재생이 멈춰도 넘어간다
 }
 
@@ -377,13 +383,13 @@ async function playSprite({ s, t, d }, rate = 1) {
 }
 
 // v: 다른 사람 목소리('low', 'high'). 가족 녹음은 그 사람 목소리 그대로 둔다
-async function playWord(word, v) {
+async function playWord(word, v, speed = 1) {
   const rate = VOICE_RATE[v] || 1;
   if (data.preferFamily && !v) {
     const blob = await voiceDb.get(word);
     if (blob) {
       const url = URL.createObjectURL(blob);
-      await playUrl(url);
+      await playUrl(url, 1, speed);
       URL.revokeObjectURL(url);
       return 'family';
     }
@@ -391,12 +397,12 @@ async function playWord(word, v) {
   await voicePackReady;
   const p = voicePack[word];
   if (p) {
-    try { await (typeof p === 'string' ? playUrl(p, rate) : playSprite(p, rate)); return 'pack'; } catch {} // 묶음을 못 읽으면 기기 음성으로
+    try { await (typeof p === 'string' ? playUrl(p, rate, speed) : playSprite(p, rate * speed)); return 'pack'; } catch {} // 묶음을 못 읽으면 기기 음성으로
   }
   if (!window.speechSynthesis) return 'none';
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(word);
-  u.lang = 'ko-KR'; u.rate = 0.85 * rate; u.pitch = v === 'low' ? 0.6 : v === 'high' ? 1.4 : 1;
+  u.lang = 'ko-KR'; u.rate = 0.85 * rate * speed; u.pitch = v === 'low' ? 0.6 : v === 'high' ? 1.4 : 1;
   if (koVoice) u.voice = koVoice;
   await new Promise((res) => { u.onend = u.onerror = res; speechSynthesis.speak(u); setTimeout(res, 3000 + word.length * 250); }); // 문장은 길어서 기다리는 시간을 늘린다
   return koVoice ? 'tts' : 'tts-nokorean';
@@ -817,6 +823,17 @@ function renderHome() {
       </div>
       <div class="chips">${weakTop(3).map(([k]) => `<span class="chip focus">${esc(friendly(k))}</span>`).join('')}</div>
     </section>` : ''}
+
+    <div class="home-links">
+      <button class="report-link speak-link" data-go="#focus">
+        <span class="focus-ico">${ICON.target}</span>
+        <span><b>집중 연습</b><small>단어·낱소리·문장을 1~10단계로</small></span>
+      </button>
+      <button class="report-link speak-link" data-go="#vocab">
+        <span class="focus-ico">${ICON.doc}</span>
+        <span><b>단어장</b><small>장소별 낱말을 눌러 듣기</small></span>
+      </button>
+    </div>
 
     <h2 class="section-title">소리길 지도 <span>생활 장소 7곳</span></h2>
     <ol class="map">${CHAPTERS.map((c) => {
@@ -2481,6 +2498,7 @@ async function renderPlay(routeId) {
     const ans = await ask(set.map((w) => [w]), set.indexOf(target), set.some((w) => w.length > 5) ? 'sentences' : 'words');
     const ok = set[ans] === target;
     logFocus(focus, ok);
+    logItem(target, ok); // 단어장 정답률에도 센다
     if (!ok) for (const x of contrasts(target, set[ans])) if (x !== '단어 길이') sessionConf[x] = (sessionConf[x] || 0) + 1; // 길이 차이는 소리 혼동이 아니다
     const why = ok ? '' : contrasts(target, set[ans]).filter((x) => x !== '단어 길이').map(friendly).join(', ');
     const pair = [() => playWord(target), () => playWord(set[ans])];
@@ -2814,6 +2832,10 @@ function route() {
   const gate = h.match(/^#gate\/(\d)$/);
   const ch = h.match(/^#ch\/(\d)$/);
   const inv = h.match(/^#plan\/(.+)$/);
+  const fc = h.match(/^#focus(?:\/(word|sound|sent)(?:\/(\d+)(\/go)?)?)?$/);
+  const vc = h.match(/^#vocab(?:\/(\d+)(\/go)?)?$/);
+  const flv = fc && fc[2] && +fc[2] >= 1 && +fc[2] <= 10 ? +fc[2] : null;
+  const vch = vc && vc[1] && VOCAB[+vc[1] - 1] ? +vc[1] : null;
   if (cell && CELL[cell[1]]?.kind) (CELL[cell[1]].kind === 'speak' ? renderSpeak(cell[1]) : renderPlay(cell[1]));
   else if (h === '#weak') renderPlay('weak');
   else if (gate && GATES[gate[1]]) renderGate(+gate[1]);
@@ -2827,6 +2849,11 @@ function route() {
   else if (h === '#speak') renderSpeak(null);
   else if (h === '#noise') renderNoiseRec();
   else if (h === '#retest') renderRetest();
+  else if (fc && flv) (fc[3] ? renderFocusTest(fc[1], flv) : renderFocusLevel(fc[1], flv));
+  else if (fc && fc[1]) renderFocusCat(fc[1]);
+  else if (fc) renderFocusHome();
+  else if (vc && vch) (vc[2] ? renderVocabQuiz(vch) : renderVocabCh(vch));
+  else if (vc) renderVocab();
   else renderHome();
   window.scrollTo(0, 0);
 }
