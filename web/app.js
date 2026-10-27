@@ -60,6 +60,12 @@ const fresh = () => ({
   focusRuns: [],         // 집중 연습 도전: {cat: 'word'|'sound'|'sent', lv, date, at, correct, total, noise, sec}
   itemStats: {},         // 문제로 나온 말마다 [나온 횟수, 맞힌 횟수]
   focusNoise: { on: false, scene: 'cafe' }, // 집중 연습·단어장 소음 모드
+  who: null,             // 사용자 유형(fit.js의 WHO): 'ha' 보청기, 'ci' 인공와우 성인, 'kid' 인공와우 아이, 'ear2' 두 번째 귀, 'none' 고르지 않음
+  ear: 'both',           // 듣는 귀: 'both', 'L', 'R'
+  talkSpeed: null,       // 말 빠르기(없으면 유형에 따라)
+  lings: [],             // 링 6소리 점검: {date, at, ear, src, ok, heard, miss: [소리], res: {소리: 고른 소리|'none'}}
+  supraRuns: [],         // 소리 구별: {mode, date, at, correct, total, sec}
+  maps: [],              // 기기 조절 일지: {date, at, kind, ear, memo}
 });
 // 단계·레벨로 적던 옛 기록을 칸으로 옮긴다(옛 숙제 링크의 단계 번호도 같은 표로 읽는다)
 const STAGE_CELL = { 1: ['1-1', '1-1', '1-1'], 2: ['1-2', '2-1', '2-1'], 3: ['1-3', '2-2', '3-1'], 5: ['4-1', '4-2', '4-3'], 6: ['5-1', '5-3', '6-1'] };
@@ -72,7 +78,9 @@ function migrate(d) {
     const { stage, level, score, ...rest } = s;
     return { ...rest, cell };
   }).filter(Boolean);
-  for (const k of ['gates', 'misses', 'speakLog', 'checks', 'noiseRecs', 'retests', 'focusRuns']) if (!Array.isArray(d[k])) d[k] = [];
+  for (const k of ['gates', 'misses', 'speakLog', 'checks', 'noiseRecs', 'retests', 'focusRuns', 'lings', 'supraRuns', 'maps']) if (!Array.isArray(d[k])) d[k] = [];
+  if (!['both', 'L', 'R'].includes(d.ear)) d.ear = 'both';
+  if (!SPEEDS.some(([v]) => v === d.talkSpeed)) d.talkSpeed = null;
   if (!d.itemStats || typeof d.itemStats !== 'object') d.itemStats = {};
   if (d.plan && !Array.isArray(d.plan.cells)) d.plan.cells = [...new Set((d.plan.stages || []).map((n) => PLAN_STAGE[n]).filter(Boolean))];
   if (d.plan && !d.plan.cells.length) d.plan = null;
@@ -126,6 +134,21 @@ function unlockAudio() {
   if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance('')); // iOS 사파리는 터치 안에서 한 번 말해야 이후 음성이 나온다
   setTimeout(() => { if (c.state !== 'running') toast('소리가 막혀 있어요. 휴대폰 음량과 무음 모드를 확인하고 화면을 한 번 더 눌러 주세요.'); }, 600);
 }
+// 듣는 귀: 한쪽만 고르면 모든 소리를 하나로 모아 그쪽 채널로만 보낸다(이어폰이나 기기 블루투스로 들을 때).
+let earNode = null; let earNodeSide = null;
+function earOut(c = audio()) {
+  const side = earSide();
+  if (!side) return c.destination;
+  if (!earNode || earNodeSide !== side) {
+    if (earNode) earNode.disconnect();
+    const mono = c.createGain();
+    mono.channelCount = 1; mono.channelCountMode = 'explicit'; mono.channelInterpretation = 'speakers';
+    const m = c.createChannelMerger(2);
+    mono.connect(m, 0, side === 'L' ? 0 : 1); m.connect(c.destination);
+    earNode = mono; earNodeSide = side;
+  }
+  return earNode;
+}
 const dbToGain = (db) => Math.pow(10, db / 20);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -165,7 +188,7 @@ function noise(c, dest, t0, dur, peak, filterType, freq, q = 1) {
 // 소리 알아차리기(1-1): 순음. db는 기준 대비 dB(0이 가장 큼).
 function playTone(freq, db, dur = 0.8) {
   const c = audio();
-  osc(c, c.destination, 'sine', freq, c.currentTime + 0.05, dur, 0.5 * dbToGain(db));
+  osc(c, earOut(c), 'sine', freq, c.currentTime + 0.05, dur, 0.5 * dbToGain(db));
   return wait(dur * 1000 + 100);
 }
 
@@ -219,7 +242,7 @@ const ENV_SOUNDS = {
 };
 function playEnv(id) {
   const c = audio(); const s = ENV_SOUNDS[id];
-  const master = c.createGain(); master.gain.value = 0.9; master.connect(c.destination);
+  const master = c.createGain(); master.gain.value = 0.9; master.connect(earOut(c));
   s.make(c, master, c.currentTime + 0.05);
   return wait(s.dur * 1000 + 200);
 }
@@ -328,7 +351,7 @@ async function withNoise(id, snr, fn) {
   const buf = sceneBuffer(c, id);
   const src = c.createBufferSource(); src.buffer = buf; src.loop = true;
   const g = c.createGain(); g.gain.value = 0;
-  src.connect(g); g.connect(c.destination);
+  src.connect(g); g.connect(earOut(c));
   if (stopNoise) stopNoise();
   stopNoise = () => { try { src.stop(); } catch {} stopNoise = null; };
   const t = c.currentTime;
@@ -360,10 +383,13 @@ const voicePackReady = fetch('voice/index.json').then((r) => (r.ok ? r.json() : 
 const canSpeak = () => !!window.speechSynthesis || Object.keys(voicePack).length > 0;
 
 // 관문의 여러 사람 대화: 같은 음성을 낮거나 높게 바꿔 다른 사람처럼 들려준다(빠르기도 함께 바뀐다).
-const VOICE_RATE = { low: 0.86, high: 1.1 };
-// speed: 높낮이는 그대로 두고 빠르기만 바꾼다(집중 연습 뒤 단계 문장)
+// man·woman은 소리 구별의 남자·여자 목소리(AI 음성이 여자 목소리라 남자는 더 낮춘다)
+const VOICE_RATE = { low: 0.86, high: 1.1, man: 0.76, woman: 1.04 };
+const TTS_PITCH = { low: 0.6, high: 1.4, man: 0.5, woman: 1.3 };
+// speed: 높낮이는 그대로 두고 빠르기만 바꾼다(집중 연습 뒤 단계 문장, 말 빠르기)
 function playUrl(url, rate = 1, speed = 1) {
   const a = new Audio(url);
+  if (earSide()) try { const c = audio(); c.createMediaElementSource(a).connect(earOut(c)); } catch {} // 한쪽 귀로 보내려면 웹 오디오를 거친다
   if (rate !== 1) { a.preservesPitch = a.webkitPreservesPitch = a.mozPreservesPitch = false; a.defaultPlaybackRate = a.playbackRate = rate; }
   if (speed !== 1) a.defaultPlaybackRate = a.playbackRate = rate * speed;
   return new Promise((res) => { a.onended = a.onerror = res; a.play().catch(res); setTimeout(res, 8000); }).then(() => a.pause()); // 재생이 멈춰도 넘어간다
@@ -378,13 +404,15 @@ function loadSprite(url) {
 async function playSprite({ s, t, d }, rate = 1) {
   const buf = await loadSprite(s);
   const c = audio(); const src = c.createBufferSource();
-  src.buffer = buf; src.playbackRate.value = rate; src.connect(c.destination); src.start(0, t, d);
+  src.buffer = buf; src.playbackRate.value = rate; src.connect(earOut(c)); src.start(0, t, d);
   await new Promise((res) => { src.onended = res; setTimeout(res, (d / rate) * 1000 + 500); });
 }
 
-// v: 다른 사람 목소리('low', 'high'). 가족 녹음은 그 사람 목소리 그대로 둔다
-async function playWord(word, v, speed = 1) {
+// v: 다른 사람 목소리('low', 'high', 'man', 'woman'). 가족 녹음은 그 사람 목소리 그대로 둔다
+// asIs: 말 빠르기 설정을 따르지 않는다(월간 점검·소음 기록은 늘 같은 조건으로 견준다)
+async function playWord(word, v, speed = 1, asIs = false) {
   const rate = VOICE_RATE[v] || 1;
+  if (!asIs) speed *= talkRate();
   if (data.preferFamily && !v) {
     const blob = await voiceDb.get(word);
     if (blob) {
@@ -402,10 +430,10 @@ async function playWord(word, v, speed = 1) {
   if (!window.speechSynthesis) return 'none';
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(word);
-  u.lang = 'ko-KR'; u.rate = 0.85 * rate * speed; u.pitch = v === 'low' ? 0.6 : v === 'high' ? 1.4 : 1;
+  u.lang = 'ko-KR'; u.rate = 0.85 * rate * speed; u.pitch = TTS_PITCH[v] || 1;
   if (koVoice) u.voice = koVoice;
-  await new Promise((res) => { u.onend = u.onerror = res; speechSynthesis.speak(u); setTimeout(res, 3000 + word.length * 250); }); // 문장은 길어서 기다리는 시간을 늘린다
-  return koVoice ? 'tts' : 'tts-nokorean';
+  await new Promise((res) => { u.onend = u.onerror = res; speechSynthesis.speak(u); setTimeout(res, (3000 + word.length * 250) / Math.min(1, speed)); }); // 문장은 길어서 기다리는 시간을 늘린다
+  return !koVoice ? 'tts-nokorean' : earSide() ? 'tts-both' : 'tts'; // 기기 음성은 한쪽 귀로 보낼 수 없다
 }
 
 /* ---------- 한글 자모 분석 (취약음) ---------- */
@@ -492,7 +520,7 @@ const CELLS = [
   { id: '1-5', name: '"아" 소리 내기', desc: '알맞은 크기로 2초' },
   { id: '2-1', name: '생활 소리 고르기', desc: '경적, 사이렌까지 네 개 중에서', kind: 'env', n: 4 },
   { id: '2-2', name: '길이가 같은 낱말', desc: '사과, 우유, 모자처럼 글자 수가 같은 말', kind: 'word', sets: () => WORD_SETS[2] },
-  { id: '2-3', name: '소리 높낮이', desc: '올라가는지 내려가는지' },
+  { id: '2-3', name: '소리 높낮이', desc: '말끝이 올라가는지 내려가는지', kind: 'supra', mode: 'tune', labels: ['올라가요', '내려가요'] },
   { id: '2-4', name: '숫자 듣기', desc: '버스 번호, 층수' },
   { id: '2-5', name: '쉬운 낱말 따라 말하기', desc: '듣고 소리 내어 말해요', kind: 'speak', mode: 'word' },
   { id: '3-1', name: '첫소리만 다른 낱말', desc: '불, 풀, 뿔', kind: 'word', sets: () => wordSets3().first },
@@ -542,7 +570,8 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 
 /* ---------- 사다리 규칙 ---------- */
 
-const needDays = (c) => (c.ch <= 2 ? 1 : 2); // 1·2장은 하루만 넘으면 통과
+// 칸 통과에 필요한 서로 다른 날 수: 1·2장은 하루, 3장부터 이틀(아이는 이틀, 사흘로 천천히)
+const needDays = (c, d = data) => whoOf(d).days[c.ch <= 2 ? 0 : 1];
 const gatesOf = (n, d = data) => (d.gates || []).filter((g) => g.ch === n);
 const gatePassed = (n, d = data) => gatesOf(n, d).some((g) => g.pass);
 const gateNeed = (total, rate) => Math.ceil(rate * total - 1e-9);
@@ -557,7 +586,7 @@ function goodDates(c, d = data) {
 // soon: 아직 없는 칸, done: 통과, skip: 이 기기에서 확인할 수 없는 말하기 칸(관문을 여는 데 세지 않는다), open: 연습할 칸
 function cellState(c, d = data) {
   if (!c.kind) return 'soon';
-  if (gatePassed(c.ch, d) || goodDates(c, d).size >= needDays(c)) return 'done';
+  if (gatePassed(c.ch, d) || goodDates(c, d).size >= needDays(c, d)) return 'done';
   if (c.kind === 'speak' && !Recognition) return 'skip';
   return 'open';
 }
@@ -570,8 +599,9 @@ function stuckOpened(n, d = data) {
   const from = addDays(g[0].date, STUCK_DAYS);
   return g.some((x) => x.date >= from && x.correct >= gateNeed(x.total, GATE_STUCK));
 }
+// 사용자 유형에 따라 시작하는 장까지는 처음부터 열어 둔다(보청기는 3장부터)
 function chapterOpen(n, d = data) {
-  if (n <= 1) return true;
+  if (n <= whoOf(d).ch) return true;
   return (d.gates || []).some((g) => g.pass && g.ch >= n - 1) || stuckOpened(n - 1, d);
 }
 // 지금 오르는 장: 열린 장 중 가장 높은 곳(7장은 아직 칸이 없어 6장까지)
@@ -597,18 +627,18 @@ function playCellFor(id, d = data) {
   if (!last || last.for === id) return id;
   const own = mine.filter((s) => !s.for).slice(-2);
   if (own.length < 2 || own.some((s) => s.correct >= LOW)) return id;
-  const below = CELLS.slice(0, CELLS.indexOf(c)).reverse().find(listenCell);
+  const below = CELLS.slice(0, CELLS.indexOf(c)).reverse().find((x) => listenCell(x) && x.kind !== 'supra'); // 소리 높낮이는 낱말을 다지는 데 맞지 않아 건너뛴다
   return below ? below.id : id;
 }
 // 복습할 칸: 넘은 듣기 칸 중 가장 오래전에 한 칸
 function reviewCell(d = data) {
   const lastAt = (id) => Math.max(0, ...(d.sessions || []).filter((s) => s.cell === id).map((s) => s.at || 0));
-  const done = CELLS.filter((c) => listenCell(c) && goodDates(c, d).size >= needDays(c));
+  const done = CELLS.filter((c) => listenCell(c) && goodDates(c, d).size >= needDays(c, d));
   return done.sort((a, b) => lastAt(a.id) - lastAt(b.id))[0]?.id || null;
 }
 const roundsOn = (date, d = data) => (d.sessions || []).filter((s) => s.date === date).length
   + (d.speakLog || []).filter((s) => s.date === date).length + (d.gates || []).filter((g) => g.date === date).length;
-const practiceDates = (d = data) => new Set([...(d.sessions || []), ...(d.speakLog || []), ...(d.gates || []), ...(d.noiseRecs || []), ...(d.retests || [])].map((s) => s.date));
+const practiceDates = (d = data) => new Set([...(d.sessions || []), ...(d.speakLog || []), ...(d.gates || []), ...(d.noiseRecs || []), ...(d.retests || []), ...(d.supraRuns || [])].map((s) => s.date));
 // 그때 틀린 문제 다시 듣기: 2주 넘게 지났고 아직 다시 풀지 않은 문제. 같은 문제는 한 번만, 오래된 것부터.
 const missKey = (m) => `${m.kind}|${m.say || m.answer}`;
 function retestPool(d = data) {
@@ -641,10 +671,12 @@ function passHint(c) {
   if (st === 'soon') return '곧 열려요';
   if (st === 'skip') return '이 기기에서는 말하기를 확인할 수 없어요';
   const bar = c.kind === 'speak' ? '5개 중 4개를 또렷하게 말하면' : '10문제 중 8개 이상 맞히면';
-  const got = goodDates(c);
-  if (needDays(c) === 1) return `${bar} 통과`;
-  if (!got.size) return `${bar} 한 번, 다른 날 한 번 더 하면 통과`;
-  return got.has(today()) ? '오늘 넘었어요. 다른 날 한 번 더 넘으면 통과' : '다른 날 한 번 더 넘으면 통과';
+  const got = goodDates(c); const need = needDays(c);
+  const times = (k) => `${['', '한', '두', '세', '네'][k] || k} 번`;
+  if (need === 1) return `${bar} 통과`;
+  if (!got.size) return need === 2 ? `${bar} 한 번, 다른 날 한 번 더 하면 통과` : `${bar.slice(0, -1)}는 날이 ${times(need)}이면 통과`; // 맞히면 → 맞히는 날이
+  const more = `다른 날 ${times(need - got.size)} 더 넘으면 통과`;
+  return got.has(today()) ? `오늘 넘었어요. ${more}` : more;
 }
 const routeName = (r) => {
   const m = r.match(/^#(cell|gate)\/(.+)$/);
@@ -677,6 +709,10 @@ const ICON = {
   redo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg>',
   wave: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 7v10M21 12h0"/></svg>',
   walk: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8"/><path d="M10 21l2-6-2.5-2.5L11 8l3 3h3M9.5 12.5L7 14M14 15l2 6"/></svg>',
+  up: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15h7l9-9M13 6h6v6"/></svg>',
+  down: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h7l9 9M19 12v6h-6"/></svg>',
+  dial: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
+  shape: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15c2.5 0 2.5-6 5-6s2.5 8 5 8 2.5-10 5-10c1.5 0 2 2 3 2"/></svg>',
 };
 
 /* ---------- 화면 ---------- */
@@ -755,6 +791,7 @@ const tipCard = (i) => {
 };
 
 function renderHome() {
+  if (data.who == null) return renderWho(true); // 처음 열면 누가 연습하는지부터 고른다
   setNav('home');
   const step = nextStep();
   const ch = chapterOf(step.ch);
@@ -803,6 +840,7 @@ function renderHome() {
       <p class="note">위의 '오늘의 연습'을 누르면 숙제를 차례로 이어서 해요.</p>
     </section>`;
     })() : ''}
+    ${lingHome()}
     ${checkDue() ? `
     <button class="report-link check-link" data-go="#check">
       <span class="focus-ico">${ICON.ear}</span>
@@ -823,6 +861,7 @@ function renderHome() {
       </div>
       <div class="chips">${weakTop(3).map(([k]) => `<span class="chip focus">${esc(friendly(k))}</span>`).join('')}</div>
     </section>` : ''}
+    ${fitCard()}
 
     <div class="home-links">
       <button class="report-link speak-link" data-go="#focus">
@@ -833,6 +872,14 @@ function renderHome() {
         <span class="focus-ico">${ICON.doc}</span>
         <span><b>단어장</b><small>장소별 낱말을 눌러 듣기</small></span>
       </button>
+      <button class="report-link speak-link" data-go="#supra">
+        <span class="focus-ico">${ICON.shape}</span>
+        <span><b>소리 구별</b><small>길이·말끝·목소리 가려 듣기</small></span>
+      </button>
+      <button class="report-link speak-link" data-go="#ling">
+        <span class="focus-ico">${ICON.ear}</span>
+        <span><b>링 6소리</b><small>아·우·이·쉬·스·음 30초 점검</small></span>
+      </button>
     </div>
 
     <h2 class="section-title">소리길 지도 <span>생활 장소 7곳</span></h2>
@@ -841,9 +888,10 @@ function renderHome() {
       const done = cells.filter((x) => cellState(x) === 'done').length;
       const passed = gatePassed(c.n); const open = chapterOpen(c.n);
       const state = !cells.length && !GATES[c.n] ? 'soon' : passed ? 'done' : c.n === cur ? 'current' : open ? 'open' : 'ahead';
+      const skipped = !passed && c.n < whoOf().ch; // 유형에 맞춰 건너뛴 장(몸풀기로 해도 된다)
       const sub = state === 'soon' ? '곧 열려요'
         : passed ? `관문 '${GATES[c.n].title}' 넘음`
-        : `칸 ${done}/${cells.length}${open ? '' : ' · 관문부터 도전해도 돼요'}`;
+        : `칸 ${done}/${cells.length}${skipped ? ' · 건너뛰어도 되는 곳' : open ? '' : ' · 관문부터 도전해도 돼요'}`;
       const pct = state === 'soon' ? 0 : passed ? 100 : Math.round((100 * done) / (cells.length + 1));
       return `
       <li class="ch-row ${state}">
@@ -867,6 +915,10 @@ function renderHome() {
         <span class="switch-ui" aria-hidden="true"></span>
         글자 크게 보기
       </label>
+      <button class="set-row" data-go="#who">
+        <span><b>${whoOf().name || '사용자 유형 고르기'}</b><small>듣는 귀 ${EAR_NAME[data.ear]} · 말 빠르기 ${speedName()}</small></span>
+        <span class="set-go">바꾸기</span>
+      </button>
     </section>
     <p class="note center">훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.</p>`;
   view.querySelector('#big').onchange = (e) => { data.bigText = e.target.checked; persist(); applyTextSize(); };
@@ -900,6 +952,7 @@ function renderChapter(n) {
       <p class="lead">${c.about}</p>
     </header>
     ${open ? '' : `<p class="note ahead-note">아직 앞에 있는 장이에요. 칸은 ${n - 1}장 관문을 넘으면 열리고, 이 장 관문에는 지금 먼저 도전할 수 있어요.</p>`}
+    ${!passed && n < whoOf().ch ? `<p class="note ahead-note">${whoOf().name} 사용자는 대개 이 장이 쉬워서 ${whoOf().ch}장부터 시작해요. 몸풀기로 해도 좋아요.</p>` : ''}
     <ol class="cell-list">${cellsOf(n).map((x) => {
       const st = cellState(x);
       const can = x.kind && st !== 'skip' && (open || planHas(x.id));
@@ -949,6 +1002,7 @@ async function renderVoices() {
   const keys = await voiceDb.keys();
   const all = new Set([...ALL_WORDS, ...ALL_SENTENCES]);
   const have = new Set(keys.filter((k) => all.has(k)));
+  const haveAny = new Set(keys);
   const canRec = !!(navigator.mediaDevices && window.MediaRecorder);
   const groups = [
     ['부르는 말', [...new Set(CALL_SETS.flat())]],
@@ -958,7 +1012,9 @@ async function renderVoices() {
     ['생활 문장', [...new Set(SENTENCE_SETS[1].flat())]],
     ['한 낱말만 다른 문장', [...new Set(SENTENCE_SETS[2].flat())]],
     ['소음 속 문장', NOISE_SENTENCES],
+    ['링 6소리 · 2초쯤 길게', LING.map(lingKey)], // 여섯 소리를 다 녹음하면 링 6소리 점검을 이 목소리로 한다
   ];
+  const label = (w) => (w.startsWith('링:') ? `${w.slice(2)}~` : w);
   const total = all.size;
   const pct = Math.round((100 * have.size) / total);
   view.innerHTML = `
@@ -980,15 +1036,15 @@ async function renderVoices() {
     </section>
     ${groups.map(([title, words], gi) => `
       <details class="group" ${gi === openGroup ? 'open' : ''} data-g="${gi}">
-      <summary class="section-title">${title} <span>${words.filter((w) => have.has(w)).length} / ${words.length}</span></summary>
+      <summary class="section-title">${title} <span>${words.filter((w) => haveAny.has(w)).length} / ${words.length}</span></summary>
       <ul class="word-list">
         ${words.map((w) => `
-          <li class="word-row ${have.has(w) ? 'has' : ''}" data-w="${esc(w)}">
-            <span class="word">${esc(w)}</span>
-            <span class="word-state">${have.has(w) ? `${ICON.check}녹음됨` : 'AI 음성'}</span>
-            <button class="icon-btn" data-act="play" aria-label="${esc(w)} 들어 보기">${ICON.speaker}</button>
-            <button class="icon-btn rec-btn" data-act="rec" ${canRec ? '' : 'disabled'} aria-label="${esc(w)} 녹음">${ICON.mic}</button>
-            ${have.has(w) ? `<button class="icon-btn" data-act="del" aria-label="${esc(w)} 녹음 지우기">${ICON.trash}</button>` : ''}
+          <li class="word-row ${haveAny.has(w) ? 'has' : ''}" data-w="${esc(w)}">
+            <span class="word">${esc(label(w))}</span>
+            <span class="word-state">${haveAny.has(w) ? `${ICON.check}녹음됨` : w.startsWith('링:') ? '합성 소리' : 'AI 음성'}</span>
+            <button class="icon-btn" data-act="play" aria-label="${esc(label(w))} 들어 보기">${ICON.speaker}</button>
+            <button class="icon-btn rec-btn" data-act="rec" ${canRec ? '' : 'disabled'} aria-label="${esc(label(w))} 녹음">${ICON.mic}</button>
+            ${haveAny.has(w) ? `<button class="icon-btn" data-act="del" aria-label="${esc(label(w))} 녹음 지우기">${ICON.trash}</button>` : ''}
           </li>`).join('')}
       </ul>
       </details>`).join('')}`;
@@ -997,7 +1053,12 @@ async function renderVoices() {
   view.querySelectorAll('.word-row button').forEach((b) => {
     b.onclick = async () => {
       const w = b.closest('.word-row').dataset.w;
-      if (b.dataset.act === 'play') { b.classList.add('busy'); await playWord(w); b.classList.remove('busy'); return; }
+      if (b.dataset.act === 'play') {
+        b.classList.add('busy');
+        const s = LING.find((x) => lingKey(x) === w);
+        await (s ? playLing(s, haveAny.has(w)) : playWord(w));
+        b.classList.remove('busy'); return;
+      }
       if (b.dataset.act === 'del') { await voiceDb.del(w); return renderVoices(); }
       const ok = await recordWord(w, b);
       if (ok) renderVoices();
@@ -1172,6 +1233,11 @@ function renderProgress() {
       })() : '<p class="note">카페 소음 속에서 1분 동안 문장을 들어요. 알아들으면 소음이 커지고 놓치면 작아져서, 끝났을 때의 소음 크기가 기록이 돼요. 문장 칸(4장)을 해 본 뒤에 재면 좋아요.</p>'}
       <button class="btn block" data-go="#noise">${ICON.wave}${data.noiseRecs.length ? '다시 재기' : '처음 재기'}</button>
     </section>
+    ${lingPanel()}
+    <button class="report-link" data-go="#maps">
+      <span class="focus-ico">${ICON.dial}</span>
+      <span><b>기기 조절 일지</b><small>${data.maps.length ? `${data.maps.length}번 적었어요 · ` : ''}매핑·보청기 조절 날짜와 그 전후 점수</small></span>
+    </button>
     ${data.retests.length ? (() => {
       const n = data.retests.reduce((a, r) => a + r.n, 0); const k = data.retests.reduce((a, r) => a + r.correct, 0);
       return `<section class="panel">
@@ -1202,7 +1268,7 @@ function renderProgress() {
   const reset = view.querySelector('#reset');
   reset.onclick = () => {
     if (reset.dataset.confirm) {
-      data = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText });
+      data = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, who: data.who, ear: data.ear, talkSpeed: data.talkSpeed });
       persist(); renderProgress(); toast('기록을 지웠어요.');
     } else { reset.dataset.confirm = '1'; reset.textContent = '한 번 더 누르면 지워져요'; reset.classList.add('danger'); }
   };
@@ -1516,6 +1582,20 @@ function renderReport() {
   }
   const rt = data.retests || [];
   if (rt.length) lines.push(`2주 넘게 지나 다시 푼 틀린 문제 ${rt.reduce((a, r) => a + r.n, 0)}개 중 <b>${rt.reduce((a, r) => a + r.correct, 0)}개</b>를 맞혔어요.`);
+  const ls = (data.lings || []).filter((x) => x.date >= days[0].key);
+  if (ls.length) {
+    const missN = {}; for (const x of ls) for (const id of x.miss) missN[id] = (missN[id] || 0) + 1;
+    const top = Object.entries(missN).sort((a, b) => b[1] - a[1])[0];
+    const drop = lingDrop();
+    lines.push(`링 6소리 점검을 최근 2주에 <b>${ls.length}번</b> 했고 평균 <b>${lingAvg(ls)}개</b>를 알아들었어요${top ? `. 가장 자주 놓친 소리는 '${LING_BY[top[0]].say}'(${top[1]}번)예요` : ''}${drop && daysSince(drop.date) <= 7 ? `. ${shortDate(drop.date)}에 갑자기 떨어졌어요(${drop.why.replace(/요\.$/, '요')}). 기기 점검이나 매핑이 필요한지 확인해 보세요` : ''}.`);
+  }
+  const maps = [...(data.maps || [])].sort((a, b) => a.date.localeCompare(b.date));
+  const lastMap = maps[maps.length - 1];
+  if (lastMap) {
+    const e = mapEffect(lastMap);
+    const has = (w) => w.acc != null || w.ling != null;
+    lines.push(`${shortDate(lastMap.date)}에 ${lastMap.ear !== 'both' ? `${EAR_NAME[lastMap.ear]} ` : ''}${MAP_DID[lastMap.kind] || MAP_DID.etc}.${has(e.before) && has(e.after) ? ` 전 7일 ${effText(e.before)} → 뒤 7일 <b>${effText(e.after)}</b>.` : ' 전후를 견줄 기록이 아직 모자라요.'}`);
+  }
 
   // 날마다 정답률 꺾은선(한 계열)
   const W = 340; const H = 170; const L = 38; const R = 34; const T = 14; const B = 24;
@@ -1538,7 +1618,7 @@ function renderReport() {
         <div>
           <p class="eyebrow">소리길 청능훈련 리포트</p>
           <h1><span id="rname-view">${esc(data.reportName || '')}</span>${data.reportName ? ' 님의' : ''} 훈련 기록</h1>
-          <p class="note">기간 ${ss[0].date} ~ ${today()} · 만든 날 ${today()}${data.demo ? ' · 시연용 예시 기록' : ''}</p>
+          <p class="note">기간 ${ss[0].date} ~ ${today()} · 만든 날 ${today()}${whoOf().name ? ` · ${whoOf().name}` : ''}${earSide() ? ` · ${EAR_NAME[data.ear]}로 연습` : ''}${data.demo ? ' · 시연용 예시 기록' : ''}</p>
         </div>
         <span class="report-logo" aria-hidden="true">${ICON.path}</span>
       </header>
@@ -1574,7 +1654,7 @@ function renderReport() {
               <td class="${r.done ? 'up' : ''}">${r.done ? '통과' : '–'}</td></tr>`;
           }).join('')}</tbody>
         </table>
-        <p class="note">처음과 최근은 각각 앞뒤 최대 5판의 정답률이에요. 칸은 10문제 중 8개 이상인 날이 2번(1·2장은 1번)이면 통과해요.</p>
+        <p class="note">처음과 최근은 각각 앞뒤 최대 5판의 정답률이에요. 칸은 10문제 중 8개 이상인 날이 ${needDays({ ch: 3 })}번(1·2장은 ${needDays({ ch: 1 })}번)이면 통과해요.</p>
       </section>
 
       <section class="panel p-weak"${weak.length ? '' : ' hidden'}>
@@ -1594,6 +1674,20 @@ function renderReport() {
           <span class="acc-bar"><i style="width:${tone[f] == null ? 0 : Math.round((-tone[f] / 60) * 100)}%"></i></span>
           <span class="acc-val">${tone[f] == null ? '–' : `${tone[f]}dB`}</span></li>`).join('')}</ul>
         <p class="note">기기 음량 기준으로 몇 dB 작게까지 들었는지예요. 기기마다 달라서 청력 검사 결과와 같지 않아요.</p>
+      </section>
+
+      <section class="panel p-maps"${maps.length ? '' : ' hidden'}>
+        <h2 class="panel-title">기기 조절 전후 <span>전 7일 → 뒤 7일</span></h2>
+        <table class="rtable">
+          <thead><tr><th>날짜</th><th>정답률</th><th>링 6소리</th></tr></thead>
+          <tbody>${maps.slice(-4).reverse().map((m) => {
+            const e = mapEffect(m);
+            const cell = (a, b, unit) => (a == null && b == null ? '–' : `${a == null ? '–' : a + unit} → ${b == null ? '–' : `<b>${b}${unit}</b>`}`);
+            return `<tr><th scope="row">${shortDate(m.date)} <small>${esc(MAP_KIND[m.kind] || '')}${m.ear !== 'both' ? ` · ${EAR_NAME[m.ear]}` : ''}</small></th>
+              <td>${cell(e.before.acc, e.after.acc, '%')}</td><td>${cell(e.before.ling, e.after.ling, '개')}</td></tr>`;
+          }).join('')}</tbody>
+        </table>
+        <p class="note">정답률은 그동안 한 칸 판을 모두 모은 것이라, 연습한 칸이 바뀌면 함께 달라질 수 있어요.</p>
       </section>
 
       <section class="panel p-memo">
@@ -1701,7 +1795,7 @@ function patientRow(raw, name) {
   const step = nextStep(d);
   const last = [...practiceDates(d)].sort().pop() || null;
   return {
-    name: name || '이름 없음',
+    name: name || '이름 없음', who: WHO[d.who]?.name || '',
     last, week: weekDays(d), planDays: d.plan?.days || null, rounds: ss.length,
     ch: step.ch, now: step.cell || (step.gate ? '관문' : '복습'),
     gates: new Set(d.gates.filter((g) => g.pass).map((g) => g.ch)).size,
@@ -1757,7 +1851,7 @@ function renderClinic() {
         <table class="rtable patients">
           <thead><tr><th>이름</th><th>마지막</th><th>이번 주</th><th>지금</th><th>넘은 관문</th><th>최근 정답</th><th>약한 소리</th><th>월 점검</th><th>소음 기록</th></tr></thead>
           <tbody>${clinicRows.length ? clinicRows.map((r) => `
-            <tr><th scope="row">${esc(r.name)}${r.demo ? '<span class="chip demo sm">예시</span>' : ''}</th>
+            <tr><th scope="row">${esc(r.name)}${r.demo ? '<span class="chip demo sm">예시</span>' : ''}${r.who ? `<small class="who-sm">${esc(r.who)}</small>` : ''}</th>
               <td>${dayName(r.last)}</td>
               <td class="${r.planDays && r.week >= r.planDays ? 'up' : ''}">${r.week}${r.planDays ? `/${r.planDays}일` : '일'}</td>
               <td>${r.ch}장 <small>${esc(r.now)}</small></td><td>${r.gates}개</td><td>${r.acc == null ? '–' : `${r.acc}%`}</td>
@@ -1885,7 +1979,8 @@ async function renderCheck() {
     $('#hint').innerHTML = (sc ? `<span class="chip scene">${sc.icon} ${sc.name} · 소음 ${snrText(6)}</span>` : '') + `<button class="pill" id="replay">${ICON.speaker}한 번 더 듣기</button>`;
     $('#answers').className = '';
     $('#answers').innerHTML = '';
-    const listen = () => (sc ? withNoise(it.scene, 6, () => playWord(it.answer)) : playWord(it.answer)); // 소음은 늘 +6dB
+    const say = () => playWord(it.answer, undefined, 1, true); // 늘 같은 빠르기
+    const listen = () => (sc ? withNoise(it.scene, 6, say) : say()); // 소음은 늘 +6dB
     let busy = true;
     const playing = async () => { busy = true; orb.className = 'orb playing'; try { await listen(); } finally { busy = false; if (alive()) orb.className = 'orb idle'; } };
     const replay = $('#replay');
@@ -1953,10 +2048,11 @@ const BACKUP_KEY = 'sorigil.v1.backup';
 // 칸 통과와 관문은 앱과 같은 규칙 함수로 따지고, 다 만든 뒤 마지막 날이 오늘(idle이면 그만큼 전)이 되게 날짜를 옮긴다.
 // opts로 사람마다 다르게 만들어 선생님 화면의 예시 환자로도 쓴다.
 function demoData(opts = {}) {
-  const { seed0 = 7, name = '김소리', boost = 0, to = 5, stay = 6, idle = 0, plan = null } = opts;
+  const { seed0 = 7, name = '김소리', boost = 0, to = 5, stay = 6, idle = 0, plan = null, who = 'ci' } = opts;
   let seed = seed0;
   const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-  const d = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, demo: true, reportName: name, plan });
+  // 듣는 귀와 말 빠르기는 이 기기를 쓰는 사람 것을 그대로 둔다
+  const d = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, ear: data.ear, talkSpeed: data.talkSpeed, demo: true, reportName: name, plan, who });
   const day0 = '2000-01-03';
   const START = { 1: 0.78, 2: 0.72, 3: 0.56, 4: 0.6, 5: 0.52, 6: 0.45 }; // 칸에 처음 들어섰을 때 정답률
   const GSTART = { 1: 0.86, 2: 0.78, 3: 0.72, 4: 0.68, 5: 0.66, 6: 0.6 };
@@ -2059,6 +2155,27 @@ function demoData(opts = {}) {
       return { date, at: new Date(`${date}T20:30:00`).getTime(), snr: s0 + 2 * (a.length - 1 - i), n: 11 + Math.floor(rnd() * 4), correct: 8 + Math.floor(rnd() * 3) };
     });
   }
+  // 링 6소리를 거의 매일 했다(인공와우). 3주쯤 전 '스'·'쉬'를 놓치기 시작해 매핑을 받았고, 그 뒤 다시 올라갔다.
+  if (WHO[who]?.ling) {
+    const mapAgo = Math.min(18, Math.max(8, span - 4));
+    for (let ago = Math.min(30, span); ago >= 1; ago--) {
+      if (rnd() < 0.2) continue;
+      const date = addDays(today(), -ago);
+      const low = ago > mapAgo && ago <= mapAgo + 4; // 매핑 전 며칠은 높은 소리를 놓쳤다
+      const miss = low ? ['s', 'sh'].slice(0, rnd() < 0.6 ? 2 : 1) : rnd() < 0.3 ? ['s'] : [];
+      const wrong = { s: rnd() < 0.5 ? 'none' : 'sh', sh: 's' }; // '스'는 안 들리거나 '쉬'로, '쉬'는 '스'로 들렸다
+      const res = Object.fromEntries(LING.map((s) => [s.id, miss.includes(s.id) ? wrong[s.id] : s.id]));
+      d.lings.push({ date, at: new Date(`${date}T08:30:00`).getTime(), ear: d.ear, src: 'synth', ok: 6 - miss.length, heard: LING.filter((s) => res[s.id] !== 'none').length, miss, res });
+    }
+    const md = addDays(today(), -mapAgo);
+    d.maps = [{ date: md, at: new Date(`${md}T15:00:00`).getTime(), kind: 'map', ear: 'both', memo: '높은 소리 쪽을 조금 키움' }];
+    // 처음 몇 주는 소리 구별부터 했다
+    const first0 = d.sessions[0]?.date || today();
+    d.supraRuns = ['len', 'tune', 'len', 'voice', 'tune'].map((mode, i) => {
+      const date = addDays(first0, i);
+      return { mode, date, at: new Date(`${date}T19:30:00`).getTime(), correct: 6 + Math.min(4, i + Math.floor(rnd() * 2)), total: 10, sec: 140 };
+    });
+  }
   // 6일 전에 그때 틀린 문제를 한 번 다시 풀었다
   const pool = span >= 20 ? retestPool(d).filter((m) => daysSince(m.date) >= RETEST_AGO + 6).slice(0, RETEST_N) : [];
   if (pool.length === RETEST_N) {
@@ -2073,20 +2190,20 @@ function demoPatients() {
   const mk = (cells, kind, amount, days) => ({ by: '김민정', cells, kind, amount, days, memo: '', at: Date.now() });
   return [
     demoData({ seed0: 7, name: '김소리', plan: mk(['5-2', 'g5'], 'm', 10, 5) }),
-    demoData({ seed0: 23, name: '이바다', boost: -0.08, to: 2, stay: 3, idle: 2, plan: mk(['2-1', '2-2'], 'r', 3, 3) }),
-    demoData({ seed0: 101, name: '박하늘', boost: 0.06, to: 6, stay: 4, plan: mk(['6-1', 'g6'], 'm', 15, 6) }),
+    demoData({ seed0: 23, name: '이바다', boost: -0.08, to: 2, stay: 3, idle: 2, plan: mk(['2-1', '2-2'], 'r', 3, 3), who: 'ear2' }),
+    demoData({ seed0: 101, name: '박하늘', boost: 0.06, to: 6, stay: 4, plan: mk(['6-1', 'g6'], 'm', 15, 6), who: 'ha' }),
     demoData({ seed0: 55, name: '최도윤', boost: -0.03, to: 3, stay: 5, idle: 1 }),
   ];
 }
 
 function loadDemo() {
-  if (!data.demo && practiceDates().size) try { localStorage.setItem(BACKUP_KEY, JSON.stringify(data)); } catch {} // 내 기록은 따로 보관한다
+  if (!data.demo) try { localStorage.setItem(BACKUP_KEY, JSON.stringify(data)); } catch {} // 내 기록과 설정은 따로 보관한다
   data = demoData(); persist();
 }
 function clearDemo() {
   let back = null;
   try { back = JSON.parse(localStorage.getItem(BACKUP_KEY)); localStorage.removeItem(BACKUP_KEY); } catch {}
-  data = migrate(Object.assign(fresh(), back || { preferFamily: data.preferFamily, bigText: data.bigText }));
+  data = migrate(Object.assign(fresh(), back || { preferFamily: data.preferFamily, bigText: data.bigText, ear: data.ear, talkSpeed: data.talkSpeed }));
   persist();
 }
 
@@ -2111,7 +2228,7 @@ async function renderNoiseRec() {
   const c = audio(); const buf = sceneBuffer(c, 'cafe');
   const src = c.createBufferSource(); src.buffer = buf; src.loop = true;
   const g = c.createGain(); g.gain.value = 0;
-  src.connect(g); g.connect(c.destination);
+  src.connect(g); g.connect(earOut(c));
   if (stopNoise) stopNoise();
   stopNoise = () => { try { src.stop(); } catch {} stopNoise = null; };
   src.start(c.currentTime, Math.random() * buf.duration);
@@ -2137,7 +2254,7 @@ async function renderNoiseRec() {
       await wait(700);
       if (!alive()) return;
       orb.className = 'orb playing';
-      await playWord(target);
+      await playWord(target, undefined, 1, true); // 늘 같은 빠르기
       if (!alive()) return;
       orb.className = 'orb idle';
       const ans = await ask(opts.map((w) => [w]), opts.indexOf(target), 'sentences');
@@ -2310,7 +2427,8 @@ function startBox(inRun, extra = '') {
         ${inRun ? '<p class="run-tag center">오늘의 연습 · <b id="count">3</b>초 뒤 시작해요</p>' : ''}
         <button class="btn block" id="soundcheck">${ICON.speaker}소리 확인하기</button>
         <button class="btn primary block" id="start">${inRun ? '바로 시작' : '시작하기'}</button>
-        <p class="note center">초인종 소리와 "안녕하세요"가 들리면 준비 끝이에요. 안 들리면 휴대폰 음량과 무음 모드를 확인해 주세요.</p>${extra}`;
+        <p class="note center">초인종 소리와 "안녕하세요"가 들리면 준비 끝이에요. 안 들리면 휴대폰 음량과 무음 모드를 확인해 주세요.</p>
+        ${earSide() ? `<p class="note center ear-note">${ICON.ear}${EAR_NAME[data.ear]}로만 소리를 보내요. 이어폰이나 기기 블루투스로 들어 주세요.</p>` : ''}${extra}`;
 }
 function waitStart(inRun, alive) {
   const $ = (s) => view.querySelector(s);
@@ -2351,6 +2469,7 @@ async function renderPlay(routeId) {
     word: ['들은 말을 골라 주세요', c.weak ? '자주 헷갈린 소리가 든 낱말을 모아 냈어요.' : `${ida(c.desc)}.`],
     sent: c.level === 3 ? ['문장 속 낱말을 골라 주세요', '문장을 듣고, 그 속에 들린 낱말을 골라요.'] : ['들은 문장을 골라 주세요', '생활 속 문장을 들려드려요.'],
     noise: sc && [`${sc.name}에서 들어 보세요`, `${sc.name} 소음 속에서 말을 알아들어요. 말소리가 소음보다 ${c.snr}dB 커요.`],
+    supra: ['말끝을 들어 보세요', '"아?"처럼 끝이 올라가는 소리와 "아."처럼 내려가는 소리를 가려 들어요. 묻는 말은 끝이 올라가요.'],
   }[c.kind];
   const extra = (c.kind === 'word' || c.kind === 'sent' || c.kind === 'noise') && !canSpeak()
     ? '<p class="note warn center" id="nospeech">이 화면에서는 AI 음성이 나오지 않아요. 크롬이나 삼성 인터넷 같은 브라우저에서 열어 주세요. 가족 목소리로 녹음한 말은 여기서도 들려요.</p>' : '';
@@ -2372,7 +2491,7 @@ async function renderPlay(routeId) {
   for (let i = 0; i < TRIALS && alive(); i++) {
     $('#pnum').textContent = `${i + 1}번째 / ${TRIALS}문제`;
     $('#pbar').style.width = `${(100 * i) / TRIALS}%`;
-    const trial = { tone: toneTrial, env: envTrial, word: wordTrial, sent: sentenceTrial, noise: noiseTrial }[c.kind];
+    const trial = { tone: toneTrial, env: envTrial, word: wordTrial, sent: sentenceTrial, noise: noiseTrial, supra: supraTrial }[c.kind];
     const ok = await trial();
     if (!alive()) return;
     results.push(ok);
@@ -2387,7 +2506,7 @@ async function renderPlay(routeId) {
   for (const [f, db] of Object.entries(freqBest)) data.toneByFreq[f] = Math.min(data.toneByFreq[f] ?? 0, db);
   for (const [k, v] of Object.entries(sessionConf)) data.confusions[k] = (data.confusions[k] || 0) + v;
   data.sessions.push({ date: today(), cell: id, ...(below ? { for: routeId } : {}), correct, total: TRIALS, at: Date.now(), sec: Math.round((Date.now() - startedAt) / 1000) });
-  data.misses = [...data.misses, ...misses.map(({ replayFns, ...m }) => ({ date: today(), at: Date.now(), cell: id, ...m }))].slice(-300);
+  data.misses = [...data.misses, ...misses.filter((m) => !m.local).map(({ replayFns, ...m }) => ({ date: today(), at: Date.now(), cell: id, ...m }))].slice(-300); // local: 이 판에서만 다시 듣는 문제
   persist();
 
   let status = '';
@@ -2563,6 +2682,27 @@ async function renderPlay(routeId) {
     if (!ok) {
       misses.push({ kind: 'noise', answer: target, chose: opts[ans], options: opts, say: target, scene: c.scene, snr: c.snr, label: target, choseLabel: opts[ans], replayFns: fns });
       await replayAnswer(fns[0]);
+    }
+    return ok;
+  }
+
+  // 소리 높낮이(2-3): 말끝이 올라가는지 내려가는지. 합성한 소리라 기기 음성이 없어도 된다.
+  async function supraTrial() {
+    const it = supraItem(c.mode, c.labels);
+    $('#answers').innerHTML = '';
+    setQ(c.labels ? '끝이 올라갔나요, 내려갔나요?' : SUPRA[c.mode].q, replayBtn());
+    $('#replay').onclick = replay(it.play);
+    await playing(it.play());
+    if (!alive()) return false;
+    const ans = await ask(it.opts, it.right, 'two');
+    const ok = ans === it.right;
+    const right = it.opts[it.right][0]; const chose = it.opts[ans][0];
+    const pair = [it.plays[it.right], it.plays[ans]];
+    feedback(ok, ok ? '잘 들으셨어요!' : '괜찮아요', ok ? it.tell : `정답은 ${ida(right)}. ${it.tell}`,
+      ok ? null : [[`정답: ${right}`, pair[0]], [`고른 것: ${chose}`, pair[1]]]);
+    if (!ok) {
+      misses.push({ local: true, label: right, choseLabel: chose, replayFns: pair });
+      await replayAnswer(pair[0]);
     }
     return ok;
   }
@@ -2834,6 +2974,7 @@ function route() {
   const inv = h.match(/^#plan\/(.+)$/);
   const fc = h.match(/^#focus(?:\/(word|sound|sent)(?:\/(\d+)(\/go)?)?)?$/);
   const vc = h.match(/^#vocab(?:\/(\d+)(\/go)?)?$/);
+  const sp = h.match(/^#supra\/(\w+)$/);
   const flv = fc && fc[2] && +fc[2] >= 1 && +fc[2] <= 10 ? +fc[2] : null;
   const vch = vc && vc[1] && VOCAB[+vc[1] - 1] ? +vc[1] : null;
   if (cell && CELL[cell[1]]?.kind) (CELL[cell[1]].kind === 'speak' ? renderSpeak(cell[1]) : renderPlay(cell[1]));
@@ -2849,6 +2990,11 @@ function route() {
   else if (h === '#speak') renderSpeak(null);
   else if (h === '#noise') renderNoiseRec();
   else if (h === '#retest') renderRetest();
+  else if (h === '#who') renderWho(false);
+  else if (h === '#ling') renderLing();
+  else if (h === '#maps') renderMaps();
+  else if (h === '#supra') renderSupra();
+  else if (sp && SUPRA[sp[1]]) renderSupraQuiz(sp[1]);
   else if (fc && flv) (fc[3] ? renderFocusTest(fc[1], flv) : renderFocusLevel(fc[1], flv));
   else if (fc && fc[1]) renderFocusCat(fc[1]);
   else if (fc) renderFocusHome();
