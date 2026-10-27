@@ -145,7 +145,7 @@ function renderFocusHome() {
       <span class="focus-ico">${ICON.doc}</span>
       <span><b>단어장</b><small>장소별 낱말을 눌러 듣고 틈틈이 풀어 봐요</small></span>
     </button>
-    <p class="note center">단계: 1~2 왕초보 · 3~4 초보 · 5~7 중급 · 8~9 고수 · 10 초고수${whoOf().name ? `<br>${whoOf().name}에 맞춰 권하는 단계부터 보여 드려요.` : ''}</p>`;
+    ${whoOf().name ? `<p class="note center">${whoOf().name}에 맞춰 권하는 단계부터 보여 드려요.</p>` : ''}`;
 }
 
 function renderFocusCat(cat) {
@@ -164,7 +164,7 @@ function renderFocusCat(cat) {
       return `
       <li class="cell-row ${passed ? 'done' : ''}${lv === rec && !passed ? ' now' : ''}">
         <span class="cell-id">${lv}</span>
-        <span class="cell-text"><b>${lv}단계 <i class="tag">${FOCUS_TIERS[lv]}</i></b><small>${c.desc[lv]}</small>
+        <span class="cell-text"><b>${lv}단계</b><small>${c.desc[lv]}</small>
           <em>${best ? `최고 ${best.correct}/${FOCUS_N}${g ? ` · ${g}등급` : ''}` : lv === rec ? '여기부터 해 보세요' : lv < (whoOf().focus[cat] || 1) ? '건너뛰어도 되는 단계' : '아직 도전 전'}</em></span>
         ${g ? `<span class="grade g${g}" aria-label="${g}등급">${g}</span>` : ''}
         <button class="icon-btn play-btn" data-go="#focus/${cat}/${lv}" aria-label="${lv}단계 열기">${ICON.play}</button>
@@ -194,7 +194,7 @@ function renderFocusLevel(cat, lv) {
   let from = 1;
   view.innerHTML = `
     <header class="page-head">
-      <p class="eyebrow"><button class="link-btn" data-go="#focus/${cat}">${c.name}</button> · ${lv}단계 · ${FOCUS_TIERS[lv]}</p>
+      <p class="eyebrow"><button class="link-btn" data-go="#focus/${cat}">${c.name}</button> · ${lv}단계</p>
       <h1>${c.desc[lv]}</h1>
       ${sp !== 1 ? `<p class="lead">말 빠르기 ${sp}배</p>` : ''}
     </header>
@@ -497,7 +497,7 @@ async function renderFocusTest(cat, lv) {
   const nz = noiseCfg();
   const res = await runQuiz({
     back,
-    eyebrow: `${c.name} ${lv}단계 · ${FOCUS_TIERS[lv]} · 도전`,
+    eyebrow: `${c.name} ${lv}단계 · 도전`,
     title: `${FOCUS_N}문제에 도전해요`,
     hint: `12개 이상 맞히면 통과예요.${nz.on ? ` 소음 모드: ${SCENE_NAME[nz.scene]} 소음 ${snrText(snr)}` : ''}`,
     n: FOCUS_N,
@@ -515,7 +515,7 @@ async function renderFocusTest(cat, lv) {
     : `${FOCUS_PASS}개 이상이면 통과예요. ${FOCUS_PASS - res.correct}개만 더 맞히면 돼요. 연습에서 미리 들어 보고 다시 도전해 보세요.`;
   view.innerHTML = `
     <div class="play result">
-      <p class="eyebrow center">${c.name} ${lv}단계 · ${FOCUS_TIERS[lv]}</p>
+      <p class="eyebrow center">${c.name} ${lv}단계</p>
       ${g ? `<div class="grade big g${g}" aria-label="${g}등급">${g}</div>` : ''}
       <h1 class="q">${FOCUS_N}문제 중 ${res.correct}개 맞혔어요</h1>
       <p class="lead center">${status}</p>
