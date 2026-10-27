@@ -56,7 +56,7 @@ body {
   color: var(--ink);
   font: 22px/1.55 var(--body);
   font-synthesis: none; /* 고운돋움을 억지로 굵게 그리지 않는다 */
-  word-break: keep-all; overflow-wrap: anywhere; /* 줄은 띄어쓰기에서 바꿔 "알아들어/요"처럼 끊기지 않게 */
+  word-break: keep-all; overflow-wrap: anywhere; text-wrap: pretty; /* 줄은 띄어쓰기에서 바꾸고 끝줄에 한 낱말만 남지 않게 */
   -webkit-tap-highlight-color: transparent;
 }
 b, strong, h1, h2, h3 { font-family: var(--display); font-weight: 400; }
@@ -338,7 +338,7 @@ html.big main, html.big .sheet, html.big .tabbar { zoom: 1.15; }
 .choice:disabled { cursor: default; color: var(--ink); }
 .choice .pic { font-size: 40px; line-height: 1; }
 .choice .label { font: 400 22px/1.25 var(--display); }
-.choices.words .label { font: 400 54px/1.1 var(--display); }
+.choices.words .label { font: 400 54px/1.1 var(--display); word-break: normal; text-wrap: balance; } /* 긴 낱말은 "해바/라기"처럼 반씩 나눠 두 줄로 */
 .choices.two .choice { min-height: 128px; }
 .choices.sentences { grid-template-columns: 1fr; gap: 10px; }
 .choices.sentences .choice { min-height: 76px; align-items: flex-start; padding: 14px 20px; text-align: left; }
@@ -353,7 +353,7 @@ body:has(.sheet:not([hidden])) .choices.words .label { font-size: 40px; }
 /* 정답 · 고른 것 표시는 버튼 윗선에 붙는 딱지로 달아 버튼 높이를 늘리지 않는다(아래 줄이 확인 창에 가려도 딱지는 보이게) */
 .choice.right, .choice.wrong { position: relative; }
 .choice.right::after, .choice.wrong::after {
-  position: absolute; top: 0; left: 50%; transform: translate(-50%, -55%); white-space: nowrap;
+  position: absolute; top: 0; left: 50%; transform: translate(-50%, -62%); white-space: nowrap;
   padding: 1px 12px; border-radius: 999px; border: 3px solid var(--bg); font: 400 18px/1.3 var(--display);
 }
 .choice.right::after { content: "○ 정답"; background: var(--good); color: var(--good-ink); }
