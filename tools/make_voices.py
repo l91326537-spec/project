@@ -27,7 +27,8 @@ QA = os.path.join(ROOT, 'tools', 'voice_qa.json')
 DUMP_JS = r"""
 const vm = require('vm'); const fs = require('fs');
 const ctx = {}; vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(process.argv[1], 'utf8') + ';this.W = WORD_SETS; this.C = CALL_SETS; this.S = SENTENCE_SETS; this.N = NOISE_SCENES; this.G = GATES;', ctx);
+vm.runInContext(fs.readFileSync(process.argv[1], 'utf8') + ';this.W = WORD_SETS; this.C = CALL_SETS; this.S = SENTENCE_SETS; this.N = NOISE_SCENES; this.G = GATES;'
+  + 'this.FW = FOCUS_WORDS; this.FS = FOCUS_SOUNDS; this.FT = FOCUS_SENTENCES; this.V = VOCAB; this.fv = focusVariants; this.fs = focusSay;', ctx);
 const hasBatchim = (w) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c <= 11171 && c % 28 !== 0; };
 const fill = (f, w) => f.replace('_{을}', w + (hasBatchim(w) ? '을' : '를')).replace('_{이}', w + (hasBatchim(w) ? '이' : '가'));
 const groups = [...Object.values(ctx.W).flat(), ...ctx.C, ...ctx.S[1], ...ctx.S[2], ['안녕하세요']];
@@ -39,6 +40,10 @@ for (const g of Object.values(ctx.G)) for (const it of g.items) {
   else if (it.t === 'say') groups.push([it.s]);
   else if (it.t === 'talk') for (const l of it.lines) groups.push([l.s || l]);
 }
+// 집중 연습과 단어장
+groups.push(...Object.values(ctx.FW).flat(), ...Object.values(ctx.FS).flat());
+for (const it of Object.values(ctx.FT).flat()) groups.push(ctx.fv(it).map((p) => ctx.fs(it, p)));
+for (const ch of ctx.V) groups.push(ch.words);
 console.log(JSON.stringify({ texts: [...new Set(groups.flat())], groups }));
 """
 

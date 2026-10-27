@@ -4,7 +4,7 @@
  * 고친 파일은 뒤에서 받아 두었다가 다음 실행 때부터 보인다. 저장된 파일을 모두 비우려면 VERSION을 올린다.
  */
 const VERSION = 'sorigil-v3';
-const SHELL = ['./', 'index.html', 'style.css', 'content.js', 'app.js', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
+const SHELL = ['./', 'index.html', 'style.css', 'content.js', 'focus.js', 'app.js', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
