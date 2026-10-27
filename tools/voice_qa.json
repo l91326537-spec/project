@@ -109,6 +109,26 @@
 "speed": 0.9,
 "ok": true
 },
+"갈비 삼 인분 주세요": {
+"heard": "갈비 3인분 주세요.",
+"sim": 100.0,
+"margin": 10.5,
+"rival": "갈비 이 인분 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"갈비 이 인분 주세요": {
+"heard": "갈비 2인분 주세요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "갈비 삼 인분 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "감": {
 "heard": "감",
 "sim": 100.0,
@@ -117,6 +137,16 @@
 "exact": true,
 "try": 4,
 "speed": 0.95,
+"ok": true
+},
+"감기 기운이 조금 있으시네요": {
+"heard": "감기 기운이 조금 있으시네요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
 "ok": true
 },
 "감자": {
@@ -179,6 +209,26 @@
 "speed": 0.85,
 "ok": true
 },
+"거기 누구세요?": {
+"heard": "거기 누구세요?",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "막내야",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"거스름돈 팔백 원 여기 있어요": {
+"heard": "거스름돈 800원 여기 있어요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
 "거울": {
 "heard": "거울",
 "sim": 100.0,
@@ -209,11 +259,31 @@
 "speed": 0.9,
 "ok": true
 },
+"검사지는 간호사에게 주세요": {
+"heard": "검사진은 간호사에게 주세요.",
+"sim": 92.9,
+"margin": 50.0,
+"rival": "처방전은 약국에 내세요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "겨울": {
 "heard": "겨울",
 "sim": 100.0,
 "margin": 40.0,
 "rival": "가을",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"결제는 어떻게 하시겠어요?": {
+"heard": "결제는 어떻게 하시겠어요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -249,6 +319,16 @@
 "speed": 0.9,
 "ok": true
 },
+"계란 한 판에 칠천 원이에요": {
+"heard": "계란 한 판에 7000원이에요",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "계산은 나가실 때 해 주세요": {
 "heard": "배사는 나가실 때 해주세요.",
 "sim": 84.0,
@@ -256,6 +336,56 @@
 "rival": "주문하시겠어요?",
 "exact": false,
 "try": 2,
+"speed": 0.9,
+"ok": true
+},
+"계산은 나눠서 하자": {
+"heard": "계산은 나눠서 하자.",
+"sim": 100.0,
+"margin": 42.1,
+"rival": "계산은 카드로 할게",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"계산은 내가 할게": {
+"heard": "계산은 내가 할게.",
+"sim": 100.0,
+"margin": 31.6,
+"rival": "계산은 카드로 할게",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"계산은 아까 했어": {
+"heard": "배사는 아까 했어",
+"sim": 76.5,
+"margin": 41.2,
+"rival": "계산은 내가 할게",
+"exact": false,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"계산은 저쪽에서 해 주세요": {
+"heard": "계산은 저쪽에서 해주세요.",
+"sim": 100.0,
+"margin": 48.0,
+"rival": "줄은 이쪽으로 서 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"계산은 카드로 할게": {
+"heard": "배사는 카드로 할게.",
+"sim": 78.9,
+"margin": 34.5,
+"rival": "계산은 내가 할게",
+"exact": false,
+"try": 1,
 "speed": 0.9,
 "ok": true
 },
@@ -279,12 +409,32 @@
 "speed": 0.9,
 "ok": true
 },
+"고기 잘라 드릴게요": {
+"heard": "고기 잘라 드릴게요.",
+"sim": 100.0,
+"margin": 52.4,
+"rival": "빈 그릇 치워 드릴게요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
 "고마워요": {
 "heard": "고마워요.",
 "sim": 100.0,
 "margin": 64.3,
 "rival": "보고 싶었어요",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"고모부님": {
+"heard": "고무부님",
+"sim": 88.9,
+"margin": 66.7,
+"rival": "손주야",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -359,6 +509,16 @@
 "speed": 0.9,
 "ok": true
 },
+"공깃밥은 따로 시키셔야 해요": {
+"heard": "공기밥은 따로 시키셔야 해요.",
+"sim": 96.4,
+"margin": 66.8,
+"rival": "후식은 무료예요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "공원": {
 "heard": "공원",
 "sim": 100.0,
@@ -389,6 +549,16 @@
 "speed": 1.05,
 "ok": true
 },
+"교통카드를 한 번 더 대 주세요": {
+"heard": "교통카드를 한 번 더 대주세요.",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "하차 카드를 찍어 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "구름": {
 "heard": "구름",
 "sim": 100.0,
@@ -407,6 +577,16 @@
 "exact": false,
 "try": 3,
 "speed": 0.8,
+"ok": true
+},
+"국물 좀 더 주세요": {
+"heard": "국물 좀 더 주세요.",
+"sim": 100.0,
+"margin": 27.8,
+"rival": "깍두기 좀 더 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
 "ok": true
 },
 "국수": {
@@ -439,6 +619,36 @@
 "speed": 0.9,
 "ok": true
 },
+"그동안 잘 지내셨어요?": {
+"heard": "그동안 잘 지내셨어요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"그래? 다음에 일곱 시쯤 퇴근하면 한번 들러": {
+"heard": "그래. 다음에 7시쯤 퇴근하면 한 번 들러.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"그러니까 약 드시고 운전은 하지 마세요": {
+"heard": "그러니까 약 드시고 운전은 하지 마세요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "금요일": {
 "heard": "금요일",
 "sim": 100.0,
@@ -467,6 +677,46 @@
 "rival": "하마",
 "exact": false,
 "try": 1,
+"speed": 0.9,
+"ok": true
+},
+"기사님, 문 좀 열어 주세요": {
+"heard": "비사님, 문 좀 열어주세요.",
+"sim": 95.8,
+"margin": 45.8,
+"rival": "기사님, 여기서 내려 주세요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"기사님, 여기서 내려 주세요": {
+"heard": "비사님, 여기서 내려주세요.",
+"sim": 95.7,
+"margin": 45.7,
+"rival": "기사님, 문 좀 열어 주세요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"기사님, 이 버스 공원 가요?": {
+"heard": "비사님, 이 버스 공원가요?",
+"sim": 95.7,
+"margin": 52.2,
+"rival": "기사님, 여기서 내려 주세요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"기사님, 카드가 안 찍혀요": {
+"heard": "비사님, 카드가 안 집혀요.",
+"sim": 87.0,
+"margin": 47.8,
+"rival": "기사님, 이 버스 공원 가요?",
+"exact": false,
+"try": 2,
 "speed": 0.9,
 "ok": true
 },
@@ -550,6 +800,16 @@
 "speed": 1.05,
 "ok": true
 },
+"김 좀 더 주세요": {
+"heard": "김 좀 더 주세요.",
+"sim": 100.0,
+"margin": 12.5,
+"rival": "김치 좀 더 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "김밥": {
 "heard": "빈바",
 "sim": 50.0,
@@ -612,6 +872,16 @@
 "speed": 0.9,
 "ok": true
 },
+"김치 좀 더 주세요": {
+"heard": "김치 좀 더 주세요.",
+"sim": 100.0,
+"margin": 12.5,
+"rival": "김 좀 더 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "김치찌개 두 개 주세요": {
 "heard": "김치찌개 2개 주세요.",
 "sim": 100.0,
@@ -628,6 +898,16 @@
 "margin": 10.5,
 "rival": "김치찌개 두 개 주세요",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"깍두기 좀 더 주세요": {
+"heard": "깍둑이 좀 더 주세요.",
+"sim": 89.5,
+"margin": 21.1,
+"rival": "국물 좀 더 주세요",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -663,6 +943,16 @@
 "speed": 0.8,
 "ok": false,
 "base": 8
+},
+"나는 비빔냉면. 만두도 한 접시 시키자": {
+"heard": "나는 비빔 냉년, 만두도 한 접시 시키자.",
+"sim": 97.3,
+"margin": 13.3,
+"rival": null,
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
 },
 "나라": {
 "heard": "나라",
@@ -714,6 +1004,26 @@
 "speed": 0.9,
 "ok": true
 },
+"남은 거 포장해 주세요": {
+"heard": "남은 거 포장해 주세요.",
+"sim": 100.0,
+"margin": 81.0,
+"rival": "카드 되죠?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"내가 문 열어 줄게요": {
+"heard": "내가 문 열어줄게요.",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "누가 왔나 봐요, 나가 볼게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "내리실 문은 오른쪽입니다": {
 "heard": "내리실문은 오른쪽입니다.",
 "sim": 100.0,
@@ -730,6 +1040,16 @@
 "margin": 10.7,
 "rival": "내리실 문은 오른쪽입니다",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"내리실 분은 벨을 눌러 주세요": {
+"heard": "내리실분은 배를 눌러주세요.",
+"sim": 90.0,
+"margin": 41.7,
+"rival": "타실 분은 앞문으로 타 주세요",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -789,6 +1109,16 @@
 "sim": 100.0,
 "margin": 31.2,
 "rival": "내일 학교에 가요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"내일 아침은 굶고 오세요": {
+"heard": "내일 아침은 굶고 오세요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -854,6 +1184,26 @@
 "speed": 0.9,
 "ok": true
 },
+"녹차 라떼 두 잔이요": {
+"heard": "녹차라떼 두 잔이요.",
+"sim": 100.0,
+"margin": 11.1,
+"rival": "홍차 라떼 두 잔이요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"녹차 라떼 한 잔이요": {
+"heard": "녹차 라떼 한 잔이요",
+"sim": 100.0,
+"margin": 10.5,
+"rival": "홍차 라떼 한 잔이요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "논": {
 "heard": "돈",
 "sim": 66.7,
@@ -872,6 +1222,36 @@
 "exact": true,
 "try": 1,
 "speed": 0.9,
+"ok": true
+},
+"누가 왔나 봐요, 나가 볼게요": {
+"heard": "누가 왔나 봐요. 나가 볼게요.",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "내가 문 열어 줄게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"누구 없어요?": {
+"heard": "누구 없어요?",
+"sim": 100.0,
+"margin": 90.9,
+"rival": "이모",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"누나": {
+"heard": "누나",
+"sim": 100.0,
+"margin": 87.5,
+"rival": "사장님",
+"exact": true,
+"try": 6,
+"speed": 1.05,
 "ok": true
 },
 "눈": {
@@ -924,6 +1304,16 @@
 "speed": 0.9,
 "ok": true
 },
+"다 드신 잔은 반납대에 놓아 주세요": {
+"heard": "다 드신 잔은 단납대에 놓아주세요.",
+"sim": 97.1,
+"margin": 64.7,
+"rival": "포크 하나 더 주세요",
+"exact": false,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
 "다리": {
 "heard": "다리",
 "sim": 100.0,
@@ -960,6 +1350,46 @@
 "margin": 73.9,
 "rival": "표는 어디서 사요?",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"다음 정류장은 시립병원입니다": {
+"heard": "다음 정류장은 시립병원입니다.",
+"sim": 100.0,
+"margin": 11.8,
+"rival": "다음 정류장은 시민공원입니다",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"다음 정류장은 시민공원입니다": {
+"heard": "다음 정류장은 시민공원입니다.",
+"sim": 100.0,
+"margin": 11.8,
+"rival": "다음 정류장은 시립병원입니다",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"다음 정류장은 시민회관입니다": {
+"heard": "다음 정류장은 시민회관입니다.",
+"sim": 100.0,
+"margin": 14.7,
+"rival": "다음 정류장은 시민공원입니다",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"다음 정류장은 시외버스터미널입니다": {
+"heard": "다음 정류자는 시왜버스터미널입니다.",
+"sim": 92.1,
+"margin": 32.6,
+"rival": "다음 정류장은 시민회관입니다",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -1009,6 +1439,66 @@
 "sim": 100.0,
 "margin": 70.4,
 "rival": "약국은 건물 일 층이에요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"다음 진료는 목요일 오전이에요": {
+"heard": "다음 진료는 목요일 오전이에요.",
+"sim": 100.0,
+"margin": 9.4,
+"rival": "다음 진료는 화요일 오전이에요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"다음 진료는 목요일 오후예요": {
+"heard": "다음 주요는 목요일 오후예요.",
+"sim": 89.7,
+"margin": 11.1,
+"rival": "다음 진료는 화요일 오후예요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"다음 진료는 화요일 오전이에요": {
+"heard": "다음 진료는 하요일 오전이에요.",
+"sim": 96.8,
+"margin": 6.1,
+"rival": "다음 진료는 목요일 오전이에요",
+"exact": false,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"다음 진료는 화요일 오후예요": {
+"heard": "다음 주요는 화요일 오후예요.",
+"sim": 89.3,
+"margin": 10.0,
+"rival": "다음 진료는 목요일 오후예요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"다음에는 언제 모일까?": {
+"heard": "다음에는 언제 모일까?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"다회용 컵에 드릴까요?": {
+"heard": "다회용 컵에 드릴까요?",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "종이컵에 드릴까요?",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -1246,6 +1736,16 @@
 "speed": 0.9,
 "ok": true
 },
+"두 시간까지 이용할 수 있어요": {
+"heard": "2시간까지 이용할 수 있어요.",
+"sim": 100.0,
+"margin": 64.3,
+"rival": "물티슈 있어요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "두 시에 만나요": {
 "heard": "2시에 만나요.",
 "sim": 100.0,
@@ -1316,6 +1816,26 @@
 "speed": 0.9,
 "ok": true
 },
+"뒷문으로 내려 주세요": {
+"heard": "뒷문으로 내려주세요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "앞문으로 내려 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"뒷문으로 타 주세요": {
+"heard": "뒷문으로 타주세요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "앞문으로 타 주세요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
 "드라마 시작했어요": {
 "heard": "드라마 시작했어요.",
 "sim": 100.0,
@@ -1346,6 +1866,26 @@
 "speed": 0.9,
 "ok": true
 },
+"디카페인으로 바꿀 수 있어요?": {
+"heard": "디카페인으로 바꿀 수 있어요.",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "시럽은 따로 주세요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"따뜻하게 드릴까요, 아이스로 드릴까요?": {
+"heard": "따뜻하게 드릴까요? 아이스로 드릴까요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
 "따뜻한 걸로 드릴까요?": {
 "heard": "따뜻한 걸로 드릴까요?",
 "sim": 100.0,
@@ -1371,6 +1911,26 @@
 "sim": 100.0,
 "margin": 25.0,
 "rival": "아이스 아메리카노 한 잔이요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"따뜻한 유자차 주세요": {
+"heard": "따뜻한 유자차 주세요.",
+"sim": 100.0,
+"margin": 23.8,
+"rival": "따뜻한 자몽차 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"따뜻한 자몽차 주세요": {
+"heard": "따뜻한 자몽차 주세요.",
+"sim": 100.0,
+"margin": 23.8,
+"rival": "따뜻한 유자차 주세요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -1447,6 +2007,16 @@
 "speed": 0.9,
 "ok": true
 },
+"마감은 열 시예요": {
+"heard": "마감은 10시예요.",
+"sim": 100.0,
+"margin": 61.1,
+"rival": "창가 자리 비었어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "마당에 개가 있어요": {
 "heard": "마다니에 개가 있어요.",
 "sim": 89.5,
@@ -1487,6 +2057,36 @@
 "speed": 0.9,
 "ok": true
 },
+"마을버스는 오 분 뒤에 출발해요": {
+"heard": "마을버스는 5분 뒤에 출발해요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"마지막 주문 받을게요": {
+"heard": "마지막 주문 닫을게요.",
+"sim": 95.5,
+"margin": 68.2,
+"rival": "창가 자리 비었어요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"막내야": {
+"heard": "막내야",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "거기 누구세요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "만 원이에요": {
 "heard": "만 원이에요.",
 "sim": 100.0,
@@ -1517,6 +2117,16 @@
 "speed": 0.9,
 "ok": true
 },
+"맛이 어때요?": {
+"heard": "맛이 어때요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "맛있게 드세요": {
 "heard": "맛있게 드세요.",
 "sim": 100.0,
@@ -1537,12 +2147,32 @@
 "speed": 0.9,
 "ok": true
 },
+"맞다. 그럼 그 한정식집 예약할까?": {
+"heard": "맞다. 그럼 그 한정식집 예약할까?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "맵게 해 드릴까요?": {
 "heard": "맵게 해드릴까요?",
 "sim": 100.0,
 "margin": 75.0,
 "rival": "포장도 되나요?",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"머그잔에 드릴까요?": {
+"heard": "머구 잔에 드릴까요?",
+"sim": 94.4,
+"margin": 36.5,
+"rival": "종이컵에 드릴까요?",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -1567,6 +2197,26 @@
 "speed": 0.9,
 "ok": true
 },
+"먹으면 졸릴 수 있어요": {
+"heard": "먹으면 졸릴 수 있어요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"멤버십 번호 불러 주세요": {
+"heard": "멤버십 번호 불러주세요.",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "전화번호 뒷자리 불러 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "몇 분이세요?": {
 "heard": "몇 분이세요?",
 "sim": 100.0,
@@ -1577,11 +2227,31 @@
 "speed": 0.9,
 "ok": true
 },
+"몇 시까지 영업해요?": {
+"heard": "몇 시까지 영업해요?",
+"sim": 100.0,
+"margin": 84.2,
+"rival": "주차 되나요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "몇 시에 끝나요?": {
 "heard": "몇시에 끝나요?",
 "sim": 100.0,
 "margin": 75.0,
 "rival": "무슨 요일이에요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"모두 만 이천 원입니다": {
+"heard": "모두 12,000원입니다.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -1625,6 +2295,16 @@
 "exact": true,
 "try": 2,
 "speed": 1.0,
+"ok": true
+},
+"목욕물 받아 놨어요, 씻으세요": {
+"heard": "모벽물 받아났어요. 씻으세요.",
+"sim": 86.7,
+"margin": 52.2,
+"rival": "밥 다 됐어요, 나와서 드세요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
 "ok": true
 },
 "목이 말라요": {
@@ -1759,11 +2439,31 @@
 "speed": 0.9,
 "ok": true
 },
+"물 끓어요, 불 좀 꺼 주세요": {
+"heard": "물 끓어요. 불 좀 꺼주세요.",
+"sim": 100.0,
+"margin": 57.1,
+"rival": "빨래 다 됐어요, 좀 널어 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "물 좀 주세요": {
 "heard": "물 좀 주세요.",
 "sim": 100.0,
 "margin": 25.0,
 "rival": "컵 좀 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"물수건 좀 주세요": {
+"heard": "물수건 좀 주세요.",
+"sim": 100.0,
+"margin": 77.8,
+"rival": "주문 바꿔도 될까요?",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -1789,6 +2489,16 @@
 "speed": 0.9,
 "ok": true
 },
+"물은 조금 드셔도 괜찮아요": {
+"heard": "물은 조금 드셔도 괜찮아요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "물을 많이 드세요": {
 "heard": "물을 많이 드세요.",
 "sim": 100.0,
@@ -1809,11 +2519,31 @@
 "speed": 0.9,
 "ok": true
 },
+"물티슈 있어요?": {
+"heard": "물티슈 있어요?",
+"sim": 100.0,
+"margin": 64.3,
+"rival": "두 시간까지 이용할 수 있어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "미용실": {
 "heard": "미용실",
 "sim": 100.0,
 "margin": 62.5,
 "rival": "고양이",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"민수야, 너 요즘도 은행 다니지?": {
+"heard": "민수야, 너 요즘도 은행 다니지?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -1825,6 +2555,16 @@
 "margin": 75.0,
 "rival": "복숭아",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"바닐라라떼 나왔습니다": {
+"heard": "다닐라라 때 나왔습니다.",
+"sim": 91.3,
+"margin": 21.7,
+"rival": "카페라떼 나왔습니다",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -1951,6 +2691,16 @@
 "speed": 0.9,
 "ok": true
 },
+"반찬은 셀프 코너에 있어요": {
+"heard": "반차는 셀프 코너에 있어요.",
+"sim": 92.6,
+"margin": 69.5,
+"rival": "예약하셨어요?",
+"exact": false,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
 "발": {
 "heard": "탈",
 "sim": 66.7,
@@ -2013,6 +2763,16 @@
 "speed": 0.9,
 "ok": false,
 "base": 8
+},
+"밥 다 됐어요, 나와서 드세요": {
+"heard": "밥 다 됐어요. 나와서 드세요.",
+"sim": 100.0,
+"margin": 46.4,
+"rival": "빨래 다 됐어요, 좀 널어 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
 },
 "밥 먹었어요?": {
 "heard": "밥 먹었어요?",
@@ -2104,6 +2864,16 @@
 "speed": 0.9,
 "ok": true
 },
+"백사십이 번 버스가 곧 도착합니다": {
+"heard": "142번 버스가 곧 도착합니다.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "버스": {
 "heard": "버스",
 "sim": 100.0,
@@ -2119,6 +2889,26 @@
 "sim": 100.0,
 "margin": 25.0,
 "rival": "택시를 타고 가요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"번호로 불러 드릴게요": {
+"heard": "번호로 불러드릴게요.",
+"sim": 100.0,
+"margin": 28.0,
+"rival": "진동벨로 불러 드릴게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"번호표 뽑고 기다려 주세요": {
+"heard": "번호 표 뽑고 기다려 주세요.",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "테이블 번호 알려 주세요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -2159,6 +2949,16 @@
 "sim": 100.0,
 "margin": 78.3,
 "rival": "할머니가 전화하셨어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"병원은 저 건물 칠 층이에요": {
+"heard": "병원은 저 건물 7층이에요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -2214,6 +3014,16 @@
 "speed": 0.9,
 "ok": true
 },
+"봉투 드릴까요?": {
+"heard": "봉쇼 드릴까요?",
+"sim": 85.7,
+"margin": 1.7,
+"rival": null,
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "부": {
 "heard": "부",
 "sim": 100.0,
@@ -2222,6 +3032,26 @@
 "exact": true,
 "try": 2,
 "speed": 1.0,
+"ok": true
+},
+"부대찌개 덜 맵게 해 주세요": {
+"heard": "부대찌개 덜 맵게 해주세요.",
+"sim": 100.0,
+"margin": 12.5,
+"rival": "부대찌개 맵게 해 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"부대찌개 맵게 해 주세요": {
+"heard": "부대찌개 맵게 해주세요.",
+"sim": 100.0,
+"margin": 12.5,
+"rival": "부대찌개 덜 맵게 해 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
 "ok": true
 },
 "불": {
@@ -2241,6 +3071,36 @@
 "rival": "이불 덮고 자요",
 "exact": true,
 "try": 1,
+"speed": 0.9,
+"ok": true
+},
+"불 좀 줄여 주세요": {
+"heard": "불 좀 줄여주세요.",
+"sim": 100.0,
+"margin": 65.0,
+"rival": "숟가락 하나 더 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"불고기 삼 인분 주세요": {
+"heard": "불고기 3인분 주세요.",
+"sim": 100.0,
+"margin": 9.5,
+"rival": "불고기 이 인분 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"불고기 이 인분 주세요": {
+"heard": "불고기 2인분 주세요.",
+"sim": 100.0,
+"margin": 13.6,
+"rival": "불고기 삼 인분 주세요",
+"exact": true,
+"try": 2,
 "speed": 0.9,
 "ok": true
 },
@@ -2275,12 +3135,32 @@
 "speed": 0.85,
 "ok": true
 },
+"비밀번호 눌러 주세요": {
+"heard": "비밀번호 눌러주세요.",
+"sim": 100.0,
+"margin": 61.9,
+"rival": "서명해 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "비행기": {
 "heard": "비행기",
 "sim": 100.0,
 "margin": 71.4,
 "rival": "전화기",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"빈 그릇 치워 드릴게요": {
+"heard": "빈 글을 치워 드릴게요",
+"sim": 86.4,
+"margin": 36.4,
+"rival": "고기 잘라 드릴게요",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -2301,6 +3181,16 @@
 "margin": 68.2,
 "rival": "사이즈는 어떻게 하세요?",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"빨래 다 됐어요, 좀 널어 주세요": {
+"heard": "빨래 다 됐어요. 좀 넓어주세요.",
+"sim": 96.4,
+"margin": 42.9,
+"rival": "밥 다 됐어요, 나와서 드세요",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -2416,6 +3306,16 @@
 "speed": 0.9,
 "ok": true
 },
+"사과 한 봉지에 삼천오백 원이에요": {
+"heard": "사과 한 봉지에 3,500원이에요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "사다": {
 "heard": "사다",
 "sim": 100.0,
@@ -2476,6 +3376,16 @@
 "speed": 0.9,
 "ok": true
 },
+"사이즈는 어떤 걸로 하시겠어요?": {
+"heard": "사이즈는 어떤 걸로 하시겠어요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "사이즈는 어떻게 하세요?": {
 "heard": "사이즈는 어떻게 하세요?",
 "sim": 100.0,
@@ -2491,6 +3401,16 @@
 "sim": 100.0,
 "margin": 50.0,
 "rival": "하마",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"사장님": {
+"heard": "사장님",
+"sim": 100.0,
+"margin": 81.8,
+"rival": "작은엄마",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -2546,6 +3466,16 @@
 "speed": 0.9,
 "ok": true
 },
+"삼 일 뒤에 다시 오세요": {
+"heard": "3일 뒤에 다시 오세요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "삼번 검사실로 들어오세요": {
 "heard": "3번 검사실로 들어오세요.",
 "sim": 100.0,
@@ -2581,6 +3511,16 @@
 "sim": 100.0,
 "margin": 7.7,
 "rival": "천 원이에요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"삼촌": {
+"heard": "삼촌",
+"sim": 100.0,
+"margin": 85.7,
+"rival": "막내야",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -2626,11 +3566,41 @@
 "speed": 0.9,
 "ok": true
 },
+"샷 추가해 드릴까요?": {
+"heard": "샷 추가해 드릴까요?",
+"sim": 100.0,
+"margin": 20.0,
+"rival": "시럽 추가해 드릴까요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"서명해 주세요": {
+"heard": "서명해 주세요.",
+"sim": 100.0,
+"margin": 46.2,
+"rival": "카드 빼 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "선글라스": {
 "heard": "선글라스",
 "sim": 100.0,
 "margin": 90.0,
 "rival": "양말",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"선생님": {
+"heard": "선생님",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "외할아버지",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -2757,6 +3727,16 @@
 "speed": 0.9,
 "ok": true
 },
+"손 씻었어요?": {
+"heard": "손 씻었어요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "손수건": {
 "heard": "손수건",
 "sim": 100.0,
@@ -2794,6 +3774,16 @@
 "rival": "여기 보고 웃어요",
 "exact": true,
 "try": 2,
+"speed": 0.9,
+"ok": true
+},
+"손주야": {
+"heard": "손주야",
+"sim": 100.0,
+"margin": 77.8,
+"rival": "고모부님",
+"exact": true,
+"try": 1,
 "speed": 0.9,
 "ok": true
 },
@@ -2898,6 +3888,26 @@
 "speed": 0.9,
 "ok": true
 },
+"수제비 둘 주세요": {
+"heard": "수제비 둘 주세요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "수제비 하나 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"수제비 하나 주세요": {
+"heard": "수제비 하나 주세요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "수제비 둘 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "숙제 다 했어요": {
 "heard": "숙제 다 했어요.",
 "sim": 100.0,
@@ -2908,11 +3918,41 @@
 "speed": 0.9,
 "ok": true
 },
+"순두부찌개 덜 맵게 해 주세요": {
+"heard": "순두부찌개 덜 맵게 해주세요.",
+"sim": 100.0,
+"margin": 11.1,
+"rival": "순두부찌개 맵게 해 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"순두부찌개 맵게 해 주세요": {
+"heard": "순두부찌개 맵게 해주세요.",
+"sim": 100.0,
+"margin": 11.1,
+"rival": "순두부찌개 덜 맵게 해 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "숟가락": {
 "heard": "숟가락",
 "sim": 100.0,
 "margin": 37.5,
 "rival": "젓가락",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"숟가락 하나 더 주세요": {
+"heard": "숟가락 하나 더 주세요.",
+"sim": 100.0,
+"margin": 65.0,
+"rival": "불 좀 줄여 주세요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -2944,6 +3984,26 @@
 "margin": 14.3,
 "rival": "얼음 빼 주세요",
 "exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"시럽 추가해 드릴까요?": {
+"heard": "실업 추가해 드릴까요?",
+"sim": 90.5,
+"margin": 14.3,
+"rival": "샷 추가해 드릴까요?",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"시럽은 따로 주세요": {
+"heard": "시럽은 따로 주세요.",
+"sim": 100.0,
+"margin": 61.1,
+"rival": "연하게 해 주세요",
+"exact": true,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -3008,6 +4068,16 @@
 "speed": 0.9,
 "ok": true
 },
+"식사는 하셨어요?": {
+"heard": "식사는 하셨어요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "신발": {
 "heard": "신발",
 "sim": 100.0,
@@ -3038,11 +4108,41 @@
 "speed": 0.9,
 "ok": true
 },
+"실례합니다": {
+"heard": "실례합니다.",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "아주머니",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "심": {
 "heard": "심",
 "sim": 100.0,
 "margin": 33.3,
 "rival": "침",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"십 분 정도 걸려요": {
+"heard": "10분 정도 걸려요.",
+"sim": 100.0,
+"margin": 10.0,
+"rival": "이십 분 정도 걸려요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"십오 분 정도 걸려요": {
+"heard": "15분 정도 걸려요.",
+"sim": 100.0,
+"margin": 10.0,
+"rival": "십 분 정도 걸려요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -3069,6 +4169,26 @@
 "speed": 0.8,
 "ok": true
 },
+"아가야": {
+"heard": "아가야",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "오빠",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"아기 의자 있어요?": {
+"heard": "아디 의자 있어요?",
+"sim": 93.3,
+"margin": 64.8,
+"rival": "창가 쪽에 앉아도 돼요?",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "아기가 자요": {
 "heard": "아기가 자요.",
 "sim": 100.0,
@@ -3079,11 +4199,71 @@
 "speed": 0.9,
 "ok": true
 },
+"아니요, 지난달에 그만두고 이제 학교에서 일해요": {
+"heard": "아니요. 지난달에 그만두고 이제 학교에서 일해요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"아메리카노 두 잔에 케이크 하나, 모두 만 사천 원입니다": {
+"heard": "아메리카노 두 잔의 케이크 하나 모두 14,000원입니다.",
+"sim": 98.0,
+"margin": 14.0,
+"rival": null,
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "아빠": {
 "heard": "아빠",
 "sim": 100.0,
 "margin": 60.0,
 "rival": "엄마",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"아빠, 손님 왔어요": {
+"heard": "아빠, 손님 왔어요.",
+"sim": 100.0,
+"margin": 23.5,
+"rival": "아빠, 편지 왔어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"아빠, 전화 왔어요": {
+"heard": "아빠, 전화 왔어요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "아빠, 편지 왔어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"아빠, 택배 왔어요": {
+"heard": "아빠, 택배 왔어요.",
+"sim": 100.0,
+"margin": 31.2,
+"rival": "아빠, 편지 왔어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"아빠, 편지 왔어요": {
+"heard": "아빠, 편지 왔어요.",
+"sim": 100.0,
+"margin": 23.5,
+"rival": "아빠, 손님 왔어요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -3164,6 +4344,26 @@
 "sim": 100.0,
 "margin": 90.9,
 "rival": "컵",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"아저씨": {
+"heard": "아저씨",
+"sim": 100.0,
+"margin": 37.5,
+"rival": "아주머니",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"아주머니": {
+"heard": "아주 머니",
+"sim": 100.0,
+"margin": 37.5,
+"rival": "아저씨",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -3269,6 +4469,16 @@
 "speed": 0.9,
 "ok": true
 },
+"아홉 시까지 이 층 검사실로 오세요": {
+"heard": "9시까지 2층 검사실로 오세요.",
+"sim": 93.8,
+"margin": 9.8,
+"rival": null,
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "안경": {
 "heard": "안녕",
 "sim": 83.3,
@@ -3309,6 +4519,16 @@
 "speed": 0.9,
 "ok": true
 },
+"안쪽으로 들어가 주세요": {
+"heard": "안쪽으로 들어가 주세요.",
+"sim": 100.0,
+"margin": 62.1,
+"rival": "타실 분은 앞문으로 타 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "알람 맞춰 놨어요": {
 "heard": "알람 맞춰놨어요.",
 "sim": 100.0,
@@ -3329,11 +4549,41 @@
 "speed": 1.0,
 "ok": true
 },
+"앞문으로 내려 주세요": {
+"heard": "앞문으로 내려주세요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "뒷문으로 내려 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"앞문으로 타 주세요": {
+"heard": "앞문으로 타주세요.",
+"sim": 100.0,
+"margin": 16.7,
+"rival": "뒷문으로 타 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "앞으로 가세요": {
 "heard": "앞으로 가세요.",
 "sim": 100.0,
 "margin": 31.2,
 "rival": "왼쪽으로 가세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"앞치마 드릴까요?": {
+"heard": "앞치마 드릴까요?",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "이쪽으로 오세요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -3356,6 +4606,16 @@
 "rival": "잘 잤어요?",
 "exact": true,
 "try": 1,
+"speed": 0.9,
+"ok": true
+},
+"약 알레르기 있으세요?": {
+"heard": "약 알레르기 있으세요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 2,
 "speed": 0.9,
 "ok": true
 },
@@ -3419,6 +4679,16 @@
 "speed": 0.9,
 "ok": true
 },
+"약은 하루 세 번, 밥 먹고 드세요": {
+"heard": "약은 하루 세 번 밥 먹고 드세요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "양말": {
 "heard": "양말",
 "sim": 100.0,
@@ -3469,6 +4739,36 @@
 "speed": 0.9,
 "ok": true
 },
+"어디가 불편해서 오셨어요?": {
+"heard": "어디가 불편해서 오셨어요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"어디까지 가세요?": {
+"heard": "어디까지 가세요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"어서 오세요, 뭐 드릴까요?": {
+"heard": "어서 오세요. 뭐 드릴까요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "어제": {
 "heard": "어제",
 "sim": 100.0,
@@ -3509,11 +4809,31 @@
 "speed": 0.9,
 "ok": true
 },
+"얼음 더 넣어 드릴까요?": {
+"heard": "얼음 더 넣어드릴까요?",
+"sim": 100.0,
+"margin": 58.3,
+"rival": "휘핑크림 올려 드릴까요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "얼음 빼 주세요": {
 "heard": "얼음 빼주세요.",
 "sim": 100.0,
 "margin": 28.6,
 "rival": "우유 빼 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"얼음 적게 넣어 주세요": {
+"heard": "얼음 적게 넣어주세요.",
+"sim": 100.0,
+"margin": 59.1,
+"rival": "연하게 해 주세요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -3539,6 +4859,46 @@
 "speed": 0.9,
 "ok": true
 },
+"엄마, 병원 다녀올게요": {
+"heard": "엄마, 병원 다녀올게요.",
+"sim": 100.0,
+"margin": 27.3,
+"rival": "엄마, 회사 다녀올게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"엄마, 시장 다녀올게요": {
+"heard": "엄마, 시장 다녀올게요.",
+"sim": 100.0,
+"margin": 19.0,
+"rival": "엄마, 회사 다녀올게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"엄마, 학교 다녀올게요": {
+"heard": "엄마, 학교 다녀올게요.",
+"sim": 100.0,
+"margin": 19.0,
+"rival": "엄마, 회사 다녀올게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"엄마, 회사 다녀올게요": {
+"heard": "엄마, 회사 다녀올게요.",
+"sim": 100.0,
+"margin": 19.0,
+"rival": "엄마, 학교 다녀올게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "엄마한테 전화해요": {
 "heard": "엄마한테 전화해요.",
 "sim": 100.0,
@@ -3554,6 +4914,16 @@
 "sim": 100.0,
 "margin": 90.9,
 "rival": "안경",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여기 냉면이 맛있대. 다들 냉면 먹을래?": {
+"heard": "여기 냉면이 맛있대. 다들 냉면 먹을래?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -3599,11 +4969,111 @@
 "speed": 0.9,
 "ok": true
 },
+"여기 좀 보세요": {
+"heard": "여기 좀 보세요.",
+"sim": 100.0,
+"margin": 69.2,
+"rival": "저기요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여기는 예약석이에요": {
+"heard": "여기는 예약석이에요.",
+"sim": 100.0,
+"margin": 61.9,
+"rival": "마감은 열 시예요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여기서 드세요, 포장이세요?": {
+"heard": "여기서 드세요. 포장이세요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "여름": {
 "heard": "여름",
 "sim": 100.0,
 "margin": 80.0,
 "rival": "겨울",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여보": {
+"heard": "여보",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "아저씨",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여보, 문 좀 열어 줘요": {
+"heard": "여보, 문 좀 열어줘요.",
+"sim": 100.0,
+"margin": 31.6,
+"rival": "여보, 불 좀 켜 줘요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여보, 불 좀 켜 줘요": {
+"heard": "여보, 불 좀 펴줘요.",
+"sim": 93.8,
+"margin": 25.3,
+"rival": "여보, 문 좀 열어 줘요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여보, 어디 있어요?": {
+"heard": "여보, 어디 있어요?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여보, 창문 좀 닫아 줘요": {
+"heard": "여보, 창문 좀 닫아줘요.",
+"sim": 100.0,
+"margin": 31.8,
+"rival": "여보, 문 좀 열어 줘요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여보, 텔레비전 좀 꺼 줘요": {
+"heard": "여보, 텔레비전 좀 꺼져요.",
+"sim": 95.7,
+"margin": 47.8,
+"rival": "여보, 불 좀 켜 줘요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"여보세요": {
+"heard": "여보세요.",
+"sim": 100.0,
+"margin": 87.5,
+"rival": "아빠",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -3639,6 +5109,16 @@
 "speed": 0.9,
 "ok": true
 },
+"연하게 해 주세요": {
+"heard": "연하게 해주세요.",
+"sim": 100.0,
+"margin": 59.1,
+"rival": "얼음 적게 넣어 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "열 시에 만나요": {
 "heard": "10시에 만나요.",
 "sim": 100.0,
@@ -3669,6 +5149,16 @@
 "speed": 0.9,
 "ok": true
 },
+"영수증 버려 드릴까요?": {
+"heard": "영수증 버려드릴까요?",
+"sim": 100.0,
+"margin": 79.2,
+"rival": "멤버십 번호 불러 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "영수증 주세요": {
 "heard": "영수증 주세요.",
 "sim": 100.0,
@@ -3684,6 +5174,36 @@
 "sim": 100.0,
 "margin": 70.6,
 "rival": "같이 시장 갈래요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"예약은 전화로 하세요": {
+"heard": "예약은 전화로 하세요.",
+"sim": 100.0,
+"margin": 70.4,
+"rival": "검사지는 간호사에게 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"예약하셨어요?": {
+"heard": "예약하셨어요?",
+"sim": 100.0,
+"margin": 73.3,
+"rival": "이쪽으로 오세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"오 분 정도 걸려요": {
+"heard": "5분 정도 걸려요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "십오 분 정도 걸려요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -3820,6 +5340,26 @@
 "speed": 0.9,
 "ok": true
 },
+"오늘까지만 반값이에요": {
+"heard": "오늘까지만 단각시예요.",
+"sim": 83.3,
+"margin": 50.0,
+"rival": "이건 국산이에요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"오늘은 고기가 이만 오천 원이에요": {
+"heard": "오늘은 고비가 25,000원이에요.",
+"sim": 97.0,
+"margin": 13.0,
+"rival": null,
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "오늘은 목요일이에요": {
 "heard": "오늘은 목요일이에요.",
 "sim": 100.0,
@@ -3920,6 +5460,16 @@
 "speed": 0.9,
 "ok": true
 },
+"오빠": {
+"heard": "오빠",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "아가야",
+"exact": true,
+"try": 3,
+"speed": 0.8,
+"ok": true
+},
 "오월에 만나요": {
 "heard": "5월에 만나요.",
 "sim": 100.0,
@@ -3980,12 +5530,42 @@
 "speed": 0.9,
 "ok": true
 },
+"와이파이 비밀번호는 영수증 아래에 적혀 있어요": {
+"heard": "와이파이 비밀번호는 영수증 아래에 적혀있어요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "왕": {
 "heard": "왕",
 "sim": 100.0,
 "margin": 66.7,
 "rival": "장",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"외할머니": {
+"heard": "왜 할머니",
+"sim": 88.9,
+"margin": 55.6,
+"rival": "언니",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"외할아버지": {
+"heard": "왜 할아버지?",
+"sim": 90.9,
+"margin": 63.6,
+"rival": "아빠",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -4090,6 +5670,16 @@
 "speed": 0.9,
 "ok": true
 },
+"우유하고 빵 해서 사천삼백 원이요": {
+"heard": "우유하고 빵해서 4,300원이요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "우체국": {
 "heard": "우체고",
 "sim": 71.4,
@@ -4150,6 +5740,26 @@
 "speed": 0.9,
 "ok": true
 },
+"육백삼 번 버스는 두 정거장 전에 있습니다": {
+"heard": "603번 버스는 두 정거장 전에 있습니다.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"음료는 냉장고에서 꺼내 드세요": {
+"heard": "음료는 냉장고에서 꺼내드세요.",
+"sim": 100.0,
+"margin": 83.3,
+"rival": "후식은 무료예요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "음식 나왔습니다": {
 "heard": "음식 나왔습니다.",
 "sim": 100.0,
@@ -4180,6 +5790,16 @@
 "speed": 1.0,
 "ok": true
 },
+"이 버스 시청 가는 거 맞죠?": {
+"heard": "이 버스 시청 가는 거 맞죠?",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "이 버스 시청 가요?": {
 "heard": "이 버스 시청 가요.",
 "sim": 100.0,
@@ -4195,6 +5815,56 @@
 "sim": 95.0,
 "margin": 65.8,
 "rival": "카드를 한 장만 대 주세요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이 버스는 공항까지 갑니다": {
+"heard": "이 버스는 공항까지 갑니다.",
+"sim": 100.0,
+"margin": 15.4,
+"rival": "이 버스는 종점까지 갑니다",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이 버스는 삼십 분마다 와요": {
+"heard": "이 버스는 30분마다 와요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이 버스는 시장까지만 갑니다": {
+"heard": "이 버스는 시장까지만 갑니다.",
+"sim": 100.0,
+"margin": 17.9,
+"rival": "이 버스는 역까지만 갑니다",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이 버스는 역까지만 갑니다": {
+"heard": "이 버스는 여기까지만 갑니다.",
+"sim": 92.6,
+"margin": 10.4,
+"rival": "이 버스는 시장까지만 갑니다",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이 버스는 종점까지 갑니다": {
+"heard": "이 버스는 종전까지 갑니다.",
+"sim": 96.2,
+"margin": 11.5,
+"rival": "이 버스는 공항까지 갑니다",
 "exact": false,
 "try": 1,
 "speed": 0.9,
@@ -4240,6 +5910,16 @@
 "speed": 0.9,
 "ok": true
 },
+"이 약은 한 번에 두 알씩 드세요": {
+"heard": "이 약은 한 번에 두 알씩 드세요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
 "이 층에서 내리세요": {
 "heard": "2층에서 내리세요.",
 "sim": 100.0,
@@ -4260,11 +5940,151 @@
 "speed": 0.9,
 "ok": true
 },
+"이거 좀 덜어 줄래?": {
+"heard": "이거 좀 덜어줄래?",
+"sim": 100.0,
+"margin": 17.6,
+"rival": "이거 좀 데워 줄래?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이거 좀 데워 줄래?": {
+"heard": "이거 좀 대워줄래?",
+"sim": 93.8,
+"margin": 6.2,
+"rival": "이거 좀 치워 줄래?",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이거 좀 잘라 줄래?": {
+"heard": "이거 좀 잘라줄래?",
+"sim": 100.0,
+"margin": 23.5,
+"rival": "이거 좀 덜어 줄래?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이거 좀 치워 줄래?": {
+"heard": "이거 좀 치워줄래?",
+"sim": 100.0,
+"margin": 12.5,
+"rival": "이거 좀 데워 줄래?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이건 교환이 안 돼요": {
+"heard": "이건 교환이 안 돼요.",
+"sim": 100.0,
+"margin": 60.9,
+"rival": "이건 할인 상품이에요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이건 국산이에요": {
+"heard": "이건 국산이에요.",
+"sim": 100.0,
+"margin": 58.3,
+"rival": "오늘까지만 반값이에요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이건 내일 들어와요": {
+"heard": "이건 내일 들어와요.",
+"sim": 100.0,
+"margin": 52.2,
+"rival": "이건 할인 상품이에요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이건 덤으로 드릴게요": {
+"heard": "이건 더무로 드릴게요.",
+"sim": 85.7,
+"margin": 40.7,
+"rival": "이건 내일 들어와요",
+"exact": false,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"이건 할인 상품이에요": {
+"heard": "이건 할인 상품이에요.",
+"sim": 100.0,
+"margin": 52.2,
+"rival": "이건 내일 들어와요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이따가 삼촌이 온대요": {
+"heard": "이따가 삼촌이 온대요.",
+"sim": 100.0,
+"margin": 76.2,
+"rival": "내가 문 열어 줄게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이름으로 불러 드릴게요": {
+"heard": "이름으로 불러드릴게요.",
+"sim": 100.0,
+"margin": 30.4,
+"rival": "번호로 불러 드릴게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "이름을 불러 드릴게요": {
 "heard": "이름을 불러드릴게요.",
 "sim": 100.0,
 "margin": 77.3,
 "rival": "접수는 어디서 해요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이리 좀 와 볼래?": {
+"heard": "이리 좀 와 볼래?",
+"sim": 100.0,
+"margin": 85.7,
+"rival": "큰아버지",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이모": {
+"heard": "이모",
+"sim": 100.0,
+"margin": 77.8,
+"rival": "고모부님",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이번 달에는 딸기 라떼를 시키시면 쿠키를 하나 드려요": {
+"heard": "이번 달에는 딸기라떼를 시키시면 쿠키를 하나 드려요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -4320,6 +6140,56 @@
 "speed": 0.9,
 "ok": true
 },
+"이번 정류장은 구청 앞입니다": {
+"heard": "이번 정류장은 구청 앞입니다.",
+"sim": 100.0,
+"margin": 15.2,
+"rival": "이번 정류장은 우체국 앞입니다",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이번 정류장은 도서관 앞입니다": {
+"heard": "이번 정류장은 도서관 앞입니다.",
+"sim": 100.0,
+"margin": 18.2,
+"rival": "이번 정류장은 우체국 앞입니다",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이번 정류장은 소방서 앞입니다": {
+"heard": "이번 정류장은 소방서 앞입니다.",
+"sim": 100.0,
+"margin": 18.2,
+"rival": "이번 정류장은 도서관 앞입니다",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이번 정류장은 우체국 앞입니다": {
+"heard": "이번 정류장은 우체고가핍니다.",
+"sim": 84.8,
+"margin": 7.4,
+"rival": "이번 정류장은 구청 앞입니다",
+"exact": false,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"이번 토요일이 할머니 생신이잖아": {
+"heard": "이번 토요일이 할머니 생신이잖아.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "이불": {
 "heard": "이불",
 "sim": 100.0,
@@ -4340,6 +6210,26 @@
 "speed": 0.9,
 "ok": true
 },
+"이십 분 정도 걸려요": {
+"heard": "20분 정도 걸려요.",
+"sim": 100.0,
+"margin": 10.0,
+"rival": "십 분 정도 걸려요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"이쪽으로 오세요": {
+"heard": "이쪽으로 오세요.",
+"sim": 100.0,
+"margin": 73.3,
+"rival": "예약하셨어요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "이층에서 기다려요": {
 "heard": "2층에서 기다려요.",
 "sim": 100.0,
@@ -4355,6 +6245,46 @@
 "sim": 100.0,
 "margin": 37.5,
 "rival": "토요일",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"자, 다 같이 건배해요": {
+"heard": "자, 다 같이 건배해요.",
+"sim": 100.0,
+"margin": 22.2,
+"rival": "자, 다 같이 노래해요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"자, 다 같이 노래해요": {
+"heard": "자, 다 같이 노래해요.",
+"sim": 100.0,
+"margin": 22.2,
+"rival": "자, 다 같이 건배해요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"자, 다 같이 박수 쳐요": {
+"heard": "자, 다 같이 박수 쳐요.",
+"sim": 100.0,
+"margin": 38.9,
+"rival": "자, 다 같이 노래해요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"자, 다 같이 사진 찍어요": {
+"heard": "자, 다 같이 사진 찍어요.",
+"sim": 100.0,
+"margin": 42.9,
+"rival": "자, 다 같이 박수 쳐요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -4390,6 +6320,16 @@
 "speed": 0.9,
 "ok": true
 },
+"자리로 가져다 드릴게요": {
+"heard": "자리로 가져다 드릴게요.",
+"sim": 100.0,
+"margin": 52.2,
+"rival": "이름으로 불러 드릴게요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "자전거": {
 "heard": "자전거",
 "sim": 100.0,
@@ -4410,11 +6350,41 @@
 "speed": 0.9,
 "ok": true
 },
+"작은엄마": {
+"heard": "작은 엄마",
+"sim": 100.0,
+"margin": 76.5,
+"rival": "잠깐만 와 보세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"잔액이 부족합니다": {
+"heard": "자내기 부족합니다.",
+"sim": 80.0,
+"margin": 52.7,
+"rival": "환승 처리되었습니다",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "잘 잤어요?": {
 "heard": "잘 잤어요.",
 "sim": 100.0,
 "margin": 75.0,
 "rival": "약 먹을 시간이에요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"잠깐만 와 보세요": {
+"heard": "잠깐만 와 보세요.",
+"sim": 100.0,
+"margin": 76.5,
+"rival": "작은엄마",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -4480,6 +6450,26 @@
 "speed": 1.0,
 "ok": true
 },
+"장바구니는 입구에 있어요": {
+"heard": "장바구니는 입구에 있어요.",
+"sim": 100.0,
+"margin": 57.7,
+"rival": "카트는 주차장에 있어요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"장바구니는 천오백 원이에요": {
+"heard": "장바구니는 1,500원이에요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "저기 물이 있어요": {
 "heard": "저기 물이 있어요.",
 "sim": 100.0,
@@ -4520,12 +6510,32 @@
 "speed": 0.9,
 "ok": true
 },
+"저기요": {
+"heard": "저기요.",
+"sim": 100.0,
+"margin": 69.2,
+"rival": "여기 좀 보세요",
+"exact": true,
+"try": 2,
+"speed": 1.0,
+"ok": true
+},
 "저녁": {
 "heard": "전혀",
 "sim": 40.0,
 "margin": 6.7,
 "rival": "점심",
 "exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"저녁에는 싸게 팔아요": {
+"heard": "저녁에는 싸게 팔아요.",
+"sim": 100.0,
+"margin": 70.8,
+"rival": "오늘까지만 반값이에요",
+"exact": true,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -4560,6 +6570,16 @@
 "speed": 0.9,
 "ok": true
 },
+"전화 좀 대신 받아 줄래요?": {
+"heard": "전화 좀 대신 닫아줄래요?",
+"sim": 96.0,
+"margin": 68.0,
+"rival": "내가 문 열어 줄게요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "전화기": {
 "heard": "전화기",
 "sim": 100.0,
@@ -4568,6 +6588,16 @@
 "exact": true,
 "try": 3,
 "speed": 0.8,
+"ok": true
+},
+"전화번호 뒷자리 불러 주세요": {
+"heard": "전화번호 뒷자리 불러주세요.",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "멤버십 번호 불러 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
 "ok": true
 },
 "절": {
@@ -4597,6 +6627,16 @@
 "rival": "주말에 뭐 해요?",
 "exact": true,
 "try": 1,
+"speed": 0.9,
+"ok": true
+},
+"점심 특선 있어요?": {
+"heard": "점심 특선 있어요.",
+"sim": 100.0,
+"margin": 68.4,
+"rival": "후식은 무료예요",
+"exact": true,
+"try": 2,
 "speed": 0.9,
 "ok": true
 },
@@ -4710,6 +6750,36 @@
 "speed": 0.9,
 "ok": true
 },
+"종이컵에 드릴까요?": {
+"heard": "종이컵에 드릴까요?",
+"sim": 100.0,
+"margin": 28.6,
+"rival": "다회용 컵에 드릴까요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"좋아. 열두 시에 지하철역 앞에서 만나자": {
+"heard": "좋아. 12시에 지하철역 앞에서 만나자.",
+"sim": 86.8,
+"margin": 2.8,
+"rival": null,
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"좋아요. 저는 물냉면이요": {
+"heard": "좋아요. 저는 물냉면이요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "주말에 뭐 해요?": {
 "heard": "주말에 뭐 해요?",
 "sim": 100.0,
@@ -4726,6 +6796,16 @@
 "margin": 68.4,
 "rival": "적립 카드 있으세요?",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"주문 바꿔도 될까요?": {
+"heard": "주문 닫고도 될까요?",
+"sim": 78.9,
+"margin": 52.6,
+"rival": "물수건 좀 주세요",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -4750,11 +6830,31 @@
 "speed": 0.9,
 "ok": true
 },
+"주차 되나요?": {
+"heard": "주차 되나요?",
+"sim": 100.0,
+"margin": 70.0,
+"rival": "카드 되죠?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "줄": {
 "heard": "줄",
 "sim": 100.0,
 "margin": 33.3,
 "rival": "꿀",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"줄은 이쪽으로 서 주세요": {
+"heard": "줄은 이쪽으로 서주세요.",
+"sim": 100.0,
+"margin": 48.0,
+"rival": "계산은 저쪽에서 해 주세요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -4821,6 +6921,36 @@
 "speed": 0.9,
 "ok": true
 },
+"진동벨로 불러 드릴게요": {
+"heard": "진동벨로 불러드릴게요.",
+"sim": 100.0,
+"margin": 28.0,
+"rival": "번호로 불러 드릴게요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"진동벨이 울리면 오른쪽 픽업대로 오세요": {
+"heard": "진동밸이 울리면 오른쪽 픽업대로 오세요.",
+"sim": 97.7,
+"margin": 13.7,
+"rival": null,
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"진료비는 수납 창구에 내세요": {
+"heard": "진료비는 수납 창고에 내세요.",
+"sim": 96.4,
+"margin": 60.7,
+"rival": "검사지는 간호사에게 주세요",
+"exact": false,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
 "짐": {
 "heard": "짐",
 "sim": 100.0,
@@ -4861,6 +6991,36 @@
 "speed": 0.9,
 "ok": true
 },
+"차가 출발하니 자리에 앉아 주세요": {
+"heard": "차가 출발하니 자리에 앉아주세요.",
+"sim": 100.0,
+"margin": 64.5,
+"rival": "타실 분은 앞문으로 타 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"차가운 유자차 주세요": {
+"heard": "차가운 유자차 주세요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "차가운 자몽차 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"차가운 자몽차 주세요": {
+"heard": "차가운 자몽차 주세요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "차가운 유자차 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "차다": {
 "heard": "차다",
 "sim": 100.0,
@@ -4876,6 +7036,36 @@
 "sim": 100.0,
 "margin": 25.0,
 "rival": "바지",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"참외는 두 개에 육천 원이에요": {
+"heard": "참에는 두 개의 6천 원이에요.",
+"sim": 93.1,
+"margin": 9.1,
+"rival": null,
+"exact": false,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"창가 자리 비었어요": {
+"heard": "창가 자리 비었어요.",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "마감은 열 시예요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"창가 쪽에 앉아도 돼요?": {
+"heard": "창가 쪽에 앉아도 돼요.",
+"sim": 100.0,
+"margin": 66.7,
+"rival": "아기 의자 있어요?",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -4961,6 +7151,16 @@
 "speed": 0.9,
 "ok": true
 },
+"처방전은 약국에 내세요": {
+"heard": "처방전은 약국에 내세요.",
+"sim": 100.0,
+"margin": 64.3,
+"rival": "진료비는 수납 창구에 내세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "처음 오셨어요?": {
 "heard": "처음 오셨어요?",
 "sim": 100.0,
@@ -5008,6 +7208,36 @@
 "rival": "선풍기",
 "exact": true,
 "try": 1,
+"speed": 0.9,
+"ok": true
+},
+"체온이 조금 높아요": {
+"heard": "체온이 조금 높아요.",
+"sim": 100.0,
+"margin": 25.0,
+"rival": "혈압이 조금 높아요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"초코 케이크 두 개 주세요": {
+"heard": "초코 케이크 2개 주세요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "치즈 케이크 두 개 주세요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"초코 케이크 하나 주세요": {
+"heard": "초코 케이크 하나 주세요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "치즈 케이크 하나 주세요",
+"exact": true,
+"try": 2,
 "speed": 0.9,
 "ok": true
 },
@@ -5061,6 +7291,26 @@
 "speed": 0.9,
 "ok": true
 },
+"치즈 케이크 두 개 주세요": {
+"heard": "치즈케이크 2개 주세요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "초코 케이크 두 개 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"치즈 케이크 하나 주세요": {
+"heard": "치즈 케이크 하나 주세요.",
+"sim": 100.0,
+"margin": 15.0,
+"rival": "초코 케이크 하나 주세요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
 "친구랑 놀다 올게요": {
 "heard": "친구랑 놀다 올게요.",
 "sim": 100.0,
@@ -5091,6 +7341,36 @@
 "speed": 0.9,
 "ok": true
 },
+"카드 꽂아 주세요": {
+"heard": "카드 꽂아 주세요.",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "카드 빼 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카드 되죠?": {
+"heard": "칼퇴퇴줘",
+"sim": 44.4,
+"margin": 34.4,
+"rival": "주차 되나요?",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카드 빼 주세요": {
+"heard": "카드 빼주세요.",
+"sim": 100.0,
+"margin": 33.3,
+"rival": "카드 꽂아 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "카드로 계산할게요": {
 "heard": "카드로 계산할게요.",
 "sim": 100.0,
@@ -5106,6 +7386,106 @@
 "sim": 100.0,
 "margin": 68.0,
 "rival": "뒤로 조금만 들어가 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카트는 주차장에 있어요": {
+"heard": "카트는 주차장에 있어요.",
+"sim": 100.0,
+"margin": 57.7,
+"rival": "장바구니는 입구에 있어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카페라떼 나왔습니다": {
+"heard": "카페라 때 나왔습니다.",
+"sim": 95.0,
+"margin": 15.0,
+"rival": "카페모카 나왔습니다",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카페모카 나왔습니다": {
+"heard": "카페모카 나왔습니다.",
+"sim": 100.0,
+"margin": 20.0,
+"rival": "카페라떼 나왔습니다",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카페모카 작은 걸로 주세요": {
+"heard": "카페모카 작은 걸로 주세요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": "카페모카 큰 걸로 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카페모카 큰 걸로 주세요": {
+"heard": "카페모카 큰 걸로 주세요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": "카페모카 작은 걸로 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카푸치노 나왔습니다": {
+"heard": "카프치노 나왔습니다.",
+"sim": 95.0,
+"margin": 20.0,
+"rival": "카페모카 나왔습니다",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카푸치노 작은 걸로 주세요": {
+"heard": "카프치노 작은 걸로 주세요.",
+"sim": 96.0,
+"margin": 16.0,
+"rival": "카푸치노 큰 걸로 주세요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"카푸치노 큰 걸로 주세요": {
+"heard": "카프치노 큰 걸로 주세요.",
+"sim": 95.5,
+"margin": 15.5,
+"rival": "카푸치노 작은 걸로 주세요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"칼국수 둘 주세요": {
+"heard": "칼국수 둘 주세요.",
+"sim": 100.0,
+"margin": 22.2,
+"rival": "칼국수 하나 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"칼국수 하나 주세요": {
+"heard": "칼국수 하나 주세요.",
+"sim": 100.0,
+"margin": 22.2,
+"rival": "칼국수 둘 주세요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -5151,6 +7531,66 @@
 "speed": 0.9,
 "ok": true
 },
+"컵 홀더 끼워 드릴까요?": {
+"heard": "컵홀더 키워드릴까요?",
+"sim": 95.2,
+"margin": 40.7,
+"rival": "케이크도 같이 드릴까요?",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"케이크는 데워 드릴까요?": {
+"heard": "케이크는 대워드릴까요?",
+"sim": 95.5,
+"margin": 17.2,
+"rival": "케이크는 잘라 드릴까요?",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"케이크는 잘라 드릴까요?": {
+"heard": "케이크는 잘라드릴까요?",
+"sim": 100.0,
+"margin": 20.0,
+"rival": "케이크는 포장해 드릴까요?",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"케이크는 접시에 드릴까요?": {
+"heard": "페이크는 접시에 드릴까요?",
+"sim": 96.0,
+"margin": 24.0,
+"rival": "케이크는 잘라 드릴까요?",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"케이크는 포장해 드릴까요?": {
+"heard": "페이크는 포장해 드릴까요?",
+"sim": 96.0,
+"margin": 20.0,
+"rival": "케이크는 잘라 드릴까요?",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"케이크도 같이 드릴까요?": {
+"heard": "케이크도 같이 드릴까요?",
+"sim": 100.0,
+"margin": 45.5,
+"rival": "컵 홀더 끼워 드릴까요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "케이크도 있어요?": {
 "heard": "케이크도 있어요.",
 "sim": 100.0,
@@ -5171,12 +7611,42 @@
 "speed": 1.05,
 "ok": true
 },
+"콘센트는 창가 쪽에 있어요": {
+"heard": "콘센트는 창가 쪽에 있어요.",
+"sim": 100.0,
+"margin": 60.7,
+"rival": "화장실은 이 층에 있어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "콩": {
 "heard": "쿵",
 "sim": 66.7,
 "margin": 33.3,
 "rival": "공",
 "exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"쿠폰 도장 찍어 드릴게요": {
+"heard": "쿠폰 도장 찍어 드릴게요.",
+"sim": 100.0,
+"margin": 71.4,
+"rival": "콘센트는 창가 쪽에 있어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"쿠폰 먼저 보여 주세요": {
+"heard": "쿠폰 먼저 보여주세요.",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "멤버십 번호 불러 주세요",
+"exact": true,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -5201,6 +7671,26 @@
 "speed": 0.9,
 "ok": true
 },
+"큰아버지": {
+"heard": "큰아버지",
+"sim": 100.0,
+"margin": 77.8,
+"rival": "아가야",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"큰어머니": {
+"heard": "큰 어머니",
+"sim": 100.0,
+"margin": 100.0,
+"rival": "삼촌",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "타실 문은 오른쪽입니다": {
 "heard": "탈실문은 오른쪽입니다.",
 "sim": 96.3,
@@ -5217,6 +7707,16 @@
 "margin": 10.3,
 "rival": "타실 문은 오른쪽입니다",
 "exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"타실 분은 앞문으로 타 주세요": {
+"heard": "타실분은 앞문으로 타주세요.",
+"sim": 100.0,
+"margin": 53.3,
+"rival": "내리실 분은 벨을 눌러 주세요",
+"exact": true,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -5276,6 +7776,26 @@
 "sim": 100.0,
 "margin": 25.0,
 "rival": "버스를 타고 가요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"텀블러에 담아 드릴까요?": {
+"heard": "텀블러에 담아드릴까요?",
+"sim": 100.0,
+"margin": 45.8,
+"rival": "머그잔에 드릴까요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"테이블 번호 알려 주세요": {
+"heard": "테이블 번호 알려주세요.",
+"sim": 100.0,
+"margin": 62.5,
+"rival": "번호표 뽑고 기다려 주세요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -5434,6 +7954,16 @@
 "speed": 0.9,
 "ok": true
 },
+"포인트 적립하시겠어요?": {
+"heard": "포인트 정립하시겠어요?",
+"sim": 95.8,
+"margin": 11.8,
+"rival": null,
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "포장도 되나요?": {
 "heard": "포장도 되나요?",
 "sim": 100.0,
@@ -5449,6 +7979,16 @@
 "sim": 100.0,
 "margin": 50.0,
 "rival": "커피 한 잔 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"포크 하나 더 주세요": {
+"heard": "포크 하나 더 주세요.",
+"sim": 100.0,
+"margin": 67.6,
+"rival": "다 드신 잔은 반납대에 놓아 주세요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -5535,6 +8075,16 @@
 "speed": 0.9,
 "ok": true
 },
+"하차 카드를 찍어 주세요": {
+"heard": "하차 카드를 찍어주세요.",
+"sim": 100.0,
+"margin": 50.0,
+"rival": "교통카드를 한 번 더 대 주세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "학교": {
 "heard": "학교",
 "sim": 100.0,
@@ -5543,6 +8093,16 @@
 "exact": true,
 "try": 3,
 "speed": 0.8,
+"ok": true
+},
+"한 개 더 사시면 하나 더 드려요": {
+"heard": "한 개 더 사시면 하나 더 드려요.",
+"sim": 100.0,
+"margin": 73.1,
+"rival": "오늘까지만 반값이에요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
 "ok": true
 },
 "한 잔 더 주세요": {
@@ -5560,6 +8120,56 @@
 "sim": 100.0,
 "margin": 85.7,
 "rival": "밥",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"할머니, 물 드세요": {
+"heard": "할머니 물 드세요.",
+"sim": 100.0,
+"margin": 18.8,
+"rival": "할머니, 약 드세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"할머니, 밥 드세요": {
+"heard": "할머니, 밥 드세요.",
+"sim": 100.0,
+"margin": 12.5,
+"rival": "할머니, 빵 드세요",
+"exact": true,
+"try": 2,
+"speed": 0.9,
+"ok": true
+},
+"할머니, 빵 드세요": {
+"heard": "할머니, 빵 드세요.",
+"sim": 100.0,
+"margin": 12.5,
+"rival": "할머니, 밥 드세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"할머니, 약 드세요": {
+"heard": "할머니, 약 드세요.",
+"sim": 100.0,
+"margin": 18.8,
+"rival": "할머니, 빵 드세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"할머니, 잠깐만요!": {
+"heard": "할머니, 잠깐 만요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": null,
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -5635,6 +8245,46 @@
 "speed": 0.9,
 "ok": true
 },
+"할아버지, 모자 여기 있어요": {
+"heard": "할아버지, 모자 여기 있어요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": "할아버지, 지갑 여기 있어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"할아버지, 안경 여기 있어요": {
+"heard": "할아버지, 안경 여기 있어요.",
+"sim": 100.0,
+"margin": 19.2,
+"rival": "할아버지, 지갑 여기 있어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"할아버지, 열쇠 여기 있어요": {
+"heard": "할아버지, 열쇠 여기 있어요.",
+"sim": 100.0,
+"margin": 19.2,
+"rival": "할아버지, 안경 여기 있어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"할아버지, 지갑 여기 있어요": {
+"heard": "할아버지, 지갑 여기 있어요.",
+"sim": 100.0,
+"margin": 16.0,
+"rival": "할아버지, 모자 여기 있어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "할인마트": {
 "heard": "할인 마트",
 "sim": 100.0,
@@ -5665,11 +8315,71 @@
 "speed": 0.9,
 "ok": true
 },
+"혈당이 조금 높아요": {
+"heard": "혈단이 조금 높아요.",
+"sim": 95.0,
+"margin": 5.0,
+"rival": "혈압이 조금 높아요",
+"exact": false,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "혈압 먼저 재고 오세요": {
 "heard": "혈압 먼저 재고 오세요.",
 "sim": 100.0,
 "margin": 70.8,
 "rival": "수납은 일 층에서 하세요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"혈압은 정상이에요": {
+"heard": "혈압은 정상이에요.",
+"sim": 100.0,
+"margin": 47.6,
+"rival": "혈압이 조금 높아요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"혈압이 조금 높아요": {
+"heard": "혈압이 조금 높아요.",
+"sim": 100.0,
+"margin": 10.0,
+"rival": "혈당이 조금 높아요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"형": {
+"heard": "형",
+"sim": 100.0,
+"margin": 85.7,
+"rival": "할머니",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"홍차 라떼 두 잔이요": {
+"heard": "홍차라떼 두 잔이요",
+"sim": 100.0,
+"margin": 11.1,
+"rival": "녹차 라떼 두 잔이요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"홍차 라떼 한 잔이요": {
+"heard": "홍차 라떼 한 잔이요.",
+"sim": 100.0,
+"margin": 10.5,
+"rival": "녹차 라떼 한 잔이요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
@@ -5695,12 +8405,32 @@
 "speed": 0.9,
 "ok": true
 },
+"화장실은 이 층에 있어요": {
+"heard": "화장실은 2층에 있어요.",
+"sim": 100.0,
+"margin": 57.1,
+"rival": "콘센트는 창가 쪽에 있어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
 "화장실이 어디예요?": {
 "heard": "화장실이 어디예요?",
 "sim": 100.0,
 "margin": 66.7,
 "rival": "이거 얼마예요?",
 "exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"환승 처리되었습니다": {
+"heard": "한승 처리되었습니다.",
+"sim": 95.5,
+"margin": 59.1,
+"rival": "잔액이 부족합니다",
+"exact": false,
 "try": 1,
 "speed": 0.9,
 "ok": true
@@ -5722,6 +8452,26 @@
 "rival": "오른쪽으로 가세요",
 "exact": true,
 "try": 2,
+"speed": 0.9,
+"ok": true
+},
+"후식은 무료예요": {
+"heard": "후식은 무료예요.",
+"sim": 100.0,
+"margin": 68.4,
+"rival": "점심 특선 있어요?",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"휘핑크림 올려 드릴까요?": {
+"heard": "휘핑크림 올려드릴까요?",
+"sim": 100.0,
+"margin": 58.3,
+"rival": "얼음 더 넣어 드릴까요?",
+"exact": true,
+"try": 1,
 "speed": 0.9,
 "ok": true
 },
@@ -5750,6 +8500,16 @@
 "sim": 100.0,
 "margin": 81.0,
 "rival": "지갑 놓고 왔어요",
+"exact": true,
+"try": 1,
+"speed": 0.9,
+"ok": true
+},
+"휴지 좀 더 주세요": {
+"heard": "휴지 좀 더 주세요.",
+"sim": 100.0,
+"margin": 75.0,
+"rival": "쿠폰 도장 찍어 드릴게요",
 "exact": true,
 "try": 1,
 "speed": 0.9,
