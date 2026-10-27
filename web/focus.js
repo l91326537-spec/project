@@ -123,7 +123,7 @@ const rateChip = (text) => { const r = itemRate(text); return `<small class="rat
 /* ---------- 집중 연습 화면 ---------- */
 
 function renderFocusHome() {
-  setNav('home');
+  setNav('focus');
   view.innerHTML = `
     <header class="page-head">
       <p class="eyebrow">집중 연습</p>
@@ -148,48 +148,79 @@ function renderFocusHome() {
     ${whoOf().name ? `<p class="note center">${whoOf().name}에 맞춰 권하는 단계부터 보여 드려요.</p>` : ''}`;
 }
 
+// 등급은 꽃잎으로 보여 준다: C 1장, B 2장, A 3장
+const PETALS = { A: 3, B: 2, C: 1 };
+const petalSvg = (on) => `<svg class="petal${on ? ' on' : ''}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4 4 4 10 0 18-4-8-4-14 0-18z"/></svg>`;
+const petals = (g, total = 3) => [...Array(total)].map((_, i) => petalSvg(i < (PETALS[g] || 0))).join('');
+const gradeWords = (g) => `꽃잎 ${PETALS[g]}장(${g}등급)`;
+
+// 단계 목록: 1~10단계를 구불구불한 길 위의 동그라미로. 누르면 아래 카드에 그 단계가 나온다.
+const PATH_X = [22, 50, 78, 62, 30, 22, 50, 78, 62, 30]; // 동그라미의 가로 위치(%)
+const PATH_STEP = 84;                                     // 동그라미 사이 세로 간격(px)
+const pathPick = {};                                      // 갈래마다 고른 단계
 function renderFocusCat(cat) {
-  setNav('home');
+  setNav('focus');
   const c = FOCUS_CATS[cat];
   const rec = nextLevel(cat);
+  const passedN = [...Array(10)].filter((_, i) => levelPassed(cat, i + 1)).length;
+  const sel = pathPick[cat] || rec;
+  const H = PATH_STEP * 10;
+  const y = (i) => PATH_STEP / 2 + i * PATH_STEP;
+  // 동그라미 중심을 잇는 부드러운 곡선(가로는 %, 세로는 px라서 viewBox 가로를 100으로 둔다)
+  const curve = (n) => PATH_X.slice(0, n).map((x, i) => (i ? `S ${(x + PATH_X[i - 1]) / 2} ${y(i) - PATH_STEP / 2}, ${x} ${y(i)}` : `M ${x} ${y(0)}`)).join(' ');
+  let lastDone = 0; for (let lv = 1; lv <= 10; lv++) if (levelPassed(cat, lv)) lastDone = lv;
   view.innerHTML = `
     <header class="page-head">
-      <p class="eyebrow"><button class="link-btn" data-go="#focus">집중 연습</button> · ${c.name}</p>
-      <h1>${c.icon} ${c.name} 1~10단계</h1>
-      <p class="lead">${c.about}. 20문제 중 12개 이상 맞히면 통과예요.</p>
+      <p class="eyebrow"><button class="link-btn" data-go="#focus">집중 연습</button></p>
+      <h1>${c.name}의 길</h1>
+      <p class="lead">${passedN ? `${passedN}단계를 넘었어요. 지금은 ${rec}단계예요.` : `${rec}단계부터 걸어 봐요.`} 20문제 중 12개 이상이면 통과예요.</p>
     </header>
-    <ol class="cell-list">${[...Array(10)].map((_, i) => {
-      const lv = i + 1; const best = bestRun(cat, lv); const passed = levelPassed(cat, lv);
-      const g = best && gradeOf(best.correct);
-      return `
-      <li class="cell-row ${passed ? 'done' : ''}${lv === rec && !passed ? ' now' : ''}">
-        <span class="cell-id">${lv}</span>
-        <span class="cell-text"><b>${lv}단계</b><small>${c.desc[lv]}</small>
-          <em>${best ? `최고 ${best.correct}/${FOCUS_N}${g ? ` · ${g}등급` : ''}` : lv === rec ? '여기부터 해 보세요' : lv < (whoOf().focus[cat] || 1) ? '건너뛰어도 되는 단계' : '아직 도전 전'}</em></span>
-        ${g ? `<span class="grade g${g}" aria-label="${g}등급">${g}</span>` : ''}
-        <button class="icon-btn play-btn" data-go="#focus/${cat}/${lv}" aria-label="${lv}단계 열기">${ICON.play}</button>
-      </li>`;
-    }).join('')}
-    </ol>`;
+    <div class="path" style="height:${H}px">
+      <svg class="path-line" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true">
+        <path d="${curve(10)}"/>
+        ${lastDone > 1 ? `<path class="walked" d="${curve(lastDone)}"/>` : ''}
+      </svg>
+      <ol class="path-nodes">${[...Array(10)].map((_, i) => {
+        const lv = i + 1; const best = bestRun(cat, lv); const g = best && gradeOf(best.correct);
+        const st = levelPassed(cat, lv) ? 'done' : lv === rec ? 'now' : 'ahead';
+        return `
+        <li style="left:${PATH_X[i]}%; top:${y(i)}px">
+          <button class="node ${st}${lv === sel ? ' sel' : ''}" data-lv="${lv}" aria-pressed="${lv === sel}" aria-label="${lv}단계 ${c.desc[lv]}${g ? `, ${gradeWords(g)}` : ''}">${lv}</button>
+          ${g ? `<span class="node-petals">${petals(g)}</span>` : lv === rec ? '<span class="node-tag">지금 여기</span>' : ''}
+        </li>`;
+      }).join('')}
+      </ol>
+    </div>
+    <section class="panel path-card" id="path-card"></section>`;
+  const card = () => {
+    const lv = pathPick[cat] || rec;
+    const best = bestRun(cat, lv); const g = best && gradeOf(best.correct); const runs = focusRuns(cat, lv).length;
+    $('#path-card').innerHTML = `
+      <div class="path-card-head"><h2 class="panel-title">${lv}단계 · ${c.desc[lv]}</h2>
+        <span class="note">${best ? `최고 ${best.correct}/${FOCUS_N} · ${runs}번 도전` : '처음 도전'}</span></div>
+      ${g ? `<p class="best-line"><span class="petals">${petals(g)}</span> ${gradeWords(g)}</p>` : ''}
+      <div class="actions two">
+        <button class="btn" data-go="#focus/${cat}/${lv}">미리 듣기</button>
+        <button class="btn primary" data-go="#focus/${cat}/${lv}/go">도전하기</button>
+      </div>`;
+    view.querySelectorAll('.node').forEach((b) => { const on = +b.dataset.lv === lv; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on); });
+  };
+  view.querySelectorAll('.node').forEach((b) => { b.onclick = () => { pathPick[cat] = +b.dataset.lv; card(); }; });
+  card();
 }
 
+// 단계 화면: '미리 듣기'와 '도전' 두 탭. 미리 듣기는 4개 묶음을 한 장씩 넘겨 본다.
+const practiceAt = {};   // 단계마다 보고 있던 묶음 번호
+let levelTab = 'listen';
 function renderFocusLevel(cat, lv) {
-  setNav('home');
+  setNav('focus');
   const c = FOCUS_CATS[cat];
   const best = bestRun(cat, lv); const g = best && gradeOf(best.correct);
   const sp = cat === 'sent' ? FOCUS_SPEED[lv] : 1;
   const say = sayAt(sp);
-  let practice;
-  if (cat === 'sent') {
-    practice = FOCUS_SENTENCES[lv].map((it) => `
-        <ul class="say-list">${focusVariants(it).map((p) => { const t = focusSay(it, p); return `
-          <li><button class="say-row" data-say="${esc(t)}">${ICON.speaker}<span>${esc(t)}</span>${rateChip(t)}</button></li>`; }).join('')}
-        </ul>`).join('');
-  } else {
-    practice = `<div class="tile-sets">${c.sets(lv).map((set) => `
-        <div class="tile-row">${set.map((w) => `<button class="tile" data-say="${esc(w)}"><span>${esc(w)}</span>${rateChip(w)}</button>`).join('')}</div>`).join('')}
-      </div>`;
-  }
+  const key = `${cat}${lv}`;
+  // 한 장 = 단어·낱소리는 4개 묶음, 문장은 틀 하나에서 나오는 문장 4개
+  const cards = cat === 'sent' ? FOCUS_SENTENCES[lv].map((it) => focusVariants(it).map((p) => focusSay(it, p))) : c.sets(lv);
   const types = QTYPES[cat === 'sent' ? 'sent' : 'word'];
   let from = 1;
   view.innerHTML = `
@@ -198,25 +229,80 @@ function renderFocusLevel(cat, lv) {
       <h1>${c.desc[lv]}</h1>
       ${sp !== 1 ? `<p class="lead">말 빠르기 ${sp}배</p>` : ''}
     </header>
-    <section class="panel">
-      <h2 class="panel-title">연습 <span>눌러서 미리 들어 보기</span></h2>
-      <p class="note">숫자는 지금까지 문제로 나왔을 때 맞힌 비율이에요.</p>
-      ${practice}
-    </section>
-    <section class="panel challenge">
-      <h2 class="panel-title">도전 <span>${FOCUS_N}문제</span></h2>
-      <ol class="qtype-list">${types.map(([, n, label]) => { const t = `<li><b>${from}~${from + n - 1}번</b> ${label}</li>`; from += n; return t; }).join('')}</ol>
-      <p class="note">12개 이상 맞히면 통과예요. 12~15개 C, 16~18개 B, 19~20개 A등급.</p>
-      ${best ? `<p class="best-line">최고 기록 <b>${best.correct}/${FOCUS_N}</b>${g ? ` <span class="grade g${g}">${g}</span>` : ''} · ${focusRuns(cat, lv).length}번 도전</p>` : ''}
-    </section>
+    <div class="seg tabs2" role="tablist">
+      <button class="seg-btn${levelTab === 'listen' ? ' on' : ''}" role="tab" aria-selected="${levelTab === 'listen'}" data-tab="listen">미리 듣기</button>
+      <button class="seg-btn${levelTab === 'test' ? ' on' : ''}" role="tab" aria-selected="${levelTab === 'test'}" data-tab="test">도전 ${FOCUS_N}문제</button>
+    </div>
+    <div id="tab-listen" ${levelTab === 'listen' ? '' : 'hidden'}>
+      <section class="set-card" id="set-card"></section>
+      <div class="set-nav">
+        <button class="round-btn" id="set-prev" aria-label="앞 묶음"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <span class="dots" id="set-dots" aria-hidden="true"></span>
+        <button class="round-btn primary" id="set-next" aria-label="다음 묶음"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <p class="note center">옆으로 밀어도 넘어가요. 아래 숫자는 문제로 나왔을 때 맞힌 비율이에요.</p>
+    </div>
+    <div id="tab-test" ${levelTab === 'test' ? '' : 'hidden'}>
+      <section class="panel challenge">
+        <ol class="qtype-list">${types.map(([, n, label]) => { const t = `<li><b>${from}~${from + n - 1}번</b> ${label}</li>`; from += n; return t; }).join('')}</ol>
+        <p class="note">12개 이상 맞히면 통과예요. 12~15개 꽃잎 1장(C), 16~18개 2장(B), 19~20개 3장(A).</p>
+        ${best ? `<p class="best-line">최고 기록 <b>${best.correct}/${FOCUS_N}</b>${g ? ` <span class="petals">${petals(g)}</span>` : ''} · ${focusRuns(cat, lv).length}번 도전</p>` : ''}
+      </section>
+      <button class="btn primary block" data-go="#focus/${cat}/${lv}/go">도전 시작</button>
+    </div>
     ${noisePanel(FOCUS_SNR[lv])}
-    <button class="btn primary block" data-go="#focus/${cat}/${lv}/go">도전 시작</button>
     <div class="actions two">
       ${lv > 1 ? `<button class="btn" data-go="#focus/${cat}/${lv - 1}">← ${lv - 1}단계</button>` : '<span></span>'}
       ${lv < 10 ? `<button class="btn" data-go="#focus/${cat}/${lv + 1}">${lv + 1}단계 →</button>` : '<span></span>'}
     </div>`;
   bindNoisePanel();
-  bindTapPlay(view, (t) => withFocusNoise(FOCUS_SNR[lv], () => say(t)));
+  const play = (t) => withFocusNoise(FOCUS_SNR[lv], () => say(t));
+  view.querySelectorAll('[data-tab]').forEach((b) => {
+    b.onclick = () => {
+      levelTab = b.dataset.tab;
+      view.querySelectorAll('[data-tab]').forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', on); });
+      $('#tab-listen').hidden = levelTab !== 'listen'; $('#tab-test').hidden = levelTab !== 'test';
+    };
+  });
+  const show = (k) => {
+    const n = cards.length;
+    practiceAt[key] = ((k % n) + n) % n;
+    const set = cards[practiceAt[key]];
+    const long = set.some((t) => t.length > 6);
+    $('#set-card').innerHTML = `
+      <div class="set-head"><span>묶음 ${practiceAt[key] + 1} / ${n}</span></div>
+      <div class="set-grid${long ? ' long' : ''}">${set.map((t) => {
+        const r = itemRate(t);
+        return `<button class="set-item" data-say="${esc(t)}"><span>${esc(t)}</span>
+          <small class="rate${r ? (r.pct >= 80 ? ' hi' : r.pct < 50 ? ' lo' : '') : ''}">${r ? `맞힌 비율 ${r.pct}%` : '아직 안 나왔어요'}</small></button>`;
+      }).join('')}</div>
+      <button class="btn block" id="play-all">${ICON.speaker}네 개 차례로 듣기</button>`;
+    $('#set-dots').innerHTML = cards.map((_, i) => `<i${i === practiceAt[key] ? ' class="on"' : ''}></i>`).join('');
+    bindTapPlay($('#set-card'), play);
+    $('#play-all').onclick = async () => {
+      if (tapBusy) return;
+      tapBusy = true; unlockAudio();
+      const items = [...$('#set-card').querySelectorAll('.set-item')];
+      try {
+        for (const b of items) {
+          if (!b.isConnected) break;
+          b.classList.add('busy'); await play(b.dataset.say); b.classList.remove('busy'); await wait(400);
+        }
+      } finally { tapBusy = false; }
+    };
+  };
+  $('#set-prev').onclick = () => show(practiceAt[key] - 1);
+  $('#set-next').onclick = () => show(practiceAt[key] + 1);
+  // 옆으로 밀어서 넘기기
+  let x0 = null;
+  const sc = $('#set-card');
+  sc.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  sc.addEventListener('touchend', (e) => {
+    if (x0 == null) return;
+    const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 50) show(practiceAt[key] + (dx < 0 ? 1 : -1));
+  });
+  show(practiceAt[key] || 0);
 }
 
 /* ---------- 문제 풀기 틀 ---------- */
@@ -373,7 +459,7 @@ function wordQuestion(type, pk, say, snr, isSound) {
     const fns = [[`정답: ${target}`, () => say(target)], [`고른 것: ${opts[ans]}`, () => say(opts[ans])]];
     ui.feedback(ok, ok ? `${was(target)}.` : `정답은 ${isIt(target)}.${why ? ` <span class="why">${esc(why)}</span>` : ''}${rate ? ` <span class="why">${rate}</span>` : ''}`, ok ? null : fns);
     if (!ok) await ui.replayAnswer(fns[0][1]);
-    return { ok, miss: { label: target, fns } };
+    return { ok, miss: { label: ok ? target : `${target} ↔ ${opts[ans]}`, fns } };
   };
 }
 
@@ -510,23 +596,55 @@ async function renderFocusTest(cat, lv) {
   data.focusRuns.push({ cat, lv, date: today(), at: Date.now(), correct: res.correct, total: FOCUS_N, noise: nz.on ? nz.scene : null, sec: res.sec });
   persist();
   const g = gradeOf(res.correct);
-  const status = g
-    ? `${lv}단계 통과! ${g}등급이에요.${!wasPassed && lv < 10 ? ` ${lv + 1}단계로 넘어갈 수 있어요.` : ''}${prevBest && res.correct > prevBest.correct ? ' 최고 기록을 새로 썼어요.' : ''}`
-    : `${FOCUS_PASS}개 이상이면 통과예요. ${FOCUS_PASS - res.correct}개만 더 맞히면 돼요. 연습에서 미리 들어 보고 다시 도전해 보세요.`;
+  const runs = focusRuns(cat, lv);
+  const prev = runs.length > 1 ? runs[runs.length - 2] : null;
+  const diff = prev ? res.correct - prev.correct : null;
+  // 첫 문장은 점수보다 변화를 먼저 말한다
+  const head = diff > 0 ? `지난번보다 ${diff}개 더 맞혔어요`
+    : diff === 0 ? `지난번과 같은 ${res.correct}개를 맞혔어요`
+    : `${FOCUS_N}문제 중 ${res.correct}개 맞혔어요`;
+  const sub = [
+    diff != null && diff <= 0 ? null : `${FOCUS_N}문제 중 ${res.correct}개`,
+    g ? gradeWords(g) : `${FOCUS_PASS - res.correct}개만 더 맞히면 통과예요`,
+    g && !wasPassed && lv < 10 ? `${lv + 1}단계가 기다려요` : null,
+    g && prevBest && res.correct > prevBest.correct ? '최고 기록' : null,
+  ].filter(Boolean).join(' · ');
+  const hist = runs.slice(-5);
   view.innerHTML = `
-    <div class="play result">
-      <p class="eyebrow center">${c.name} ${lv}단계</p>
-      ${g ? `<div class="grade big g${g}" aria-label="${g}등급">${g}</div>` : ''}
-      <h1 class="q">${FOCUS_N}문제 중 ${res.correct}개 맞혔어요</h1>
-      <p class="lead center">${status}</p>
-      ${missPanel(res.misses)}
-      <div class="actions">
-        ${g && lv < 10 ? `<button class="btn primary" data-go="#focus/${cat}/${lv + 1}">${lv + 1}단계로</button>` : ''}
-        <button class="btn${g && lv < 10 ? '' : ' primary'}" data-go="${back}/go">다시 도전</button>
-        <button class="btn" data-go="${back}">${lv}단계 연습</button>
+    <div class="play result focus-result">
+      <p class="eyebrow center">${c.name} ${lv}단계 · ${c.desc[lv]}</p>
+      ${g ? `
+      <div class="stamp" role="img" aria-label="통과, ${gradeWords(g)}">
+        <span class="stamp-in"><b>통과</b><span class="petals">${petals(g)}</span></span>
+      </div>` : ''}
+      <h1 class="q">${head}</h1>
+      <p class="lead center">${sub}</p>
+      ${hist.length > 1 ? `
+      <section class="panel hist">
+        <span class="note">이 단계 도전 기록</span>
+        <div class="hist-bars" role="img" aria-label="최근 도전 ${hist.length}번: ${hist.map((r) => `${r.correct}개`).join(', ')}">
+          ${hist.map((r, i) => `<span class="hist-bar${i === hist.length - 1 ? ' now' : ''}"><i style="height:${Math.max(6, (100 * r.correct) / FOCUS_N)}%"></i><small>${r.correct}</small></span>`).join('')}
+        </div>
+      </section>` : ''}
+      ${res.misses.length ? `
+      <section class="miss-chips">
+        <p class="note">헷갈린 ${josa(`말 ${res.misses.length}개`, '은', '는')} 눌러서 견줘 들어 보세요</p>
+        <div class="chips">${res.misses.map((m, i) => `<button class="pill chip-btn" data-m="${i}">${ICON.speaker}${esc(m.label)}</button>`).join('')}</div>
+      </section>` : ''}
+      <div class="actions stack">
+        ${g && lv < 10 ? `<button class="btn primary" data-go="#focus/${cat}/${lv + 1}">${lv + 1}단계로 가기</button>` : ''}
+        <button class="btn${g && lv < 10 ? ' ghost' : ' primary'}" data-go="${back}/go">한 번 더 도전</button>
+        <button class="btn ghost" data-go="${back}">${lv}단계 미리 듣기</button>
       </div>
     </div>`;
-  bindMissPanel(res.misses);
+  // 헷갈린 말: 정답과 고른 것을 차례로 들려준다
+  let rbusy = false;
+  view.querySelectorAll('[data-m]').forEach((b) => {
+    b.onclick = async () => {
+      if (rbusy) return; rbusy = true; b.classList.add('busy');
+      try { for (const [, fn] of res.misses[+b.dataset.m].fns) { await fn(); await wait(500); } } finally { rbusy = false; b.classList.remove('busy'); }
+    };
+  });
 }
 
 /* ---------- 단어장 ---------- */
@@ -538,7 +656,7 @@ const vocabRate = (words) => {
 };
 
 function renderVocab() {
-  setNav('home');
+  setNav('focus');
   view.innerHTML = `
     <header class="page-head">
       <p class="eyebrow"><button class="link-btn" data-go="#focus">집중 연습</button> · 단어장</p>
@@ -557,7 +675,7 @@ function renderVocab() {
 }
 
 function renderVocabCh(n) {
-  setNav('home');
+  setNav('focus');
   const ch = VOCAB[n - 1];
   const r = vocabRate(ch.words);
   view.innerHTML = `

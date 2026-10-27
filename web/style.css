@@ -813,3 +813,74 @@ body:has(.sheet:not([hidden])) .choices.ling .choice { min-height: 84px; }
 .p-maps .rtable th:first-child { white-space: normal; }
 .p-maps .rtable th small { display: block; }
 .p-maps .rtable td { white-space: nowrap; }
+
+/* ---------- 연습 탭, 단계의 길, 묶음 카드, 도장 ---------- */
+.tabbar a span { white-space: nowrap; }
+@media (max-width: 400px) { .tabbar a { font-size: 15px; } }
+.petal { width: 18px; height: 18px; fill: none; stroke: var(--warm); stroke-width: 1.6; }
+.petal.on { fill: var(--warm); }
+.petals { display: inline-flex; gap: 2px; vertical-align: middle; }
+
+.path { position: relative; margin: 4px 0; }
+.path-line { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.path-line path { fill: none; stroke: var(--line); stroke-width: 16px; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: .7; }
+.path-line path.walked { stroke: var(--good-soft); opacity: 1; }
+.path-nodes { list-style: none; margin: 0; padding: 0; }
+.path-nodes li { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.node {
+  width: 56px; height: 56px; border-radius: 50%; border: 0; cursor: pointer;
+  font: 400 22px var(--display); background: var(--surface); color: var(--muted); box-shadow: inset 0 0 0 3px var(--line);
+}
+.node.done { background: var(--good); color: var(--good-ink); box-shadow: none; }
+.node.now { width: 68px; height: 68px; font-size: 28px; background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 0 6px var(--accent-soft); }
+.node.sel { outline: 4px solid var(--warm); outline-offset: 4px; }
+.node-petals { display: flex; gap: 1px; height: 14px; }
+.node-petals .petal { width: 14px; height: 14px; }
+.node-tag { position: absolute; top: 50%; left: 100%; transform: translate(10px, -50%); white-space: nowrap; padding: 3px 10px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font: 400 14px var(--display); }
+.path-nodes li[style*="left:78%"] .node-tag, .path-nodes li[style*="left:62%"] .node-tag { left: auto; right: 100%; transform: translate(-10px, -50%); }
+.path-card { position: sticky; bottom: 96px; box-shadow: 0 8px 28px rgba(122, 44, 18, .14); }
+.path-card-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 10px; }
+
+.seg.tabs2 { grid-template-columns: repeat(2, 1fr); border-radius: 999px; }
+.seg.tabs2 .seg-btn { border-radius: 999px; }
+.set-card { display: flex; flex-direction: column; gap: 14px; padding: 18px 16px 16px; border-radius: 28px; background: var(--surface); box-shadow: 0 6px 24px rgba(122, 44, 18, .08); touch-action: pan-y; }
+.set-head { font: 400 18px var(--display); color: var(--muted); }
+.set-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.set-grid.long { grid-template-columns: 1fr; }
+.set-item {
+  min-height: 104px; padding: 10px; border: 0; border-radius: 22px; background: var(--bg); color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+}
+.set-item > span { font: 400 34px/1.15 var(--display); word-break: keep-all; text-align: center; }
+.set-grid.long .set-item { min-height: 72px; align-items: flex-start; text-align: left; }
+.set-grid.long .set-item > span { font: 400 20px/1.45 var(--body); text-align: left; }
+.set-item.busy { background: var(--accent-soft); box-shadow: inset 0 0 0 3px var(--accent); }
+.set-card .btn { border-radius: 999px; }
+.set-card .btn svg { color: var(--accent); }
+.set-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
+.round-btn { width: 52px; height: 52px; border: 0; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--muted); cursor: pointer; }
+.round-btn.primary { background: var(--accent); color: var(--accent-ink); }
+.round-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.dots i { width: 8px; height: 8px; border-radius: 999px; background: var(--line); }
+.dots i.on { width: 22px; background: var(--accent); }
+
+.focus-result { gap: 16px; }
+.stamp { align-self: center; position: relative; width: 150px; height: 150px; transform: rotate(-8deg); animation: stamp .45s cubic-bezier(.2, 1.4, .4, 1) both; }
+.stamp::before { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 4px dashed var(--accent); opacity: .55; }
+.stamp-in { position: absolute; inset: 12px; border-radius: 50%; background: var(--accent-soft); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+.stamp-in b { font: 400 34px var(--display); color: var(--accent); }
+.stamp .petal { width: 20px; height: 20px; }
+@keyframes stamp { from { transform: rotate(-8deg) scale(1.6); opacity: 0; } to { transform: rotate(-8deg) scale(1); opacity: 1; } }
+.hist { display: flex; flex-direction: column; gap: 8px; }
+.hist-bars { display: flex; align-items: flex-end; gap: 10px; height: 84px; }
+.hist-bar { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; }
+.hist-bar i { width: 100%; border-radius: 8px 8px 4px 4px; background: var(--line); }
+.hist-bar small { font-size: 13px; color: var(--muted); }
+.hist-bar.now i { background: var(--accent); }
+.hist-bar.now small { color: var(--accent); font-weight: 700; }
+.miss-chips { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.chip-btn svg { color: var(--accent); }
+.actions.stack { flex-direction: column; }
+.actions.stack > .btn { flex: none; width: 100%; }
+@media (prefers-reduced-motion: reduce) { .stamp { animation: none; } }
