@@ -564,14 +564,15 @@ function stuckOpened(n, d = data) {
   const from = addDays(g[0].date, STUCK_DAYS);
   return g.some((x) => x.date >= from && x.correct >= gateNeed(x.total, GATE_STUCK));
 }
-function chapterOpen(n, d = data) {
+// 오늘의 연습이 올라와 있는 장: 앞 장 관문을 넘었거나(2주 넘게 막혀 70%를 넘었거나) 한 장. 장 자체는 모두 처음부터 열려 있다.
+function chapterReached(n, d = data) {
   if (n <= 1) return true;
   return (d.gates || []).some((g) => g.pass && g.ch >= n - 1) || stuckOpened(n - 1, d);
 }
 // 지금 오르는 장: 열린 장 중 가장 높은 곳(7장은 아직 칸이 없어 6장까지)
 function currentChapter(d = data) {
   let cur = 1;
-  for (let n = 2; n <= 6; n++) if (chapterOpen(n, d)) cur = n;
+  for (let n = 2; n <= 6; n++) if (chapterReached(n, d)) cur = n;
   return cur;
 }
 // 다음에 할 일: 지금 장에서 아직 넘지 못한 첫 칸, 다 넘었으면 관문, 관문도 넘었으면 복습
@@ -647,7 +648,6 @@ const routeName = (r) => {
   return m[1] === 'gate' ? `${m[2]}장 관문 '${GATES[m[2]].title}'` : `${m[2]} ${CELL[m[2]].name}`;
 };
 const planRoute = (x) => (x[0] === 'g' ? `#gate/${x.slice(1)}` : `#cell/${x}`);
-const planHas = (id) => !!data.plan && data.plan.cells.includes(id);
 
 /* ---------- 아이콘 ---------- */
 
@@ -822,11 +822,11 @@ function renderHome() {
     <ol class="map">${CHAPTERS.map((c) => {
       const cells = cellsCounted(c.n);
       const done = cells.filter((x) => cellState(x) === 'done').length;
-      const passed = gatePassed(c.n); const open = chapterOpen(c.n);
-      const state = !cells.length && !GATES[c.n] ? 'soon' : passed ? 'done' : c.n === cur ? 'current' : open ? 'open' : 'ahead';
+      const passed = gatePassed(c.n);
+      const state = !cells.length && !GATES[c.n] ? 'soon' : passed ? 'done' : c.n === cur ? 'current' : 'open';
       const sub = state === 'soon' ? '곧 열려요'
         : passed ? `관문 '${GATES[c.n].title}' 넘음`
-        : `칸 ${done}/${cells.length}${open ? '' : ' · 관문부터 도전해도 돼요'}`;
+        : `칸 ${done}/${cells.length}`;
       const pct = state === 'soon' ? 0 : passed ? 100 : Math.round((100 * done) / (cells.length + 1));
       return `
       <li class="ch-row ${state}">
@@ -860,7 +860,7 @@ function renderHome() {
 function renderChapter(n) {
   setNav('home');
   const c = chapterOf(n); const g = GATES[n];
-  const open = chapterOpen(n); const passed = gatePassed(n);
+  const passed = gatePassed(n);
   const tries = gatesOf(n);
   const left = cellsLeft(n);
   const triesToday = gateTriesToday(n);
@@ -872,7 +872,7 @@ function renderChapter(n) {
     const stuck = !passed && tries.length && daysSince(tries[0].date) >= STUCK_DAYS;
     gateNote = passed ? `${shortDate(passDay)}에 넘었어요. 이 장의 칸은 모두 통과로 쳐요.`
       : [tries.length ? `지금까지 ${tries.length}번 도전했고, 가장 많이 맞힌 것은 ${best}개예요.` : '',
-        stuck && n < 6 && !chapterOpen(n + 1) ? `2주가 지났으니 ${gateNeed(total, GATE_STUCK)}개 이상이면 다음 장이 열려요.` : '',
+        stuck && n < 6 && !chapterReached(n + 1) ? `2주가 지났으니 ${gateNeed(total, GATE_STUCK)}개 이상이면 오늘의 연습이 다음 장으로 넘어가요.` : '',
         left.length ? '칸을 다 넘기 전에 먼저 도전해도 돼요. 넘으면 이 장의 칸을 모두 통과로 쳐요.' : '칸을 다 넘었어요. 이제 관문에 도전해 보세요.'].filter(Boolean).join(' ');
     if (triesToday >= GATE_TRIES) gateNote += ' 오늘은 세 번 다 도전했어요. 내일 다시 해요.';
   }
@@ -882,11 +882,10 @@ function renderChapter(n) {
       <h1>${c.icon} ${c.name}</h1>
       <p class="lead">${c.about}</p>
     </header>
-    ${open ? '' : `<p class="note ahead-note">아직 앞에 있는 장이에요. 칸은 ${n - 1}장 관문을 넘으면 열리고, 이 장 관문에는 지금 먼저 도전할 수 있어요.</p>`}
     <ol class="cell-list">${cellsOf(n).map((x) => {
       const st = cellState(x);
-      const can = x.kind && st !== 'skip' && (open || planHas(x.id));
-      const hint = st === 'open' && !open && !planHas(x.id) ? `${n - 1}장 관문을 넘으면 열려요` : passHint(x);
+      const can = x.kind && st !== 'skip';
+      const hint = passHint(x);
       return `
       <li class="cell-row ${st}${can ? '' : ' off'}">
         <span class="cell-id">${x.id}</span>
@@ -2693,19 +2692,19 @@ async function renderGate(n) {
   if (!alive()) return;
 
   const pass = correct >= need;
-  const nextWasOpen = n < 7 && chapterOpen(n + 1);
+  const nextWasOpen = n < 7 && chapterReached(n + 1);
   data.gates.push({ ch: n, date: today(), at: Date.now(), correct, total, pass, sec: Math.round((Date.now() - startedAt) / 1000) });
   persist();
-  const opened = n < 7 && !nextWasOpen && chapterOpen(n + 1);
+  const opened = n < 7 && !nextWasOpen && chapterReached(n + 1);
   const nextName = n < 7 ? `${n + 1}장 ${chapterOf(n + 1).name}` : '';
   const leftNow = GATE_TRIES - gateTriesToday(n);
   let status;
   if (pass) {
     status = n === 5 ? '카페 소음 속에서 점원과 주문 대화를 끝까지 해냈어요. 일상 대화 대부분을 해내는 생활 깃발에 닿았어요.'
       : `${g.title} 장면을 해냈어요. ${n}장의 칸은 모두 통과로 쳐요.`;
-    if (opened) status += ` ${josa(nextName, '이', '가')} 열렸어요.`;
+    if (opened) status += ` 이제 오늘의 연습은 ${nextName}에서 이어져요.`;
   } else if (opened) {
-    status = `2주 넘게 도전해 ${gateNeed(total, GATE_STUCK)}개를 넘었어요. ${josa(nextName, '을', '를')} 열어 둘게요. 이 관문은 언제든 다시 도전할 수 있어요.`;
+    status = `2주 넘게 도전해 ${gateNeed(total, GATE_STUCK)}개를 넘었어요. 이제 오늘의 연습은 ${nextName}에서 이어져요. 이 관문은 언제든 다시 도전할 수 있어요.`;
   } else {
     status = `${need}개 이상이면 넘어요. ${leftNow > 0 ? `오늘 ${leftNow}번 더 도전할 수 있어요.` : '오늘 도전은 다 했어요. 내일 다시 해요.'}`;
   }
