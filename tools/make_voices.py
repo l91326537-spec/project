@@ -27,12 +27,18 @@ QA = os.path.join(ROOT, 'tools', 'voice_qa.json')
 DUMP_JS = r"""
 const vm = require('vm'); const fs = require('fs');
 const ctx = {}; vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(process.argv[1], 'utf8') + ';this.W = WORD_SETS; this.S = SENTENCE_SETS; this.N = NOISE_SCENES;', ctx);
+vm.runInContext(fs.readFileSync(process.argv[1], 'utf8') + ';this.W = WORD_SETS; this.C = CALL_SETS; this.S = SENTENCE_SETS; this.N = NOISE_SCENES; this.G = GATES;', ctx);
 const hasBatchim = (w) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c <= 11171 && c % 28 !== 0; };
 const fill = (f, w) => f.replace('_{을}', w + (hasBatchim(w) ? '을' : '를')).replace('_{이}', w + (hasBatchim(w) ? '이' : '가'));
-const groups = [...Object.values(ctx.W).flat(), ...ctx.S[1], ...ctx.S[2], ['안녕하세요']];
+const groups = [...Object.values(ctx.W).flat(), ...ctx.C, ...ctx.S[1], ...ctx.S[2], ['안녕하세요']];
 for (const { frame, words } of ctx.S[3]) groups.push(words.map((w) => fill(frame, w)));
 for (const sc of Object.values(ctx.N)) groups.push(...sc.easy, ...sc.hard);
+// 관문: 고르는 문제는 보기끼리 한 묶음, 묻는 말과 안내·대화 문장은 혼자(견줄 보기 없이 받아 적은 말이 얼마나 같은지만 본다)
+for (const g of Object.values(ctx.G)) for (const it of g.items) {
+  if (it.t === 'pick') groups.push(it.opts);
+  else if (it.t === 'say') groups.push([it.s]);
+  else if (it.t === 'talk') for (const l of it.lines) groups.push([l.s || l]);
+}
 console.log(JSON.stringify({ texts: [...new Set(groups.flat())], groups }));
 """
 
@@ -142,6 +148,9 @@ def readings(heard):
     return out
 
 
+SOLO = 84.0
+
+
 class Judge:
     """만든 음성을 Whisper로 받아 적고, 정답과 같은 문제의 다른 보기 중 무엇에 더 가깝게 들리는지 본다.
     한두 글자 낱말은 작은 모델이 자주 잘못 받아 적어(기존 마이크로소프트 음성도 마찬가지) 큰 모델로 듣는다."""
@@ -164,7 +173,9 @@ class Judge:
         close = lambda t: max(sim(t, h) for h in hs)
         own = close(text)
         best = max(((close(r), r) for r in rivals), default=(0.0, None))
-        return {'heard': heard, 'sim': round(own, 1), 'margin': round(own - best[0], 1) if best[1] else 100.0,
+        # 견줄 보기가 없는 문장(관문의 안내·대화)은 받아 적은 말이 85점 넘게 같아야 통과로 친다
+        margin = own - best[0] if best[1] else own - SOLO
+        return {'heard': heard, 'sim': round(own, 1), 'margin': round(margin, 1),
                 'rival': best[1], 'exact': any(norm(h) == norm(text) for h in hs)}
 
 
