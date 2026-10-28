@@ -3037,4 +3037,12 @@ route();
 // 홈 화면에 설치한 앱이 인터넷 없이도 열리게 한다(https나 localhost에서만 동작).
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  // 새 버전이 배포되면 새 서비스 워커가 자리를 잡는 순간 한 번 새로 읽어 바로 새 화면을 보여 준다(문제 푸는 중에는 건너뛴다)
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloaded || document.body.classList.contains('in-play')) return;
+    reloaded = true;
+    location.reload();
+  });
 }
