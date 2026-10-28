@@ -77,7 +77,7 @@ cd web && python3 -m http.server 8000
 
 ## 다음 할 일
 - 빈 칸 채우기(값 듣기, 전화 음질 등)와 칸마다 문항 60개까지 늘리기, 7장 관문
-- 여러 목소리: 지금은 AI 목소리 하나를 높낮이만 바꿔 씀. 남자·여자·아이·어르신 목소리를 따로 만들려면 여러 목소리가 있는 음성 엔진(예: Azure 키)이나 실제 녹음이 필요함
+- 여러 목소리: 남자 목소리는 구글 클라우드로 만들 수 있게 됨(아래). 아이·어르신 목소리는 실제 녹음이 필요함
 - 아이 모드(글자 대신 그림, 동물 소리와 동요, 보호자와 함께 하는 화면): 그림 자료와 대상 나이를 정한 뒤
 - 유형별 시작 단계와 진도 기준을 청능사·이비인후과 선생님께 확인받기
 - 알림(정한 시각에 하루 한 번)은 서버가 있어야 해서 아직 없음
@@ -90,6 +90,8 @@ cd web && python3 -m http.server 8000
 - `web/voice/index.json`(`{"글자": "voice/파일.mp3"}`)과 음성 파일이 있으면 기기 음성(TTS) 대신 그 파일을 씁니다. Claude 앱 화면처럼 기기 음성이 없는 곳에서도 소리가 나게 하려면 필요합니다.
 - 음성은 **MeloTTS(MIT 라이선스 오픈소스)**로 만듭니다. 키가 필요 없어서 `web/content.js`를 고친 PR마다 GitHub Actions(`음성 파일 만들기`)가 새 문항만 만들어 그 PR 브랜치에 커밋합니다. Actions 탭에서 직접 돌릴 수도 있습니다(`시험 삼아 앞의 몇 개만` 입력란으로 일부만 만들어 볼 수 있습니다).
 - 만든 음성은 **Whisper로 다시 들어 확인**합니다. 받아 적은 말이 정답보다 같은 문제의 다른 보기(예: 쌀↔살)에 더 가깝게 들리면 빠르기와 조건을 바꿔 다시 만들고(짧은 낱말은 최대 8번), 그래도 애매하면 `tools/voice_qa.json`에 남기고 `index.json`에서 뺍니다(앱은 그 문항을 기기 음성이나 가족 목소리로 들려주고, 기기 음성이 없는 곳에서는 음성 파일이 있는 문항을 골라 냅니다). 한두 글자 낱말은 작은 Whisper 모델이 자주 잘못 받아 적어 큰 모델(medium)로 듣고, '3시'처럼 숫자로 적은 것은 '세 시'·'삼 시'로 읽어 견줍니다. Actions에서 `애매했던 음성도 다시 만들기`를 켜고 돌리면 애매했던 것만 새 시드로 다시 만들고, 전보다 나을 때만 바꿉니다. 지금은 849개 중 825개가 확인을 통과했습니다.
+- **남자 목소리(지금)**: 시제품용으로 엣지 '소리 내어 읽기'의 한국어 남자 목소리(`ko-KR-InJoonNeural`, edge-tts)로 1,477개를 만들어 `web/voice/m/`에 넣었습니다(`python3 tools/make_voices.py --engine edge`, 키 필요 없음). 공식 API가 아니어서 정식 서비스 전에는 아래 구글 방식으로 다시 만들어 바꿉니다.
+- **남자 목소리(공식 API)**: 저장소 Settings > Secrets and variables > Actions에 `GOOGLE_TTS_KEY`(구글 클라우드 Text-to-Speech API 키)를 넣으면 `음성 파일 만들기`가 구글의 한국어 남자 목소리(`ko-KR-Neural2-C`)로 `web/voice/m/`과 `web/voice/index-m.json`을 함께 만듭니다. 앱의 사용자 설정에서 **목소리: 여자 / 남자 / 번갈아**를 고르고(번갈아는 말마다 고르되 다시 듣기는 같은 목소리), 관문 대화의 낮은 목소리와 '남자·여자 목소리' 구별 문제도 진짜 남자 목소리로 들려줍니다. 남자 목소리 파일이 없는 말은 지금처럼 여자 목소리(낮추기)로 대신합니다. 직접 만들려면 `GOOGLE_TTS_KEY=... python3 tools/make_voices.py --engine google`.
 - 저장소 Settings > Secrets and variables > Actions에 `AZURE_SPEECH_KEY`와 `AZURE_SPEECH_REGION`(예: `koreacentral`)을 넣어 두면 대신 **Azure 음성 서비스(공식 API, 한국어 SunHi 음성)**를 씁니다.
 - 직접 만들려면 `pip install git+https://github.com/myshell-ai/MeloTTS.git faster-whisper lameenc && python -m unidic download` 뒤에 `python3 tools/make_voices.py`(node 필요). Azure로 만들려면 `AZURE_SPEECH_KEY=... AZURE_SPEECH_REGION=koreacentral python3 tools/make_voices.py --engine azure`(무료 F0 요금제는 1분에 20번까지라 전체를 처음 만들 때 30분쯤 걸립니다).
 - 파일 수 제한이 있는 곳(예: Claude 아티팩트)에 올릴 때는 `python3 tools/make_sprites.py OUT`으로 음성을 묶음 몇 개로 합칩니다(ffmpeg 필요). 앱은 index.json 값이 객체(`{s, t, d}`)면 묶음의 해당 구간을 재생합니다.
