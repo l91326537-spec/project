@@ -13,6 +13,8 @@
   무료(F0) 요금제는 1분에 20번까지만 요청할 수 있어 기본으로 3.2초마다 하나씩 만든다.
 - google: 구글 클라우드 Text-to-Speech(공식 API)로 **남자 목소리**(기본 ko-KR-Neural2-C)를 만든다. 준비: GOOGLE_TTS_KEY(API 키).
   여자 목소리와 따로 web/voice/m/<해시>.mp3, web/voice/index-m.json에 둔다.
+- edge: 엣지 브라우저 '소리 내어 읽기' 목소리(edge-tts, 키 필요 없음)로 남자 목소리(ko-KR-InJoonNeural)를 만든다.
+  공식 API가 아니어서 시제품용 임시 목소리다. 구글 키가 생기면 --engine google로 다시 만들면 바뀐다. 준비: pip install edge-tts
 공통 준비: node (content.js를 읽는 데 씀).
 실행: python3 tools/make_voices.py
 """
@@ -392,9 +394,47 @@ def run_google(a, texts):
     return finish(index, failed, out=OUT_M, name='index-m.json')
 
 
+# ---------- 엣지 '소리 내어 읽기'(남자 목소리, 시제품용 임시) ----------
+
+def run_edge(a, texts):
+    import asyncio
+    import edge_tts
+    os.makedirs(OUT_M, exist_ok=True)
+    index, todo = plan(texts, f'edge|{a.evoice}|{a.erate}', OUT_M)
+    if a.limit:
+        todo = todo[:a.limit]
+    proxy = os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')
+    print(f'남자 목소리({a.evoice}): 문항 {len(texts)}개, 새로 만들 것 {len(todo)}개', flush=True)
+    failed = []
+
+    async def one(t, path, sem):
+        async with sem:
+            for attempt in range(4):
+                try:
+                    await edge_tts.Communicate(t, a.evoice, rate=a.erate, proxy=proxy).save(path)
+                    if os.path.getsize(path) > 0:
+                        return
+                except Exception as e:  # 일시적인 오류는 다시 시도한다
+                    err = e
+                await asyncio.sleep(1 + attempt * 2)
+            print(f'  실패: {t} ({err})', file=sys.stderr)
+            failed.append(t)
+            if os.path.exists(path):
+                os.remove(path)
+
+    async def run():
+        sem = asyncio.Semaphore(4)
+        jobs = [one(t, p, sem) for t, p in todo]
+        for i in range(0, len(jobs), 100):
+            await asyncio.gather(*jobs[i:i + 100])
+            print(f'  {min(i + 100, len(jobs))}/{len(jobs)}', flush=True)
+    asyncio.run(run())
+    return finish(index, failed, out=OUT_M, name='index-m.json')
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--engine', choices=['melo', 'azure', 'google'], default='azure' if os.environ.get('AZURE_SPEECH_KEY') else 'melo')
+    ap.add_argument('--engine', choices=['melo', 'azure', 'google', 'edge'], default='azure' if os.environ.get('AZURE_SPEECH_KEY') else 'melo')
     ap.add_argument('--speed', type=float, default=0.9)  # melo: 청능훈련용으로 조금 천천히
     ap.add_argument('--tries', type=int, default=8)  # melo: 짧은 낱말을 다시 만들어 볼 횟수(문장은 3분의 1)
     ap.add_argument('--margin', type=float, default=1.0)  # melo: 정답이 다른 보기보다 이만큼(닮은 정도 점수) 더 가깝게 들려야 통과
@@ -407,6 +447,8 @@ def main():
     ap.add_argument('--interval', type=float, default=3.2)  # azure 무료 요금제: 1분에 20번
     ap.add_argument('--gvoice', default='ko-KR-Neural2-C')  # google: 한국어 남자 목소리
     ap.add_argument('--grate', type=float, default=0.95)  # google: 청능훈련용으로 조금 천천히
+    ap.add_argument('--evoice', default='ko-KR-InJoonNeural')  # edge: 한국어 남자 목소리
+    ap.add_argument('--erate', default='-5%')  # edge: 조금 천천히
     a = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
     d = _dump()
@@ -415,6 +457,8 @@ def main():
         return run_melo(a, d['texts'], rivals_of(d['groups']))
     if a.engine == 'google':
         return run_google(a, d['texts'])
+    if a.engine == 'edge':
+        return run_edge(a, d['texts'])
     return run_azure(a, d['texts'])
 
 
