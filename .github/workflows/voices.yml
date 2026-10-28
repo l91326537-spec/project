@@ -1,6 +1,7 @@
 # 문항(web/content.js)을 고친 PR에서 AI 음성 파일을 만들어 그 PR 브랜치에 올린다. 이미 있는 파일은 건너뛴다.
 # 기본은 오픈소스 MeloTTS(키 필요 없음)로 만들고 Whisper로 들어 확인한다.
 # 저장소 Secrets에 AZURE_SPEECH_KEY, AZURE_SPEECH_REGION을 넣으면 Azure 음성 서비스로 만든다.
+# GOOGLE_TTS_KEY를 넣으면 구글 클라우드로 남자 목소리(web/voice/m, index-m.json)도 함께 만든다.
 name: 음성 파일 만들기
 
 on:
@@ -34,6 +35,7 @@ jobs:
       BRANCH: ${{ github.head_ref || github.ref_name }}
       AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
       AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
+      GOOGLE_TTS_KEY: ${{ secrets.GOOGLE_TTS_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,6 +54,13 @@ jobs:
         run: |
           set -o pipefail  # tee를 거쳐도 실패를 놓치지 않게
           python3 tools/make_voices.py --limit "${{ inputs.limit || 0 }}" ${{ inputs.redo_weak && '--redo-weak' || '' }} 2>&1 | tee /tmp/voices.log
+      - id: gen_m
+        name: 남자 목소리 만들기(구글)
+        if: env.GOOGLE_TTS_KEY != ''
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python3 tools/make_voices.py --engine google --limit "${{ inputs.limit || 0 }}" 2>&1 | tee -a /tmp/voices.log
       - name: 바뀐 음성 파일 올리기
         env:
           GH_TOKEN: ${{ github.token }}
@@ -59,7 +68,7 @@ jobs:
           [ -d web/voice ] && git add -A web/voice
           [ -f tools/voice_qa.json ] && git add tools/voice_qa.json
           # 실패했을 때는 이유를 브랜치에서 볼 수 있게 기록도 함께 올린다(성공하면 올리지 않는다)
-          if [ "${{ steps.gen.outcome }}" = failure ]; then tail -c 60000 /tmp/voices.log > tools/voice_log.txt; git add tools/voice_log.txt; fi
+          if [ "${{ steps.gen.outcome }}" = failure ] || [ "${{ steps.gen_m.outcome }}" = failure ]; then tail -c 60000 /tmp/voices.log > tools/voice_log.txt; git add tools/voice_log.txt; fi
           if git diff --cached --quiet; then echo "바뀐 음성 파일 없음"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -68,5 +77,5 @@ jobs:
           git push origin "HEAD:$BRANCH"
           # 봇이 올린 커밋은 배포를 다시 돌리지 않으므로 main이면 직접 배포한다
           if [ "$BRANCH" = main ]; then gh workflow run pages.yml --ref main; fi
-      - if: always() && steps.gen.outcome == 'failure'
+      - if: always() && (steps.gen.outcome == 'failure' || steps.gen_m.outcome == 'failure')
         run: echo "만들지 못한 음성이 있어요. 위 로그를 확인하세요." && exit 1

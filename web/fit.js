@@ -295,8 +295,10 @@ function supraItem(mode, labels) {
       tell: k === 0 ? '끝이 올라가는 소리였어요. 묻는 말이 이렇게 끝나요.' : '끝이 내려가는 소리였어요. 대답하는 말이 이렇게 끝나요.',
     };
   }
-  // 같은 AI 음성을 낮추거나 높여 남자·여자 목소리처럼 들려준다(app.js의 VOICE_RATE)
-  const s = pickHeard([...new Set(SENTENCE_SETS[1].flat())]);
+  // 남자 목소리 파일이 있으면 그것으로, 없으면 같은 AI 음성을 낮추거나 높여 남자·여자 목소리처럼 들려준다(app.js의 VOICE_RATE)
+  const pool = [...new Set(SENTENCE_SETS[1].flat())];
+  const both = pool.filter((x) => voicePackM[x]);
+  const s = pickHeard(both.length ? both : pool);
   const k = Math.random() < 0.5 ? 0 : 1;
   return {
     opts: [['남자 목소리', '👨'], ['여자 목소리', '👩']], right: k,
@@ -403,6 +405,14 @@ function renderWho(first = false) {
       <p class="note">문제의 말소리 빠르기예요. 월간 점검과 소음 기록은 늘 같은 조건으로 견주려고 보통 빠르기로 들려드려요.</p>
       <button class="pill" id="speed-test">${ICON.speaker}들어 보기</button>
     </section>
+    <section class="panel">
+      <h2 class="panel-title">목소리</h2>
+      <div class="seg" role="radiogroup" aria-label="목소리">${[['woman', '여자'], ['man', '남자'], ['mix', '번갈아']].map(([k, label]) => `
+        <button class="seg-btn${data.voice === k ? ' on' : ''}" role="radio" aria-checked="${data.voice === k}" data-voice="${k}">${label}</button>`).join('')}</div>
+      <p class="note">${hasMan() ? '문제의 AI 목소리예요. 여러 목소리로 연습하면 처음 듣는 사람 말도 더 잘 알아듣게 돼요. 가족 목소리 녹음이 있으면 그것을 먼저 들려드려요.'
+        : '남자 목소리 파일을 준비하고 있어요. 그동안은 남자를 골라도 여자 목소리로 들려드려요.'}</p>
+      <button class="pill" id="voice-test">${ICON.speaker}들어 보기</button>
+    </section>
     <p class="note">유형별 시작 단계와 빠르기는 청각 재활에서 일반적으로 알려진 원칙이에요. 담당 청능사·이비인후과 선생님 의견이 다르면 그에 맞춰 바꿔 주세요.</p>
     <button class="btn primary block" id="who-done" ${first && !w ? 'disabled' : ''}>${first ? '이대로 시작하기' : '다 됐어요'}</button>
     ${first ? '<button class="btn ghost block" id="who-skip">나중에 고를게요</button>' : ''}`;
@@ -410,6 +420,7 @@ function renderWho(first = false) {
     b.onclick = () => { data.who = b.dataset.who; data.talkSpeed = WHO[data.who].speed; persist(); renderWho(first); };
   });
   view.querySelectorAll('[data-ear]').forEach((b) => { b.onclick = () => { data.ear = b.dataset.ear; persist(); renderWho(first); }; });
+  view.querySelectorAll('[data-voice]').forEach((b) => { b.onclick = () => { data.voice = b.dataset.voice; persist(); renderWho(first); }; });
   view.querySelectorAll('[data-speed]').forEach((b) => { b.onclick = () => { data.talkSpeed = +b.dataset.speed; persist(); renderWho(first); }; });
   let busy = false;
   const test = (fn) => async () => { if (busy) return; busy = true; unlockAudio(); try { await fn(); } finally { busy = false; } };
@@ -418,6 +429,7 @@ function renderWho(first = false) {
     await playEnv('doorbell'); await playWord('안녕하세요');
   });
   $('#speed-test').onclick = test(() => playWord('천천히 말해 주세요'));
+  $('#voice-test').onclick = test(() => playWord('안녕하세요'));
   $('#who-done').onclick = () => { if (first && w) toast(`${w.name}에 맞췄어요.`); go('#home'); };
   if (first) $('#who-skip').onclick = () => { data.who = 'none'; persist(); go('#home'); };
 }

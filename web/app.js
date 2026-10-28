@@ -63,6 +63,7 @@ const fresh = () => ({
   who: null,             // 사용자 유형(fit.js의 WHO): 'ha' 보청기, 'ci' 인공와우 성인, 'kid' 인공와우 아이, 'ear2' 두 번째 귀, 'none' 고르지 않음
   ear: 'both',           // 듣는 귀: 'both', 'L', 'R'
   talkSpeed: null,       // 말 빠르기(없으면 유형에 따라)
+  voice: 'woman',        // AI 목소리: 'woman' 여자, 'man' 남자, 'mix' 번갈아
   lings: [],             // 링 6소리 점검: {date, at, ear, src, ok, heard, miss: [소리], res: {소리: 고른 소리|'none'}}
   supraRuns: [],         // 소리 구별: {mode, date, at, correct, total, sec}
   maps: [],              // 기기 조절 일지: {date, at, kind, ear, memo}
@@ -81,6 +82,7 @@ function migrate(d) {
   for (const k of ['gates', 'misses', 'speakLog', 'checks', 'noiseRecs', 'retests', 'focusRuns', 'lings', 'supraRuns', 'maps']) if (!Array.isArray(d[k])) d[k] = [];
   if (!['both', 'L', 'R'].includes(d.ear)) d.ear = 'both';
   if (!SPEEDS.some(([v]) => v === d.talkSpeed)) d.talkSpeed = null;
+  if (!['woman', 'man', 'mix'].includes(d.voice)) d.voice = 'woman';
   if (!d.itemStats || typeof d.itemStats !== 'object') d.itemStats = {};
   if (d.plan && !Array.isArray(d.plan.cells)) d.plan.cells = [...new Set((d.plan.stages || []).map((n) => PLAN_STAGE[n]).filter(Boolean))];
   if (d.plan && !d.plan.cells.length) d.plan = null;
@@ -380,6 +382,10 @@ if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pic
 // 파일 수 제한이 있는 곳에서는 여러 음성을 이어 붙인 묶음 파일을 쓴다: { 글자: { s: 묶음 경로, t: 시작 초, d: 길이 초 } }
 let voicePack = {};
 const voicePackReady = fetch('voice/index.json').then((r) => (r.ok ? r.json() : {})).then((j) => { voicePack = j || {}; }).catch(() => {});
+// 남자 목소리(voice/index-m.json, 구글 클라우드로 만든 것). 없으면 여자 목소리를 낮춰 대신한다.
+let voicePackM = {};
+const voicePackMReady = fetch('voice/index-m.json').then((r) => (r.ok ? r.json() : {})).then((j) => { voicePackM = j || {}; }).catch(() => {});
+const hasMan = () => Object.keys(voicePackM).length > 0;
 const canSpeak = () => !!window.speechSynthesis || Object.keys(voicePack).length > 0;
 
 // 관문의 여러 사람 대화: 같은 음성을 낮거나 높게 바꿔 다른 사람처럼 들려준다(빠르기도 함께 바뀐다).
@@ -408,7 +414,18 @@ async function playSprite({ s, t, d }, rate = 1) {
   await new Promise((res) => { src.onended = res; setTimeout(res, (d / rate) * 1000 + 500); });
 }
 
+// 번갈아: 말마다 남자·여자를 고르되, 다시 듣기를 눌러도 2분 동안은 같은 목소리로 들려준다
+const mixPick = new Map();
+function mixIsMan(word) {
+  const m = mixPick.get(word);
+  if (m && Date.now() - m.at < 120000) { m.at = Date.now(); return m.man; }
+  const man = Math.random() < 0.5;
+  mixPick.set(word, { man, at: Date.now() });
+  return man;
+}
 // v: 다른 사람 목소리('low', 'high', 'man', 'woman'). 가족 녹음은 그 사람 목소리 그대로 둔다
+// 남자 목소리 파일이 있으면 'man'·'low'는 그것을 그대로, 'woman'·'high'는 여자 목소리를 그대로 쓴다.
+// v가 없으면 설정(data.voice)에 따라 여자·남자·번갈아 고른다.
 // asIs: 말 빠르기 설정을 따르지 않는다(월간 점검·소음 기록은 늘 같은 조건으로 견준다)
 async function playWord(word, v, speed = 1, asIs = false) {
   const rate = VOICE_RATE[v] || 1;
@@ -422,10 +439,16 @@ async function playWord(word, v, speed = 1, asIs = false) {
       return 'family';
     }
   }
-  await voicePackReady;
+  await voicePackReady; await voicePackMReady;
+  const male = voicePackM[word];
+  const wantMan = v === 'man' || v === 'low' || (!v && (data.voice === 'man' || (data.voice === 'mix' && mixIsMan(word))));
+  if (male && wantMan) {
+    try { await playUrl(male, 1, speed); return 'pack-m'; } catch {}
+  }
   const p = voicePack[word];
+  const r = male && (v === 'woman' || v === 'high') ? 1 : rate; // 진짜 남자 목소리가 있으면 여자 목소리는 높이지 않는다
   if (p) {
-    try { await (typeof p === 'string' ? playUrl(p, rate, speed) : playSprite(p, rate * speed)); return 'pack'; } catch {} // 묶음을 못 읽으면 기기 음성으로
+    try { await (typeof p === 'string' ? playUrl(p, r, speed) : playSprite(p, r * speed)); return 'pack'; } catch {} // 묶음을 못 읽으면 기기 음성으로
   }
   if (!window.speechSynthesis) return 'none';
   speechSynthesis.cancel();
@@ -1268,7 +1291,7 @@ function renderProgress() {
   const reset = view.querySelector('#reset');
   reset.onclick = () => {
     if (reset.dataset.confirm) {
-      data = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, who: data.who, ear: data.ear, talkSpeed: data.talkSpeed });
+      data = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, who: data.who, ear: data.ear, talkSpeed: data.talkSpeed, voice: data.voice });
       persist(); renderProgress(); toast('기록을 지웠어요.');
     } else { reset.dataset.confirm = '1'; reset.textContent = '한 번 더 누르면 지워져요'; reset.classList.add('danger'); }
   };
@@ -2052,7 +2075,7 @@ function demoData(opts = {}) {
   let seed = seed0;
   const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
   // 듣는 귀와 말 빠르기는 이 기기를 쓰는 사람 것을 그대로 둔다
-  const d = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, ear: data.ear, talkSpeed: data.talkSpeed, demo: true, reportName: name, plan, who });
+  const d = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, ear: data.ear, talkSpeed: data.talkSpeed, voice: data.voice, demo: true, reportName: name, plan, who });
   const day0 = '2000-01-03';
   const START = { 1: 0.78, 2: 0.72, 3: 0.56, 4: 0.6, 5: 0.52, 6: 0.45 }; // 칸에 처음 들어섰을 때 정답률
   const GSTART = { 1: 0.86, 2: 0.78, 3: 0.72, 4: 0.68, 5: 0.66, 6: 0.6 };
@@ -2203,7 +2226,7 @@ function loadDemo() {
 function clearDemo() {
   let back = null;
   try { back = JSON.parse(localStorage.getItem(BACKUP_KEY)); localStorage.removeItem(BACKUP_KEY); } catch {}
-  data = migrate(Object.assign(fresh(), back || { preferFamily: data.preferFamily, bigText: data.bigText, ear: data.ear, talkSpeed: data.talkSpeed }));
+  data = migrate(Object.assign(fresh(), back || { preferFamily: data.preferFamily, bigText: data.bigText, ear: data.ear, talkSpeed: data.talkSpeed, voice: data.voice }));
   persist();
 }
 
@@ -2397,7 +2420,7 @@ async function renderRetest() {
 /* ---------- 칸 한 판 ---------- */
 
 let playToken = 0; // 다른 화면으로 가면 진행 중인 판을 멈춘다
-const SRC_LABEL = { family: '가족 목소리', pack: 'AI 음성', tts: 'AI 음성', 'tts-nokorean': '이 기기에는 한국어 음성이 없어 발음이 어색할 수 있어요', none: '이 화면에서는 AI 음성이 나오지 않아요' };
+const SRC_LABEL = { family: '가족 목소리', pack: 'AI 음성', 'pack-m': 'AI 음성(남자)', tts: 'AI 음성', 'tts-nokorean': '이 기기에는 한국어 음성이 없어 발음이 어색할 수 있어요', none: '이 화면에서는 AI 음성이 나오지 않아요' };
 
 // 판 화면의 공통 틀: 그만 버튼, 진행 막대, 가운데 소리 공, 보기 자리, 아래에서 올라오는 확인 시트
 function playShell(back, eyebrow, q, hint, start) {

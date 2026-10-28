@@ -11,16 +11,19 @@
   준비: pip install git+https://github.com/myshell-ai/MeloTTS.git faster-whisper lameenc && python -m unidic download
 - azure: Azure 음성 서비스(공식 API, ko-KR-SunHiNeural). 준비: AZURE_SPEECH_KEY, AZURE_SPEECH_REGION.
   무료(F0) 요금제는 1분에 20번까지만 요청할 수 있어 기본으로 3.2초마다 하나씩 만든다.
+- google: 구글 클라우드 Text-to-Speech(공식 API)로 **남자 목소리**(기본 ko-KR-Neural2-C)를 만든다. 준비: GOOGLE_TTS_KEY(API 키).
+  여자 목소리와 따로 web/voice/m/<해시>.mp3, web/voice/index-m.json에 둔다.
 공통 준비: node (content.js를 읽는 데 씀).
 실행: python3 tools/make_voices.py
 """
-import argparse, hashlib, json, os, re, subprocess, sys, time, urllib.error, urllib.request
+import argparse, base64, hashlib, json, os, re, subprocess, sys, time, urllib.error, urllib.request
 from xml.sax.saxutils import escape
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WEB = os.path.join(ROOT, 'web')
 OUT = os.path.join(WEB, 'voice')
 QA = os.path.join(ROOT, 'tools', 'voice_qa.json')
+OUT_M = os.path.join(OUT, 'm')  # 남자 목소리
 
 # content.js를 그대로 실행해 문항을 꺼낸다(문항 형식을 파이썬에서 다시 해석하지 않으려고).
 # groups는 한 문제에 함께 나오는 보기 묶음이다(음성 확인 때 헷갈릴 만한 후보로 쓴다).
@@ -66,28 +69,29 @@ def rivals_of(groups):
     return {t: sorted(v) for t, v in out.items()}
 
 
-def finish(index, failed, hide=()):
+def finish(index, failed, hide=(), out=OUT, name='index.json'):
     """failed: 만들지 못한 것. hide: 파일은 두되 앱 목록에서 뺄 것(확인에서 애매했던 음성은 앱이 기기 음성으로 들려준다)"""
     index = {t: v for t, v in index.items() if t not in failed and os.path.exists(os.path.join(WEB, v))}
     keep = {os.path.basename(v) for v in index.values()}
-    for f in os.listdir(OUT):
+    for f in os.listdir(out):
         if f.endswith('.mp3') and f not in keep:
-            os.remove(os.path.join(OUT, f))
+            os.remove(os.path.join(out, f))
     shown = {t: v for t, v in index.items() if t not in hide}
-    with open(os.path.join(OUT, 'index.json'), 'w', encoding='utf-8') as fp:
+    with open(os.path.join(OUT, name), 'w', encoding='utf-8') as fp:
         json.dump(shown, fp, ensure_ascii=False, indent=0, sort_keys=True)
     size = sum(os.path.getsize(os.path.join(WEB, v)) for v in shown.values())
     print(f'완료: 앱에 {len(shown)}개({size / 1e6:.1f}MB), 애매해서 뺀 것 {len(index) - len(shown)}개, 실패 {len(failed)}개')
     return 1 if failed else 0
 
 
-def plan(texts, tag):
+def plan(texts, tag, out=OUT):
     index, todo = {}, []
+    sub = os.path.relpath(out, WEB).replace(os.sep, '/')
     for t in texts:
         name = hashlib.sha1(f'{tag}|{t}'.encode()).hexdigest()[:12] + '.mp3'
-        index[t] = f'voice/{name}'
-        if not os.path.exists(os.path.join(OUT, name)):
-            todo.append((t, os.path.join(OUT, name)))
+        index[t] = f'{sub}/{name}'
+        if not os.path.exists(os.path.join(out, name)):
+            todo.append((t, os.path.join(out, name)))
     return index, todo
 
 
@@ -334,9 +338,63 @@ def run_azure(a, texts):
     return finish(index, failed)
 
 
+# ---------- 구글 클라우드(남자 목소리) ----------
+
+def synth_google(text, voice, rate, key):
+    body = json.dumps({'input': {'text': text}, 'voice': {'languageCode': 'ko-KR', 'name': voice},
+                       'audioConfig': {'audioEncoding': 'MP3', 'speakingRate': rate}}).encode('utf-8')
+    req = urllib.request.Request(f'https://texttospeech.googleapis.com/v1/text:synthesize?key={key}', data=body, method='POST',
+                                 headers={'Content-Type': 'application/json', 'User-Agent': 'sorigil-voices'})
+    for attempt in range(6):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                audio = json.loads(r.read()).get('audioContent')
+            if audio:
+                return base64.b64decode(audio)
+        except urllib.error.HTTPError as e:
+            if e.code in (400, 401, 403):
+                msg = e.read().decode('utf-8', 'replace')[:300]
+                raise KeyError_(f'키나 설정이 맞지 않아요 (HTTP {e.code}): {msg}')
+            if e.code == 429:  # 요청이 너무 잦다
+                time.sleep(10)
+                continue
+            err = e
+        except Exception as e:  # 일시적인 네트워크 오류는 다시 시도한다
+            err = e
+        time.sleep(2 + attempt * 3)
+    print(f'  실패: {text} ({err})', file=sys.stderr)
+    return None
+
+
+def run_google(a, texts):
+    key = os.environ.get('GOOGLE_TTS_KEY')
+    if not key:
+        sys.exit('GOOGLE_TTS_KEY가 없어요.')
+    os.makedirs(OUT_M, exist_ok=True)
+    index, todo = plan(texts, f'google|{a.gvoice}|{a.grate}', OUT_M)
+    if a.limit:
+        todo = todo[:a.limit]
+    print(f'남자 목소리({a.gvoice}): 문항 {len(texts)}개, 새로 만들 것 {len(todo)}개', flush=True)
+    failed = []
+    for i, (t, path) in enumerate(todo):
+        try:
+            audio = synth_google(t, a.gvoice, a.grate, key)
+        except KeyError_ as e:
+            sys.exit(str(e))
+        if audio:
+            with open(path, 'wb') as fp:
+                fp.write(audio)
+        else:
+            failed.append(t)
+        if (i + 1) % 100 == 0:
+            print(f'  {i + 1}/{len(todo)}', flush=True)
+        time.sleep(0.1)
+    return finish(index, failed, out=OUT_M, name='index-m.json')
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--engine', choices=['melo', 'azure'], default='azure' if os.environ.get('AZURE_SPEECH_KEY') else 'melo')
+    ap.add_argument('--engine', choices=['melo', 'azure', 'google'], default='azure' if os.environ.get('AZURE_SPEECH_KEY') else 'melo')
     ap.add_argument('--speed', type=float, default=0.9)  # melo: 청능훈련용으로 조금 천천히
     ap.add_argument('--tries', type=int, default=8)  # melo: 짧은 낱말을 다시 만들어 볼 횟수(문장은 3분의 1)
     ap.add_argument('--margin', type=float, default=1.0)  # melo: 정답이 다른 보기보다 이만큼(닮은 정도 점수) 더 가깝게 들려야 통과
@@ -347,12 +405,16 @@ def main():
     ap.add_argument('--voice', default='ko-KR-SunHiNeural')  # azure
     ap.add_argument('--rate', default='-10%')  # azure
     ap.add_argument('--interval', type=float, default=3.2)  # azure 무료 요금제: 1분에 20번
+    ap.add_argument('--gvoice', default='ko-KR-Neural2-C')  # google: 한국어 남자 목소리
+    ap.add_argument('--grate', type=float, default=0.95)  # google: 청능훈련용으로 조금 천천히
     a = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
     d = _dump()
     print(f'엔진: {a.engine}', flush=True)
     if a.engine == 'melo':
         return run_melo(a, d['texts'], rivals_of(d['groups']))
+    if a.engine == 'google':
+        return run_google(a, d['texts'])
     return run_azure(a, d['texts'])
 
 
