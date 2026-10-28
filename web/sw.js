@@ -25,7 +25,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   const font = /^fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
   if (url.origin !== location.origin && !font) return;
-  const stable = font || /\/voice\/[^/]+\.(mp3|m4a|ogg|wav)$/.test(url.pathname);
+  const stable = font || /\/voice\/(m\/)?[^/]+\.(mp3|m4a|ogg|wav)$/.test(url.pathname);
   e.respondWith(caches.open(VERSION).then(async (c) => {
     const hit = await c.match(req, { ignoreSearch: true });
     const save = (res) => { if (res.ok || res.type === 'opaque') c.put(req, res.clone()); return res; };
