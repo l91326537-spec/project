@@ -424,6 +424,7 @@ function mixIsMan(word) {
   return man;
 }
 // v: 다른 사람 목소리('low', 'high', 'man', 'woman'). 가족 녹음은 그 사람 목소리 그대로 둔다
+// 'M'·'F'는 높낮이를 바꾸지 않은 남자·여자 AI 목소리 그대로(집중 연습에서 목소리를 골랐을 때)
 // 남자 목소리 파일이 있으면 'man'·'low'는 그것을 그대로, 'woman'·'high'는 여자 목소리를 그대로 쓴다.
 // v가 없으면 설정(data.voice)에 따라 여자·남자·번갈아 고른다.
 // asIs: 말 빠르기 설정을 따르지 않는다(월간 점검·소음 기록은 늘 같은 조건으로 견준다)
@@ -441,7 +442,7 @@ async function playWord(word, v, speed = 1, asIs = false) {
   }
   await voicePackReady; await voicePackMReady;
   const male = voicePackM[word];
-  const wantMan = v === 'man' || v === 'low' || (!v && (data.voice === 'man' || (data.voice === 'mix' && mixIsMan(word))));
+  const wantMan = v === 'M' || v === 'man' || v === 'low' || (!v && (data.voice === 'man' || (data.voice === 'mix' && mixIsMan(word))));
   if (male && wantMan) {
     try { await playUrl(male, 1, speed); return 'pack-m'; } catch {}
   }
