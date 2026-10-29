@@ -713,6 +713,7 @@ const planHas = (id) => !!data.plan && data.plan.cells.includes(id);
 /* ---------- 아이콘 ---------- */
 
 const ICON = {
+  home: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7M6 9.5V20h12V9.5M10 20v-5h4v5"/></svg>',
   path: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c3 0 3-4 7-4s4-4 7-4M5 19a2 2 0 1 0 0 .01M19 11a2 2 0 1 0 0 .01M12 5a2 2 0 1 0 0 .01"/></svg>',
   mic: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
   chart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
@@ -787,7 +788,7 @@ function roundActions(back, again = true, againLabel = '한 판 더') {
         <button class="btn primary run-next" id="run-next">이어서 ${esc(routeName(next))}</button>
         <button class="btn" data-go="#home">오늘은 그만</button>` : `
         ${again ? `<button class="btn primary" data-go="${current}">${againLabel}</button>` : ''}
-        <button class="btn${again ? '' : ' primary'}" data-go="${run ? '#home' : back}">${run ? '지도로' : '돌아가기'}</button>`,
+        <button class="btn${again ? '' : ' primary'}" data-go="${run ? '#learn' : back}">${run ? '지도로' : '돌아가기'}</button>`,
     bind() {
       const b = view.querySelector('#run-next');
       if (b) b.onclick = () => { unlockAudio(); todayRun = { queue: run.queue, i: run.i + 1 }; go(next); };
@@ -813,14 +814,80 @@ const tipCard = (i) => {
     </section>`;
 };
 
+// 홈: 앱을 열면 처음 보는 화면. 큰 버튼 하나로 오늘의 연습에 바로 들어가고, 지도와 나머지 연습은 '학습' 화면에 있다.
+// 휴대폰에서는 첫 화면을 이 카드 하나로 채워 광고는 아래로 내려야만 보이게 한다.
+// 그림은 가로 560으로 그리고, 좁은 휴대폰에서는 가운데(해와 길)만 보인다.
+const WELCOME_ART = `<svg class="welcome-art" viewBox="0 0 560 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect class="sky" width="560" height="150"/>
+      <circle class="sun" cx="396" cy="48" r="22"/>
+      <path class="ring" d="M362 36q-7 12 0 24M350 28q-12 20 0 40M338 20q-17 28 0 56"/>
+      <path class="hill" d="M0 92C110 66 220 72 330 86S500 78 560 70V150H0Z"/>
+      <path class="hill2" d="M0 118C140 98 280 106 400 114S530 110 560 106V150H0Z"/>
+      <path class="road" d="M200 150C236 132 212 116 264 106S336 96 366 88"/>
+      <path class="road-line" d="M200 150C236 132 212 116 264 106S336 96 366 88"/>
+    </svg>`;
+const dayNo = () => Math.round(new Date(`${today()}T12:00:00`).getTime() / 86400000);
+// 며칠 연달아 연습했는지(오늘 아직 안 했으면 어제까지 센다)
+function streakDays(d = data) {
+  const dates = practiceDates(d);
+  let day = dates.has(today()) ? today() : addDays(today(), -1);
+  let n = 0;
+  while (dates.has(day)) { n++; day = addDays(day, -1); }
+  return n;
+}
+const routeKind = (r) => (r.startsWith('#gate/') ? ['관문', 'gate'] : CELL[r.slice(6)]?.kind === 'speak' ? ['말하기', 'speak'] : ['듣기', '']);
+
 function renderHome() {
   if (data.who == null) return renderWho(true); // 처음 열면 누가 연습하는지부터 고른다
   setNav('home');
-  const step = nextStep();
-  const ch = chapterOf(step.ch);
+  const ch = chapterOf(nextStep().ch);
   const n = roundsOn(today());
   const hour = new Date().getHours();
   const hello = hour < 12 ? '좋은 아침이에요' : hour < 18 ? '좋은 오후예요' : '편안한 저녁이에요';
+  const streak = streakDays();
+  const drop = lingDrop();
+  const pips = [...Array(TODAY_N)].map((_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('');
+  const queue = todayQueue();
+  view.innerHTML = `
+    <section class="welcome">
+      ${WELCOME_ART}
+      <div class="welcome-body">
+        <p class="eyebrow">${hello}${streak >= 2 ? ` · ${streak}일째 이어서 연습 중` : ''}</p>
+        <h1>${n >= TODAY_N ? '오늘 연습을 다 했어요' : n ? '조금만 더 걸어요' : '오늘도 소리길을 걸어 볼까요?'}</h1>
+        <p class="lead">지금 <b>${ch.n}장 ${ch.icon} ${josa(ch.name, '을', '를')}</b> 걷고 있어요.</p>
+        <div class="today-plan">
+          <p class="today-plan-head"><span>${data.plan ? '선생님 숙제' : '오늘 할 연습'} · 8~10분</span>
+            <span class="pips" role="img" aria-label="오늘 ${TODAY_N}판 중 ${Math.min(n, TODAY_N)}판 했어요">${pips}<small>${Math.min(n, TODAY_N)}/${TODAY_N}</small></span></p>
+          ${n >= TODAY_N ? `<p class="note">오늘 ${n}판을 했어요. 더 하고 싶으면 한 판 더 해도 좋아요.</p>` : `
+          <ol>${[...new Set(queue)].map((r, i) => {
+            const [kind, cls] = routeKind(r);
+            const times = queue.filter((x) => x === r).length; // 같은 칸을 두 판 하면 한 줄로
+            return `<li><span class="num">${i + 1}</span><span class="name">${esc(routeName(r))}${times > 1 ? ` <small>${times}판</small>` : ''}</span><span class="kind ${cls}">${kind}</span></li>`;
+          }).join('')}</ol>`}
+        </div>
+      </div>
+      <div class="welcome-actions">
+        <button class="btn primary block today-btn" id="today">${ICON.play}<span><b>${n >= TODAY_N ? '한 판 더 하기' : n ? '오늘의 연습 이어서' : '오늘의 연습 시작'}</b>
+          <small>누르면 바로 첫 판이 시작돼요</small></span></button>
+        <button class="btn block" data-go="#learn">${ICON.path}소리길 지도에서 골라 하기</button>
+      </div>
+    </section>
+    ${drop && daysSince(drop.date) <= 1 ? lingAlert(drop) : ''}
+    <h2 class="section-title">오늘의 듣기 요령</h2>
+    ${tipCard(dayNo() % LISTEN_TIPS.length)}
+    ${adSlot()}
+    <p class="note center">훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.</p>`;
+  $('#today').onclick = startToday;
+  bindAd();
+}
+
+// 학습: 소리길 지도와 오늘의 연습, 숙제, 점검, 집중 연습 바로가기, 설정
+function renderLearn() {
+  if (data.who == null) return renderWho(true);
+  setNav('learn');
+  const step = nextStep();
+  const ch = chapterOf(step.ch);
+  const n = roundsOn(today());
   const now = step.cell ? `지금 칸은 <b>${step.cell} ${CELL[step.cell].name}</b>${hasBatchim(CELL[step.cell].name) ? '이에요' : '예요'}. ${passHint(CELL[step.cell])}.`
     : step.gate ? `칸을 다 넘었어요. 관문 <b>'${GATES[step.gate].title}'</b>에 도전할 차례예요.`
     : `${ch.n}장까지 모두 넘었어요. ${chapterOf(7).name} 장은 곧 열려요.`;
@@ -830,7 +897,7 @@ function renderHome() {
   view.innerHTML = `
     <section class="hero">
       <div class="hero-text">
-        <p class="eyebrow">${hello} · 지금 ${ch.n}장</p>
+        <p class="eyebrow">소리길 지도 · 지금 ${ch.n}장</p>
         <h1>${ch.icon} ${ch.name}</h1>
         <p class="lead">${now}</p>
       </div>
@@ -950,7 +1017,7 @@ function renderHome() {
 
 // 장 화면: 칸 5개, 관문, 생활 미션, 그 장소에서 써 볼 듣기 요령
 function renderChapter(n) {
-  setNav('home');
+  setNav('learn');
   const c = chapterOf(n); const g = GATES[n];
   const open = chapterOpen(n); const passed = gatePassed(n);
   const tries = gatesOf(n);
@@ -1016,7 +1083,7 @@ function renderChapter(n) {
     </section>
     <h2 class="section-title">${c.name}에서 써 볼 요령</h2>
     ${c.tips.map(tipCard).join('')}
-    <button class="btn ghost block" data-go="#home">지도로</button>`;
+    <button class="btn ghost block" data-go="#learn">지도로</button>`;
 }
 
 let openGroup = 0; // 녹음한 뒤 다시 그려도 보던 묶음을 펼쳐 둔다
@@ -1359,11 +1426,11 @@ async function renderSpeak(cellId) {
   const canRec = !!(navigator.mediaDevices && window.MediaRecorder);
   const useAsr = !!Recognition;
   let mode = cell ? cell.mode : data.speakMode && SPEAK_MODES[data.speakMode] ? data.speakMode : 'word';
-  const back = cell ? `#ch/${cell.ch}` : '#home';
+  const back = cell ? `#ch/${cell.ch}` : '#learn';
   view.innerHTML = `
     <div class="play">
       <div class="play-top">
-        <button class="quit" data-go="${todayRun ? '#home' : back}" aria-label="그만하고 나가기">${ICON.close}<span>그만</span></button>
+        <button class="quit" data-go="${todayRun ? '#learn' : back}" aria-label="그만하고 나가기">${ICON.close}<span>그만</span></button>
         <div class="prog"><span id="pnum">${SPEAK_N}개</span><span class="prog-bar" aria-hidden="true"><i id="pbar"></i></span></div>
       </div>
       <p class="eyebrow center">${cell ? `${cell.id} · ${cell.name}` : `따라 말하기 · <span id="mode-name">${SPEAK_MODES[mode].name}</span>`}</p>
@@ -1772,7 +1839,7 @@ const todayDone = (d) => {
 };
 
 function renderPlanInvite(code) {
-  setNav('home');
+  setNav('learn');
   const p = planUnpack(code);
   if (!p) {
     view.innerHTML = `<section class="panel empty">
@@ -1793,7 +1860,7 @@ function renderPlanInvite(code) {
         <span class="focus-ico">${ICON.target}</span>
         <div>
           <h2 class="panel-title">하루 ${p.amount}${unit}, 주 ${p.days}일</h2>
-          <p class="note">숙제에 든 칸과 관문이에요. 받으면 집 화면에 오늘과 이번 주 진도가 같이 나와요.</p>
+          <p class="note">숙제에 든 칸과 관문이에요. 받으면 학습 화면에 오늘과 이번 주 진도가 같이 나와요.</p>
         </div>
       </div>
       <div class="chips">${p.cells.map((x) => `<span class="chip focus">${esc(planName(x))}</span>`).join('')}</div>
@@ -1806,7 +1873,7 @@ function renderPlanInvite(code) {
     <p class="note center">숙제는 이 기기에만 저장돼요. 기록이 선생님께 저절로 가지는 않아요.</p>`;
   view.querySelector('#take').onclick = () => {
     data.plan = p; persist();
-    go('#home'); toast('숙제를 받았어요. 집 화면에서 진도를 볼 수 있어요.');
+    go('#learn'); toast('숙제를 받았어요. 학습 화면에서 진도를 볼 수 있어요.');
   };
 }
 
@@ -1969,7 +2036,7 @@ async function renderCheck() {
   view.innerHTML = `
     <div class="play">
       <div class="play-top">
-        <button class="quit" data-go="#home" aria-label="그만하고 나가기">${ICON.close}<span>그만</span></button>
+        <button class="quit" data-go="#learn" aria-label="그만하고 나가기">${ICON.close}<span>그만</span></button>
         <div class="prog"><span id="count">20문제</span><span class="prog-bar" aria-hidden="true"><i id="bar"></i></span></div>
       </div>
       <p class="eyebrow center" id="part">이달의 듣기 점검</p>
@@ -2057,7 +2124,7 @@ async function renderCheck() {
       <p class="lead center">${diff != null && diff < 0 ? '컨디션이나 주변 소리에 따라 점수가 오르내릴 수 있어요. ' : ''}다음 점검은 <b>${shortDate(next.toLocaleDateString('sv-SE'))}</b>쯤 권해 드릴게요.</p>
       <div class="actions">
         <button class="btn primary" data-go="#progress">기록 보기</button>
-        <button class="btn" data-go="#home">지도로</button>
+        <button class="btn" data-go="#learn">지도로</button>
       </div>
     </div>`;
   countUp(view.querySelector('#score'), score);
@@ -2338,11 +2405,11 @@ async function renderRetest() {
     view.innerHTML = `
       <header class="page-head"><p class="eyebrow">그때 틀린 문제 다시 듣기</p><h1>다시 들을 문제가 아직 없어요</h1></header>
       <section class="panel"><p class="lead">판에서 틀린 문제는 2주가 지나면 여기서 다시 나와요. 그때 고른 답과 오늘 고른 답을 나란히 보여 드려요.</p>
-      <button class="btn primary block" data-go="#home">지도로</button></section>`;
+      <button class="btn primary block" data-go="#learn">지도로</button></section>`;
     return;
   }
   const extra = canSpeak() ? '' : '<p class="note warn center">이 화면에서는 AI 음성이 나오지 않아요. 크롬이나 삼성 인터넷 같은 브라우저에서 열어 주세요.</p>';
-  view.innerHTML = playShell('#home', '그때 틀린 문제 다시 듣기', `${items.length}문제를 다시 들어요`,
+  view.innerHTML = playShell('#learn', '그때 틀린 문제 다시 듣기', `${items.length}문제를 다시 들어요`,
     `${shortDate(items[0].date)}부터 2주 넘게 지난 판에서 틀린 문제예요. 그때와 같은 보기로 내고, 끝나면 그때 고른 답과 오늘 고른 답을 나란히 보여 드려요.`, startBox(false, extra));
   $('#pnum').textContent = `${items.length}문제`;
   await waitStart(false, alive);
@@ -2384,7 +2451,7 @@ async function renderRetest() {
   data.retests.push({ date: today(), at: Date.now(), n: out.length, correct, sec: Math.round((Date.now() - startedAt) / 1000) });
   persist();
 
-  const acts = roundActions('#home', false);
+  const acts = roundActions('#learn', false);
   view.innerHTML = `
     <div class="play result">
       <p class="eyebrow center">그때 틀린 문제 다시 듣기</p>
@@ -2479,7 +2546,7 @@ async function renderPlay(routeId) {
   const c = CELL[id];
   const below = id !== routeId; // 2판 연속 어려웠던 칸 대신 한 칸 아래 문제로 하는 판
   const inRun = !!todayRun && todayRun.queue[todayRun.i] === current;
-  const back = inRun ? '#home' : c.weak ? '#home' : `#ch/${CELL[routeId].ch}`;
+  const back = inRun || c.weak ? '#learn' : `#ch/${CELL[routeId].ch}`;
   const sc = c.kind === 'noise' ? NOISE_SCENES[c.scene] : null;
   const results = []; const misses = [];
   let toneDb = -10; // 소리 알아차리기: 들리면 5dB씩 작게, 놓치면 5dB 크게
@@ -2796,7 +2863,7 @@ async function renderGate(n) {
   const alive = () => token === playToken;
   const g = GATES[n]; const chap = chapterOf(n);
   const inRun = !!todayRun && todayRun.queue[todayRun.i] === current;
-  const back = inRun ? '#home' : `#ch/${n}`;
+  const back = inRun ? '#learn' : `#ch/${n}`;
   const qs = []; // talk는 질문마다 한 문항
   g.items.forEach((it) => { if (it.t === 'talk') it.qs.forEach((q, j) => qs.push({ it, q, j })); else qs.push({ it }); });
   const total = qs.length; const need = gateNeed(total, GATE_PASS);
@@ -3005,6 +3072,7 @@ function route() {
   else if (gate && GATES[gate[1]]) renderGate(+gate[1]);
   else if (ch && chapterOf(+ch[1])) renderChapter(+ch[1]);
   else if (inv) renderPlanInvite(inv[1]);
+  else if (h === '#learn') renderLearn();
   else if (h === '#clinic') renderClinic();
   else if (h === '#check') renderCheck();
   else if (h === '#voices') renderVoices();

@@ -12,7 +12,7 @@
  */
 
 // ch: 지도에서 시작하는 장(앞 장은 열어 두고 몸풀기로 쓴다), focus: 집중 연습 시작 단계, speed: 말 빠르기,
-// days: 칸 통과에 필요한 서로 다른 날 수 [1·2장, 3장부터], ling: 집 화면에서 링 6소리를 매일 권하는지
+// days: 칸 통과에 필요한 서로 다른 날 수 [1·2장, 3장부터], ling: 학습 화면에서 링 6소리를 매일 권하는지
 const WHO = {
   ha: {
     name: '보청기', icon: '🦻', about: '나이 들며, 또는 살면서 청력이 떨어져 보청기를 써요',
@@ -161,7 +161,7 @@ async function renderLing() {
   const family = await lingFamily();
   if (!alive()) return;
   const prev = data.lings.filter((x) => x.ear === data.ear).slice(-7);
-  view.innerHTML = playShell('#home', `링 6소리 점검${earSide() ? ` · ${EAR_NAME[data.ear]}` : ''}`, '여섯 소리를 들어요',
+  view.innerHTML = playShell('#learn', `링 6소리 점검${earSide() ? ` · ${EAR_NAME[data.ear]}` : ''}`, '여섯 소리를 들어요',
     `아·우·이·쉬·스·음을 하나씩 들려드려요. 들린 소리를 고르고, 아무 소리도 안 들리면 '안 들렸어요'를 눌러요. 30초쯤 걸려요.${family ? ' 가족이 녹음한 목소리로 들려드려요.' : ''}`,
     startBox(false, `<p class="note center">${prev.length ? `최근 ${prev.length}번 평균 ${lingAvg(prev)}개.` : '매일 같은 소리로 하니 날마다 견줄 수 있어요.'} 아이와 할 때는 보호자가 그림을 같이 짚어 주세요.</p>`));
   $('#orb').innerHTML = ICON.ear;
@@ -218,7 +218,7 @@ async function renderLing() {
         <p class="note">소리는 기기와 휴대폰 음량에 따라 달라요. 날마다 같은 음량, 같은 자리에서 하면 견주기 좋아요.</p>
       </section>
       <div class="actions">
-        <button class="btn primary" data-go="#home">지도로</button>
+        <button class="btn primary" data-go="#learn">지도로</button>
         <button class="btn" data-go="#progress">기록 보기</button>
       </div>
     </div>`;
@@ -308,7 +308,7 @@ function supraItem(mode, labels) {
 }
 
 function renderSupra() {
-  setNav('home');
+  setNav('learn');
   view.innerHTML = `
     <header class="page-head">
       <p class="eyebrow">소리 구별</p>
@@ -326,7 +326,7 @@ function renderSupra() {
     }).join('')}
     </div>
     <p class="note center">지도 2장의 '소리 높낮이' 칸도 같은 방식으로 말끝을 들어요.</p>
-    <button class="btn ghost block" data-go="#home">지도로</button>`;
+    <button class="btn ghost block" data-go="#learn">지도로</button>`;
 }
 
 async function renderSupraQuiz(mode) {
@@ -371,7 +371,7 @@ async function renderSupraQuiz(mode) {
 /* ---------- 사용자 유형·듣는 귀·말 빠르기 ---------- */
 
 function renderWho(first = false) {
-  setNav('home');
+  setNav(first ? 'home' : 'learn');
   const w = WHO[data.who];
   const side = earSide();
   const earNote = data.who === 'ear2'
@@ -430,11 +430,11 @@ function renderWho(first = false) {
   });
   $('#speed-test').onclick = test(() => playWord('천천히 말해 주세요'));
   $('#voice-test').onclick = test(() => playWord('안녕하세요'));
-  $('#who-done').onclick = () => { if (first && w) toast(`${w.name}에 맞췄어요.`); go('#home'); };
+  $('#who-done').onclick = () => { if (first && w) toast(`${w.name}에 맞췄어요.`); go(first ? '#home' : '#learn'); };
   if (first) $('#who-skip').onclick = () => { data.who = 'none'; persist(); go('#home'); };
 }
 
-// 집 화면: 유형에 맞춰 권하는 연습
+// 학습 화면: 유형에 맞춰 권하는 연습
 function fitCard() {
   const w = WHO[data.who];
   if (!w) return '';
@@ -465,7 +465,7 @@ function fitCard() {
       </ul>
     </section>`;
 }
-// 집 화면: 링 6소리를 매일 권하는 유형이면 오늘 아직 안 했을 때 알리고, 최근 점검이 갑자기 떨어졌으면 먼저 보여 준다
+// 학습 화면: 링 6소리를 매일 권하는 유형이면 오늘 아직 안 했을 때 알리고, 최근 점검이 갑자기 떨어졌으면 먼저 보여 준다
 function lingHome() {
   const drop = lingDrop();
   if (drop && daysSince(drop.date) <= 1) return lingAlert(drop);
