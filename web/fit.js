@@ -417,7 +417,7 @@ function renderWho(first = false) {
     <button class="btn primary block" id="who-done" ${first && !w ? 'disabled' : ''}>${first ? '이대로 시작하기' : '다 됐어요'}</button>
     ${first ? '<button class="btn ghost block" id="who-skip">나중에 고를게요</button>' : ''}`;
   view.querySelectorAll('[data-who]').forEach((b) => {
-    b.onclick = () => { data.who = b.dataset.who; data.talkSpeed = WHO[data.who].speed; persist(); renderWho(first); };
+    b.onclick = () => { data.who = b.dataset.who; data.talkSpeed = WHO[data.who].speed; persist(); applyLook(); renderWho(first); };
   });
   view.querySelectorAll('[data-ear]').forEach((b) => { b.onclick = () => { data.ear = b.dataset.ear; persist(); renderWho(first); }; });
   view.querySelectorAll('[data-voice]').forEach((b) => { b.onclick = () => { data.voice = b.dataset.voice; persist(); renderWho(first); }; });
@@ -431,7 +431,7 @@ function renderWho(first = false) {
   $('#speed-test').onclick = test(() => playWord('천천히 말해 주세요'));
   $('#voice-test').onclick = test(() => playWord('안녕하세요'));
   $('#who-done').onclick = () => { if (first && w) toast(`${w.name}에 맞췄어요.`); go(first ? '#home' : '#learn'); };
-  if (first) $('#who-skip').onclick = () => { data.who = 'none'; persist(); go('#home'); };
+  if (first) $('#who-skip').onclick = () => { data.who = 'none'; persist(); applyLook(); go('#home'); };
 }
 
 // 학습 화면: 유형에 맞춰 권하는 연습
