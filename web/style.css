@@ -378,6 +378,58 @@ body:has(.sheet:not([hidden])) .choices.words .label { font-size: 40px; }
 .speak-list span { font: 400 21px/1.3 var(--display); }
 .speak-list b { font-variant-numeric: tabular-nums; color: var(--muted); }
 .speak-list b.ok { color: var(--good); }
+/* 발음: 목표 말을 음절 칸으로(초록 밑줄 맞음, 노랑 한두 자모만 다름, 밤색 다르거나 빠짐). 아래 작은 글자는 들린 음절 */
+.syl-grid { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 6px 4px; }
+.syl { display: inline-flex; flex-direction: column; align-items: center; min-width: 1.3em; padding: 2px 5px 3px; border-radius: 12px; border-bottom: 5px solid transparent; }
+.syl b { font: inherit; line-height: 1.1; }
+.syl small { font: 400 17px/1.3 var(--body); color: var(--muted); }
+.syl.same { border-bottom-color: var(--good); }
+.syl.near { background: var(--warm-soft); border-bottom-color: var(--warm); }
+.syl.near small { color: var(--warm-ink); }
+.syl.miss { background: var(--bad-soft); border-bottom-color: var(--bad); }
+.syl.miss small { color: var(--bad); }
+.syl.extra { align-self: center; font-size: .55em; opacity: .85; border-bottom-style: dashed; border-bottom-color: var(--bad); }
+.syl.gap { margin-left: .45em; }
+.say-tip { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; font-size: 18px; line-height: 1.45; color: var(--ink); }
+.say-tip svg { flex: none; width: 22px; height: 22px; margin-top: 2px; color: var(--warm-ink); }
+.say-tip b { font-family: var(--display); color: var(--accent); margin-right: 4px; }
+.say-tips { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.say-tips .say-tip { display: block; margin: 0; font-size: 17px; }
+/* 목소리: 크기와 길이 막대 */
+.vmeter { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: 18px; background: var(--surface-2); }
+.vm-row { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px; font: 400 18px var(--display); color: var(--muted); }
+.vm-bar { position: relative; height: 22px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); overflow: hidden; }
+.vm-bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--good); transition: width .08s linear; }
+.vm-bar i.low { background: var(--warm); }
+.vm-bar i.hot { background: var(--bad); }
+.vm-bar #vm-len { background: var(--accent); }
+.vm-bar #vm-len.done { background: var(--good); }
+.vm-zone { position: absolute; inset: 0 0 0 40%; background: var(--good-soft); }
+.vm-goal { position: absolute; top: 0; bottom: 0; left: 66.7%; width: 3px; background: var(--ink); opacity: .45; z-index: 1; }
+.vm-row b { min-width: 3.4em; text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+.vchecks { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 2px; font-size: 18px; }
+.vchecks li { display: flex; align-items: center; gap: 6px; }
+.vchecks svg { flex: none; width: 20px; height: 20px; stroke-width: 3; }
+.vchecks li.ok svg { color: var(--good); }
+.vchecks li.bad svg { color: var(--bad); }
+.vtrace, .tune-svg { display: block; width: 100%; max-width: 360px; height: auto; margin-top: 8px; border-radius: 12px; background: var(--surface-2); }
+.vtrace .goal, .tune-svg .base { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.vtrace .lv { stroke: var(--accent); stroke-width: 2.5; }
+.vtrace .hz { stroke: var(--warm); stroke-width: 2.5; }
+.vtrace .axis, .tune-svg .axis { fill: var(--muted); stroke: none; font: 12px var(--body); }
+/* 억양: 말끝 표시와 높낮이 그래프(끝 음절은 진하게) */
+.tune-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font: 400 18px/1.3 var(--display); }
+.tune-tag svg { width: 22px; height: 22px; }
+.tune-tag.up { background: var(--accent-soft); color: var(--accent); }
+.tune-tag.down { background: var(--good-soft); color: var(--good); }
+.tune-svg .end-zone { fill: var(--warm-soft); stroke: none; }
+.tune-svg .body { stroke: var(--muted); stroke-width: 3; }
+.tune-svg .end { stroke: var(--accent); stroke-width: 4; }
+/* 기록 화면의 말하기 칸 */
+.say-stats { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 18px; }
+.say-stats li { display: grid; grid-template-columns: 60px 1fr; gap: 10px; align-items: baseline; }
+.say-k { font: 400 18px var(--display); color: var(--accent); }
+.say-stats b { color: var(--ink); }
 
 /* ---------- 리포트 ---------- */
 .report-link {
@@ -606,11 +658,12 @@ label.btn { white-space: nowrap; }
   /* A4 한 장: 표와 그래프를 두 줄로 나란히 놓는다 */
   .report {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 10px; align-items: start;
-    grid-template-areas: "head head" "kpis kpis" "att att" "sum sum" "chart stages" "weak stages" "weak freq" "maps memo" "foot foot";
+    grid-template-areas: "head head" "kpis kpis" "att att" "sum sum" "chart stages" "weak stages" "weak freq" "speak maps" "speak memo" "foot foot";
   }
   .report-head { grid-area: head; } .kpis { grid-area: kpis; } .att { grid-area: att; } .p-sum { grid-area: sum; }
   .p-chart { grid-area: chart; } .p-stages { grid-area: stages; } .p-weak { grid-area: weak; }
   .p-freq { grid-area: freq; } .p-memo { grid-area: memo; } .p-foot { grid-area: foot; } .p-maps { grid-area: maps; }
+  .p-speak { grid-area: speak; } .p-speak .note:last-child { display: none; }
   .p-maps .note { display: none; }
   .report h1 { font-size: 20pt; }
   .report .note { font-size: 9pt; }
