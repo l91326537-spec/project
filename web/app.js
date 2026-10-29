@@ -91,13 +91,8 @@ function migrate(d) {
 }
 let data = migrate(Object.assign(fresh(), store.load()));
 const persist = () => store.save(data);
-// 글자 크기와 화면 분위기(인공와우 아이 유형은 친근한 화면)
-const applyLook = () => {
-  const c = document.documentElement.classList;
-  c.toggle('big', !!data.bigText);
-  c.toggle('kid', data.who === 'kid');
-};
-applyLook();
+const applyTextSize = () => document.documentElement.classList.toggle('big', !!data.bigText);
+applyTextSize();
 
 // 가족 녹음은 용량이 커서 IndexedDB에 둔다.
 const voiceDb = (() => {
@@ -874,7 +869,7 @@ function renderHome() {
       <div class="welcome-actions">
         <button class="btn primary block today-btn" id="today">${ICON.play}<span><b>${n >= TODAY_N ? '한 판 더 하기' : n ? '오늘의 연습 이어서' : '오늘의 연습 시작'}</b>
           <small>누르면 바로 첫 판이 시작돼요</small></span></button>
-        <button class="btn block" data-go="#learn">${ICON.path}지도에서 골라 하기</button>
+        <button class="btn block" data-go="#learn">${ICON.path}소리길 지도에서 골라 하기</button>
       </div>
     </section>
     ${drop && daysSince(drop.date) <= 1 ? lingAlert(drop) : ''}
@@ -1016,7 +1011,7 @@ function renderLearn() {
       </button>
     </section>
     <p class="note center">훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.</p>`;
-  view.querySelector('#big').onchange = (e) => { data.bigText = e.target.checked; persist(); applyLook(); };
+  view.querySelector('#big').onchange = (e) => { data.bigText = e.target.checked; persist(); applyTextSize(); };
   view.querySelector('#today').onclick = startToday;
 }
 
@@ -2293,13 +2288,13 @@ function demoPatients() {
 
 function loadDemo() {
   if (!data.demo) try { localStorage.setItem(BACKUP_KEY, JSON.stringify(data)); } catch {} // 내 기록과 설정은 따로 보관한다
-  data = demoData(); persist(); applyLook();
+  data = demoData(); persist();
 }
 function clearDemo() {
   let back = null;
   try { back = JSON.parse(localStorage.getItem(BACKUP_KEY)); localStorage.removeItem(BACKUP_KEY); } catch {}
   data = migrate(Object.assign(fresh(), back || { preferFamily: data.preferFamily, bigText: data.bigText, ear: data.ear, talkSpeed: data.talkSpeed, voice: data.voice }));
-  persist(); applyLook();
+  persist();
 }
 
 /* ---------- 1분 소음 기록 ---------- */
