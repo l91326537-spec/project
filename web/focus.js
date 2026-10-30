@@ -80,7 +80,16 @@ const noiseCfg = () => data.focusNoise || (data.focusNoise = { on: false, scene:
 
 /* ---------- 소리 ---------- */
 
-const sayAt = (speed) => (t) => playWord(t, undefined, speed);
+// 집중 연습의 목소리: 단계 화면에서 여자·남자·번갈아를 고른다(처음엔 사용자 설정의 목소리)
+const FV = { woman: '여자', man: '남자', mix: '번갈아' };
+const focusVoice = () => data.focusVoice || (FV[data.voice] ? data.voice : 'woman');
+const runVoice = (r) => r.voice || 'woman'; // 목소리를 고르기 전의 기록은 여자 목소리
+const sayAt = (speed, voice = 'woman') => (t) => playWord(t, voice === 'mix' ? (mixIsMan(t) ? 'M' : 'F') : voice === 'man' ? 'M' : 'F', speed);
+const voiceBests = (cat, lv) => Object.keys(FV).map((v) => {
+  const rs = focusRuns(cat, lv).filter((r) => runVoice(r) === v);
+  return rs.length ? { v, best: Math.max(...rs.map((r) => r.correct)), n: rs.length } : null;
+}).filter(Boolean);
+const voiceBestLine = (cat, lv) => voiceBests(cat, lv).map((x) => `${FV[x.v]} ${x.best}/${FOCUS_N}`).join(' · ');
 // 소음 모드면 장소 소음을 깔고 fn()을 들려준다
 const withFocusNoise = (snr, fn) => (noiseCfg().on ? withNoise(noiseCfg().scene, snr, fn) : fn());
 
@@ -197,7 +206,7 @@ function renderFocusCat(cat) {
     const best = bestRun(cat, lv); const g = best && gradeOf(best.correct); const runs = focusRuns(cat, lv).length;
     $('#path-card').innerHTML = `
       <div class="path-card-head"><h2 class="panel-title">${lv}단계 · ${c.desc[lv]}</h2>
-        <span class="note">${best ? `최고 ${best.correct}/${FOCUS_N} · ${runs}번 도전` : '처음 도전'}</span></div>
+        <span class="note">${best ? `최고 ${voiceBestLine(cat, lv)} · ${runs}번 도전` : '처음 도전'}</span></div>
       ${g ? `<p class="best-line"><span class="petals">${petals(g)}</span> ${gradeWords(g)}</p>` : ''}
       <div class="actions two">
         <button class="btn" data-go="#focus/${cat}/${lv}">미리 듣기</button>
@@ -217,7 +226,8 @@ function renderFocusLevel(cat, lv) {
   const c = FOCUS_CATS[cat];
   const best = bestRun(cat, lv); const g = best && gradeOf(best.correct);
   const sp = cat === 'sent' ? FOCUS_SPEED[lv] : 1;
-  const say = sayAt(sp);
+  const voice = focusVoice();
+  const say = sayAt(sp, voice);
   const key = `${cat}${lv}`;
   // 한 장 = 단어·낱소리는 4개 묶음, 문장은 틀 하나에서 나오는 문장 4개
   const cards = cat === 'sent' ? FOCUS_SENTENCES[lv].map((it) => focusVariants(it).map((p) => focusSay(it, p))) : c.sets(lv);
@@ -229,6 +239,10 @@ function renderFocusLevel(cat, lv) {
       <h1>${c.desc[lv]}</h1>
       ${sp !== 1 ? `<p class="lead">말 빠르기 ${sp}배</p>` : ''}
     </header>
+    <p class="voice-label">목소리 고르기</p>
+    <div class="seg voice-pick" role="radiogroup" aria-label="목소리">
+      ${Object.entries(FV).map(([k, label]) => `<button class="seg-btn${voice === k ? ' on' : ''}" role="radio" aria-checked="${voice === k}" data-fv="${k}">${label}</button>`).join('')}
+    </div>
     <div class="seg tabs2" role="tablist">
       <button class="seg-btn${levelTab === 'listen' ? ' on' : ''}" role="tab" aria-selected="${levelTab === 'listen'}" data-tab="listen">미리 듣기</button>
       <button class="seg-btn${levelTab === 'test' ? ' on' : ''}" role="tab" aria-selected="${levelTab === 'test'}" data-tab="test">도전 ${FOCUS_N}문제</button>
@@ -246,7 +260,8 @@ function renderFocusLevel(cat, lv) {
       <section class="panel challenge">
         <ol class="qtype-list">${types.map(([, n, label]) => { const t = `<li><b>${from}~${from + n - 1}번</b> ${label}</li>`; from += n; return t; }).join('')}</ol>
         <p class="note">12개 이상 맞히면 통과예요. 12~15개 꽃잎 1장(C), 16~18개 2장(B), 19~20개 3장(A).</p>
-        ${best ? `<p class="best-line">최고 기록 <b>${best.correct}/${FOCUS_N}</b>${g ? ` <span class="petals">${petals(g)}</span>` : ''} · ${focusRuns(cat, lv).length}번 도전</p>` : ''}
+        ${best ? `<p class="best-line">최고 기록 <b>${voiceBestLine(cat, lv)}</b>${g ? ` <span class="petals">${petals(g)}</span>` : ''} · ${focusRuns(cat, lv).length}번 도전</p>` : ''}
+        <p class="note">지금 고른 목소리(${FV[voice]})로 문제를 내요. 기록은 목소리마다 따로 남아요.</p>
       </section>
       <button class="btn primary block" data-go="#focus/${cat}/${lv}/go">도전 시작</button>
     </div>
@@ -256,6 +271,7 @@ function renderFocusLevel(cat, lv) {
       ${lv < 10 ? `<button class="btn" data-go="#focus/${cat}/${lv + 1}">${lv + 1}단계 →</button>` : '<span></span>'}
     </div>`;
   bindNoisePanel();
+  view.querySelectorAll('[data-fv]').forEach((b) => { b.onclick = () => { data.focusVoice = b.dataset.fv; persist(); renderFocusLevel(cat, lv); }; });
   const play = (t) => withFocusNoise(FOCUS_SNR[lv], () => say(t));
   view.querySelectorAll('[data-tab]').forEach((b) => {
     b.onclick = () => {
@@ -578,12 +594,13 @@ async function renderFocusTest(cat, lv) {
   const c = FOCUS_CATS[cat];
   const back = `#focus/${cat}/${lv}`;
   const snr = FOCUS_SNR[lv];
-  const say = sayAt(cat === 'sent' ? FOCUS_SPEED[lv] : 1);
+  const voice = focusVoice();
+  const say = sayAt(cat === 'sent' ? FOCUS_SPEED[lv] : 1, voice);
   const pk = picker(cat === 'sent' ? FOCUS_SENTENCES[lv] : c.sets(lv));
   const nz = noiseCfg();
   const res = await runQuiz({
     back,
-    eyebrow: `${c.name} ${lv}단계 · 도전`,
+    eyebrow: `${c.name} ${lv}단계 · 도전 · ${FV[voice]} 목소리`,
     title: `${FOCUS_N}문제에 도전해요`,
     hint: `12개 이상 맞히면 통과예요.${nz.on ? ` 소음 모드: ${SCENE_NAME[nz.scene]} 소음 ${snrText(snr)}` : ''}`,
     n: FOCUS_N,
@@ -591,12 +608,13 @@ async function renderFocusTest(cat, lv) {
   });
   if (!res) return;
   const wasPassed = levelPassed(cat, lv);
-  const prevBest = bestRun(cat, lv);
+  const sameVoice = (r) => runVoice(r) === voice;
+  const prevBest = focusRuns(cat, lv).filter(sameVoice).reduce((b, r) => (!b || r.correct > b.correct ? r : b), null);
   if (!data.focusRuns) data.focusRuns = [];
-  data.focusRuns.push({ cat, lv, date: today(), at: Date.now(), correct: res.correct, total: FOCUS_N, noise: nz.on ? nz.scene : null, sec: res.sec });
+  data.focusRuns.push({ cat, lv, date: today(), at: Date.now(), correct: res.correct, total: FOCUS_N, noise: nz.on ? nz.scene : null, voice, sec: res.sec });
   persist();
   const g = gradeOf(res.correct);
-  const runs = focusRuns(cat, lv);
+  const runs = focusRuns(cat, lv).filter(sameVoice); // 같은 목소리끼리 견준다
   const prev = runs.length > 1 ? runs[runs.length - 2] : null;
   const diff = prev ? res.correct - prev.correct : null;
   // 첫 문장은 점수보다 변화를 먼저 말한다
@@ -612,7 +630,7 @@ async function renderFocusTest(cat, lv) {
   const hist = runs.slice(-5);
   view.innerHTML = `
     <div class="play result focus-result">
-      <p class="eyebrow center">${c.name} ${lv}단계 · ${c.desc[lv]}</p>
+      <p class="eyebrow center">${c.name} ${lv}단계 · ${c.desc[lv]} · ${FV[voice]} 목소리</p>
       ${g ? `
       <div class="stamp" role="img" aria-label="통과, ${gradeWords(g)}">
         <span class="stamp-in"><b>통과</b><span class="petals">${petals(g)}</span></span>
