@@ -5,7 +5,7 @@
  * 음성 파일과 글꼴은 바뀌지 않으므로 저장해 둔 것을 먼저 쓴다. 저장된 파일을 모두 비우려면 VERSION을 올린다.
  */
 const VERSION = 'sorigil-v5';
-const SHELL = ['./', 'index.html', 'style.css', 'content.js', 'focus.js', 'fit.js', 'qr.js', 'app.js', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
+const SHELL = ['./', 'index.html', 'style.css', 'content.js', 'focus.js', 'fit.js', 'qr.js', 'ads.js', 'speak.js', 'app.js', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
