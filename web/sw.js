@@ -23,7 +23,7 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  const font = /^fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
+  const font = /^fonts\.(googleapis|gstatic)\.com$/.test(url.hostname) || (url.hostname === 'cdn.jsdelivr.net' && url.pathname.includes('/pretendard@'));
   if (url.origin !== location.origin && !font) return;
   const stable = font || /\/voice\/(m\/)?[^/]+\.(mp3|m4a|ogg|wav)$/.test(url.pathname);
   e.respondWith(caches.open(VERSION).then(async (c) => {
