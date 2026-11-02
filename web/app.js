@@ -821,6 +821,7 @@ function roundActions(back, again = true, againLabel = '한 판 더') {
 }
 
 function setNav(name) {
+  if (name === 'focus') name = 'learn'; // 집중 연습·단어장은 연습 탭 안에 있다
   document.body.classList.toggle('in-play', name === 'play');
   document.querySelectorAll('[data-nav]').forEach((a) => {
     const on = a.dataset.nav === name;
@@ -859,7 +860,6 @@ function renderHome() {
   const hour = new Date().getHours();
   const hello = hour < 12 ? '좋은 아침이에요' : hour < 18 ? '좋은 오후예요' : '편안한 저녁이에요';
   const streak = streakDays();
-  const drop = lingDrop();
   const pips = [...Array(TODAY_N)].map((_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('');
   const queue = todayQueue();
   view.innerHTML = `
@@ -882,10 +882,9 @@ function renderHome() {
       <div class="welcome-actions">
         <button class="btn primary block today-btn" id="today">${ICON.play}<span><b>${n >= TODAY_N ? '한 판 더 하기' : n ? '오늘의 연습 이어서' : '오늘의 연습 시작'}</b>
 </span></button>
-        <button class="btn block" data-go="#learn">${ICON.path}소리길 지도에서 골라 하기</button>
       </div>
     </section>
-    ${drop && daysSince(drop.date) <= 1 ? lingAlert(drop) : ''}
+    ${lingHome()}
     ${adSlot()}
     <p class="note center">훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.</p>`;
   $('#today').onclick = startToday;
@@ -898,7 +897,6 @@ function renderLearn() {
   setNav('learn');
   const step = nextStep();
   const ch = chapterOf(step.ch);
-  const n = roundsOn(today());
   const now = step.cell ? `지금 칸은 <b>${step.cell} ${CELL[step.cell].name}</b>${hasBatchim(CELL[step.cell].name) ? '이에요' : '예요'}. ${passHint(CELL[step.cell])}.`
     : step.gate ? `칸을 다 넘었어요. 관문 <b>'${GATES[step.gate].title}'</b>에 도전할 차례예요.`
     : `${ch.n}장까지 만든 칸을 모두 넘었어요. 남은 칸은 곧 열려요. 넘은 칸을 복습해요.`;
@@ -906,15 +904,11 @@ function renderLearn() {
   const reN = data.retests.some((r) => r.date === today()) ? 0 : retestPool().length; // 하루 한 번만 권한다
 
   view.innerHTML = `
-    <section class="hero">
-      <div class="hero-text">
-        <p class="eyebrow">소리길 지도 · 지금 ${ch.n}장</p>
-        <h1>${ch.name}</h1>
-        <p class="lead">${now}</p>
-      </div>
-      <button class="btn primary block today-btn" id="today">${ICON.play}<span><b>${n >= TODAY_N ? '한 판 더 하기' : n ? '오늘의 연습 이어서' : '오늘의 연습 시작'}</b>
-        <small>${data.plan ? '선생님 숙제 · ' : ''}판 ${TODAY_N}개, 8~10분 · 오늘 ${n < TODAY_N ? `${n}/${TODAY_N}판` : `${n}판 했어요`}</small></span></button>
-    </section>
+    <header class="page-head">
+      <p class="eyebrow">연습 · 지금 ${ch.n}장 ${ch.name}</p>
+      <h1>소리길 지도</h1>
+      <p class="lead">${now}</p>
+    </header>
     ${data.plan ? (() => {
       const p = data.plan; const t = todayDone(data);
       return `
@@ -938,52 +932,14 @@ function renderLearn() {
       </div>
       <div class="chips">${p.cells.map((x) => `<span class="chip focus">${esc(planName(x))}</span>`).join('')}</div>
       ${p.memo ? `<p class="note">“${esc(p.memo)}”</p>` : ''}
-      <p class="note">위의 '오늘의 연습'을 누르면 숙제를 차례로 이어서 해요.</p>
+      <p class="note">홈의 '오늘의 연습'을 누르면 숙제를 차례로 이어서 해요.</p>
     </section>`;
     })() : ''}
-    ${lingHome()}
-    ${checkDue() ? `
-    <button class="report-link check-link" data-go="#check">
-      <span class="focus-ico">${ICON.ear}</span>
-      <span><b>${data.checks.length ? '이달의 듣기 점검' : '첫 듣기 점검'}</b><small>${data.checks.length
-        ? `지난 점검(${shortDate(data.checks[data.checks.length - 1].date)})에서 한 달이 지났어요. 같은 20문제로 얼마나 늘었는지 봐요`
-        : '같은 20문제를 달마다 풀어 얼마나 늘었는지 봐요. 5분쯤 걸려요'}</small></span>
-    </button>` : ''}
     ${reN >= 3 ? `
     <button class="report-link retest-link" data-go="#retest">
       <span class="focus-ico">${ICON.redo}</span>
       <span><b>그때 틀린 문제 다시 듣기</b><small>2주 넘게 지난 판에서 틀린 문제 ${Math.min(reN, RETEST_N)}개를 오늘 다시 들어 봐요</small></span>
     </button>` : ''}
-    ${weakTop(3).length ? `
-    <section class="panel focus-card">
-      <div class="focus-head">
-        <span class="focus-ico">${ICON.target}</span>
-        <div><h2 class="panel-title">맞춤 연습 중인 소리</h2><p class="note">자주 헷갈린 소리예요. 낱말과 문장 칸에서 이 소리가 든 문제를 더 자주 내요.</p></div>
-      </div>
-      <div class="chips">${weakTop(3).map(([k]) => `<span class="chip focus">${esc(friendly(k))}</span>`).join('')}</div>
-    </section>` : ''}
-    ${fitCard()}
-
-    <div class="home-links">
-      <button class="report-link speak-link" data-go="#focus">
-        <span class="focus-ico">${ICON.target}</span>
-        <span><b>집중 연습</b><small>단어·낱소리·문장을 1~10단계로</small></span>
-      </button>
-      <button class="report-link speak-link" data-go="#vocab">
-        <span class="focus-ico">${ICON.doc}</span>
-        <span><b>단어장</b><small>장소별 낱말을 눌러 듣기</small></span>
-      </button>
-      <button class="report-link speak-link" data-go="#supra">
-        <span class="focus-ico">${ICON.shape}</span>
-        <span><b>소리 구별</b><small>길이·말끝·목소리 가려 듣기</small></span>
-      </button>
-      <button class="report-link speak-link" data-go="#ling">
-        <span class="focus-ico">${ICON.ear}</span>
-        <span><b>링 6소리</b><small>아·우·이·쉬·스·음 30초 점검</small></span>
-      </button>
-    </div>
-
-    <h2 class="section-title">소리길 지도 <span>생활 장소 7곳</span></h2>
     <ol class="map">${CHAPTERS.map((c) => {
       const cells = cellsCounted(c.n);
       const done = cells.filter((x) => cellState(x) === 'done').length;
@@ -992,7 +948,7 @@ function renderLearn() {
       const skipped = !passed && c.n < startCh(); // 시작 장보다 앞이라 건너뛴 장(몸풀기로 해도 된다)
       const sub = state === 'soon' ? '곧 열려요'
         : passed ? `관문 '${GATES[c.n].title}' 넘음`
-        : `칸 ${done}/${cells.length}${skipped ? ' · 건너뛰어도 되는 곳' : open ? '' : ' · 바로 연습해도 돼요'}`;
+        : `칸 ${done}/${cells.length}${skipped ? ' · 건너뛰어도 되는 곳' : ''}`;
       const pct = state === 'soon' ? 0 : passed ? 100 : Math.round((100 * done) / (cells.length + 1));
       return `
       <li class="ch-row ${state}">
@@ -1006,10 +962,26 @@ function renderLearn() {
       <li class="flag-row">${ICON.flag}<span><b>생활 깃발</b> 5장 관문을 넘으면 일상 대화 대부분을 해내요</span></li>` : ''}`;
     }).join('')}
     </ol>
-    <button class="report-link speak-link" data-go="#speak">
-      <span class="focus-ico">${ICON.mic2}</span>
-      <span><b>말하기 연습</b><small>발음, 목소리 크기·길이, 말끝 높낮이를 확인해 드려요</small></span>
-    </button>
+
+    <h2 class="section-title">골라서 연습</h2>
+    <div class="home-links">
+      <button class="report-link speak-link" data-go="#focus">
+        <span class="focus-ico">${ICON.target}</span>
+        <span><b>집중 연습</b><small>단어·낱소리·문장 1~10단계</small></span>
+      </button>
+      <button class="report-link speak-link" data-go="#vocab">
+        <span class="focus-ico">${ICON.doc}</span>
+        <span><b>단어장</b><small>장소별 낱말 듣기</small></span>
+      </button>
+      <button class="report-link speak-link" data-go="#speak">
+        <span class="focus-ico">${ICON.mic2}</span>
+        <span><b>말하기</b><small>발음·목소리·억양</small></span>
+      </button>
+      <button class="report-link speak-link" data-go="#supra">
+        <span class="focus-ico">${ICON.shape}</span>
+        <span><b>소리 구별</b><small>길이·말끝·목소리</small></span>
+      </button>
+    </div>
     <section class="panel settings">
       <label class="switch" for="big">
         <input type="checkbox" id="big" ${data.bigText ? 'checked' : ''}>
@@ -1021,9 +993,8 @@ function renderLearn() {
         <span class="set-go">바꾸기</span>
       </button>
     </section>
-    <p class="note center">훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.</p>`;
+`;
   view.querySelector('#big').onchange = (e) => { data.bigText = e.target.checked; persist(); applyTextSize(); };
-  view.querySelector('#today').onclick = startToday;
 }
 
 // 장 화면: 칸 5개, 관문, 생활 미션, 그 장소에서 써 볼 듣기 요령

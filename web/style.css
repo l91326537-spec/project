@@ -970,7 +970,7 @@ body:has(.sheet:not([hidden])) .choices.ling .choice { min-height: 84px; }
 .welcome-actions { margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 20px; }
 .welcome-actions .btn:not(.primary) svg { stroke-width: 2.4; }
 
-/* 탭 다섯 개: 좁은 휴대폰에서도 한 줄에 들어가게 */
+/* 탭: 좁은 휴대폰에서도 한 줄에 들어가게 */
 .tabbar { gap: 2px; }
 .tabbar a { min-width: 0; padding-inline: 2px; }
 @media (max-width: 430px) { .tabbar a { font-size: 14px; } .tabbar svg { width: 26px; height: 26px; } }
