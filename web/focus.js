@@ -21,19 +21,19 @@ const gradeOf = (n) => (n >= 19 ? 'A' : n >= 16 ? 'B' : n >= FOCUS_PASS ? 'C' : 
 
 const FOCUS_CATS = {
   word: {
-    name: '단어', icon: '🔤', about: '낱말을 듣고 구별해요',
+    name: '단어', icon: '', about: '낱말을 듣고 구별해요',
     desc: ['', '글자 수가 크게 다른 낱말', '글자 수가 크게 다른 낱말', '세 글자 낱말', '두 글자 낱말', '첫 글자가 같은 낱말',
       '끝 글자가 같은 낱말', '한 소리만 다른 낱말', '예사소리·된소리·거센소리', '받침과 모음이 다른 낱말', '거의 같게 들리는 두 글자'],
     sets: (lv) => FOCUS_WORDS[lv],
   },
   sound: {
-    name: '낱소리', icon: '🔉', about: '가·까·카처럼 짧은 소리를 구별해요',
+    name: '낱소리', icon: '', about: '가·까·카처럼 짧은 소리를 구별해요',
     desc: ['', '모음이 크게 다른 소리', '첫소리가 크게 다른 소리', '비슷한 모음', "'아나·아다'처럼 가운데 소리", '입술·잇몸·입천장 소리',
       '가운데 소리가 나는 자리', 'ㅓ·ㅗ·ㅡ·ㅜ', '가·까·카', '아가·아까·아카', '받침 ㄴ·ㅁ·ㅇ·ㄹ'],
     sets: (lv) => FOCUS_SOUNDS[lv],
   },
   sent: {
-    name: '문장', icon: '💬', about: '생활 문장을 듣고 알아들어요',
+    name: '문장', icon: '', about: '생활 문장을 듣고 알아들어요',
     desc: ['', '짧은 생활 문장', '짧은 생활 문장', '조금 긴 문장', '조금 긴 문장', '긴 문장 · 조금 빠르게',
       '긴 문장 · 조금 빠르게', '긴 문장 · 조금 빠르게', '어려운 낱말 · 빠르게', '어려운 낱말 · 빠르게', '어려운 낱말 · 더 빠르게'],
   },
@@ -137,13 +137,13 @@ function renderFocusHome() {
     <header class="page-head">
       <p class="eyebrow">집중 연습</p>
       <h1>골라서 집중해요</h1>
-      <p class="lead">단어·낱소리·문장을 따로 1~10단계로 연습해요. 단계마다 미리 들어 보고, 20문제에 도전해요.</p>
+      <p class="lead">단어·낱소리·문장을 1~10단계로 연습해요.</p>
     </header>
     <div class="focus-cats">${Object.entries(FOCUS_CATS).map(([k, c]) => {
       const passed = [...Array(10)].filter((_, i) => levelPassed(k, i + 1)).length;
       return `
       <button class="report-link focus-cat" data-go="#focus/${k}">
-        <span class="cat-ico" aria-hidden="true">${c.icon}</span>
+        
         <span><b>${c.name}</b><small>${c.about}</small>
           <span class="ch-bar" aria-hidden="true"><i style="width:${passed * 10}%"></i></span>
           <small>${passed ? `10단계 중 ${passed}단계 통과 · 다음은 ${nextLevel(k)}단계` : `${nextLevel(k)}단계부터 시작해요`}</small></span>
@@ -261,7 +261,6 @@ function renderFocusLevel(cat, lv) {
         <ol class="qtype-list">${types.map(([, n, label]) => { const t = `<li><b>${from}~${from + n - 1}번</b> ${label}</li>`; from += n; return t; }).join('')}</ol>
         <p class="note">12개 이상 맞히면 통과예요. 12~15개 꽃잎 1장(C), 16~18개 2장(B), 19~20개 3장(A).</p>
         ${best ? `<p class="best-line">최고 기록 <b>${voiceBestLine(cat, lv)}</b>${g ? ` <span class="petals">${petals(g)}</span>` : ''} · ${focusRuns(cat, lv).length}번 도전</p>` : ''}
-        <p class="note">지금 고른 목소리(${FV[voice]})로 문제를 내요. 기록은 목소리마다 따로 남아요.</p>
       </section>
       <button class="btn primary block" data-go="#focus/${cat}/${lv}/go">도전 시작</button>
     </div>
@@ -685,7 +684,7 @@ function renderVocab() {
       const r = vocabRate(ch.words);
       return `
       <button class="vocab-card" data-go="#vocab/${i + 1}">
-        <span class="cat-ico" aria-hidden="true">${ch.icon}</span>
+        
         <b>${ch.name}</b><small>${ch.words.length}개${r != null ? ` · 정답률 ${r}%` : ''}</small>
       </button>`;
     }).join('')}
@@ -699,7 +698,7 @@ function renderVocabCh(n) {
   view.innerHTML = `
     <header class="page-head">
       <p class="eyebrow"><button class="link-btn" data-go="#vocab">단어장</button> · ${n}장</p>
-      <h1>${ch.icon} ${ch.name}</h1>
+      <h1>${ch.name}</h1>
       <p class="lead">낱말을 누르면 들려요. 아래 숫자는 문제로 나왔을 때 맞힌 비율이에요${r != null ? ` (이 장 전체 ${r}%)` : ''}.</p>
     </header>
     <div class="word-grid">${ch.words.map((w) => {

@@ -15,22 +15,22 @@
 // days: 칸 통과에 필요한 서로 다른 날 수 [1·2장, 3장부터], ling: 학습 화면에서 링 6소리를 매일 권하는지
 const WHO = {
   ha: {
-    name: '보청기', icon: '🦻', about: '나이 들며, 또는 살면서 청력이 떨어져 보청기를 써요',
+    name: '보청기', icon: '', about: '나이 들며, 또는 살면서 청력이 떨어져 보청기를 써요',
     start: '3장 시장·마트부터 · 집중 연습 3단계, 문장 5단계부터', ch: 3, focus: { word: 3, sound: 3, sent: 5 }, speed: 1, days: [1, 2], ling: false,
     tip: '고음 자음(ㅅ·ㅊ·ㅎ·ㅆ)과 받침, 소음 속 대화가 어려운 경우가 많아요. 소음 속 듣기는 일찍 시작하고, 애써 듣느라 지치면 20분쯤 하고 쉬어요.',
   },
   ci: {
-    name: '인공와우(성인)', icon: '👂', about: '말을 배운 뒤 청력을 잃고 인공와우를 받았어요',
+    name: '인공와우(성인)', icon: '', about: '말을 배운 뒤 청력을 잃고 인공와우를 받았어요',
     start: '1장 우리 집부터 · 조금 느리게', ch: 1, focus: { word: 1, sound: 1, sent: 1 }, speed: 0.92, days: [1, 2], ling: true,
     tip: '처음 한두 달은 소리가 낯설고 기계음 같을 수 있어요. 1~3단계에서 익히고 나면 그 뒤로는 빠르게 올라가요.',
   },
   kid: {
-    name: '인공와우(아이)', icon: '🧒', about: '태어날 때부터 잘 듣지 못해 소리와 말을 처음부터 배워요',
+    name: '인공와우(아이)', icon: '', about: '태어날 때부터 잘 듣지 못해 소리와 말을 처음부터 배워요',
     start: '소리 알아차리기 → 길이·말끝 구별 → 쉬운 낱말 · 느리게', ch: 1, focus: { word: 1, sound: 1, sent: 1 }, speed: 0.85, days: [2, 3], ling: true,
     tip: '놀이처럼 짧게, 보호자가 옆에서 함께 해요. 글자를 아직 못 읽으면 그림으로 고르는 링 6소리와 소리 구별부터 해요.',
   },
   ear2: {
-    name: '두 번째 귀', icon: '🎧', about: '한쪽 귀에 이어 다른 쪽 귀에도 인공와우를 받았어요',
+    name: '두 번째 귀', icon: '', about: '한쪽 귀에 이어 다른 쪽 귀에도 인공와우를 받았어요',
     start: '새 귀로만 1장부터 · 조금 느리게', ch: 1, focus: { word: 1, sound: 1, sent: 1 }, speed: 0.92, days: [1, 2], ling: true,
     tip: '새 귀의 소리는 낯설어서 잘 들리는 귀에 기대기 쉬워요. 처음 몇 주는 다른 쪽 기기를 빼고 새 귀로만 듣고, 익숙해지면 두 귀로 소음 속 듣기(5장)를 해요.',
   },
@@ -94,12 +94,12 @@ function playBuffer(buf) {
 // f: 목소리 공명, n: 바람 소리 공명. db는 '아' 대비 크기로, 실제 말소리처럼 '스'가 가장 작다(대략의 값).
 // pic은 글자를 모르는 아이도 고를 수 있게 붙인 그림(아-비행기, 우-유령, 이-생쥐, 쉬-쉿, 스-뱀, 음-아이스크림)
 const LING = [
-  { id: 'a', say: '아', pic: '✈️', f: [[900, 90, 1], [1400, 110, 1], [2800, 170, 0.4]], db: 0 },
-  { id: 'u', say: '우', pic: '👻', f: [[350, 70, 1], [800, 90, 0.8], [2600, 160, 0.15]], db: -4 },
-  { id: 'i', say: '이', pic: '🐭', f: [[320, 70, 1], [2700, 150, 1.6], [3300, 200, 1]], db: -5 },
-  { id: 'sh', say: '쉬', pic: '🤫', n: [[2800, 1400, 1], [4500, 1500, 0.4]], db: -5 },
-  { id: 's', say: '스', pic: '🐍', n: [[5500, 2000, 1], [7500, 2500, 0.7]], db: -13 },
-  { id: 'm', say: '음', pic: '🍦', f: [[250, 60, 1], [1100, 150, 0.15], [2400, 200, 0.1]], db: -8 },
+  { id: 'a', say: '아', pic: '', f: [[900, 90, 1], [1400, 110, 1], [2800, 170, 0.4]], db: 0 },
+  { id: 'u', say: '우', pic: '', f: [[350, 70, 1], [800, 90, 0.8], [2600, 160, 0.15]], db: -4 },
+  { id: 'i', say: '이', pic: '', f: [[320, 70, 1], [2700, 150, 1.6], [3300, 200, 1]], db: -5 },
+  { id: 'sh', say: '쉬', pic: '', n: [[2800, 1400, 1], [4500, 1500, 0.4]], db: -5 },
+  { id: 's', say: '스', pic: '', n: [[5500, 2000, 1], [7500, 2500, 0.7]], db: -13 },
+  { id: 'm', say: '음', pic: '', f: [[250, 60, 1], [1100, 150, 0.15], [2400, 200, 0.1]], db: -8 },
 ];
 const LING_BY = Object.fromEntries(LING.map((s) => [s.id, s]));
 const lingKey = (s) => `링:${s.say}`; // 가족 녹음 이름(낱말 녹음과 겹치지 않게)
@@ -163,7 +163,7 @@ async function renderLing() {
   const prev = data.lings.filter((x) => x.ear === data.ear).slice(-7);
   view.innerHTML = playShell('#learn', `링 6소리 점검${earSide() ? ` · ${EAR_NAME[data.ear]}` : ''}`, '여섯 소리를 들어요',
     `아·우·이·쉬·스·음을 하나씩 들려드려요. 들린 소리를 고르고, 아무 소리도 안 들리면 '안 들렸어요'를 눌러요. 30초쯤 걸려요.${family ? ' 가족이 녹음한 목소리로 들려드려요.' : ''}`,
-    startBox(false, `<p class="note center">${prev.length ? `최근 ${prev.length}번 평균 ${lingAvg(prev)}개.` : '매일 같은 소리로 하니 날마다 견줄 수 있어요.'} 아이와 할 때는 보호자가 그림을 같이 짚어 주세요.</p>`));
+    startBox(false, `<p class="note center">${prev.length ? `최근 ${prev.length}번 평균 ${lingAvg(prev)}개.` : '매일 같은 소리로 하니 날마다 견줄 수 있어요.'}</p>`));
   $('#orb').innerHTML = ICON.ear;
   $('#pnum').textContent = '6소리';
   await waitStart(false, alive);
@@ -211,7 +211,7 @@ async function renderLing() {
       <section class="panel">
         <ul class="ling-rows">${LING.map((s) => {
           const r = res[s.id];
-          return `<li><span class="ling-pic" aria-hidden="true">${s.pic}</span><b>${s.say}</b>
+          return `<li><b>${s.say}</b>
             <span class="${r === s.id ? 'ok' : ''}">${r === s.id ? `${ICON.check}알아들었어요` : r === 'none' ? '안 들렸어요' : `'${LING_BY[r].say}'${hasBatchim(LING_BY[r].say) ? '으로' : '로'} 들렸어요`}</span>
             <button class="icon-btn" data-ling="${s.id}" aria-label="${s.say} 다시 듣기">${ICON.speaker}</button></li>`;
         }).join('')}</ul>
@@ -262,9 +262,9 @@ function lingPanel() {
 
 const SUPRA_N = 10;
 const SUPRA = {
-  len: { name: '짧은 말·긴 말', icon: '📏', about: '한 글자 말과 긴 말을 가려 들어요', q: '짧은 말일까요, 긴 말일까요?' },
-  tune: { name: '묻는 말·대답하는 말', icon: '❓', about: '말끝이 올라가는지 내려가는지 들어요', q: '묻는 말일까요, 대답하는 말일까요?' },
-  voice: { name: '남자·여자 목소리', icon: '🧑', about: '낮은 목소리와 높은 목소리를 가려 들어요', q: '누구 목소리일까요?' },
+  len: { name: '짧은 말·긴 말', icon: '', about: '한 글자 말과 긴 말을 가려 들어요', q: '짧은 말일까요, 긴 말일까요?' },
+  tune: { name: '묻는 말·대답하는 말', icon: '', about: '말끝이 올라가는지 내려가는지 들어요', q: '묻는 말일까요, 대답하는 말일까요?' },
+  voice: { name: '남자·여자 목소리', icon: '', about: '낮은 목소리와 높은 목소리를 가려 들어요', q: '누구 목소리일까요?' },
 };
 const supraRuns = (mode) => (data.supraRuns || []).filter((r) => r.mode === mode);
 // 말끝이 올라가는 '아?'와 내려가는 '아.'를 합성한다. 처음 높이를 그때그때 바꿔 끝의 움직임으로만 가리게 한다.
@@ -301,7 +301,7 @@ function supraItem(mode, labels) {
   const s = pickHeard(both.length ? both : pool);
   const k = Math.random() < 0.5 ? 0 : 1;
   return {
-    opts: [['남자 목소리', '👨'], ['여자 목소리', '👩']], right: k,
+    opts: [['남자 목소리'], ['여자 목소리']], right: k,
     play: () => playWord(s, k ? 'woman' : 'man'), plays: [() => playWord(s, 'man'), () => playWord(s, 'woman')],
     tell: `"${esc(s)}"`,
   };
@@ -319,7 +319,7 @@ function renderSupra() {
       const runs = supraRuns(k); const best = runs.reduce((a, r) => Math.max(a, r.correct), 0);
       return `
       <button class="report-link focus-cat" data-go="#supra/${k}">
-        <span class="cat-ico" aria-hidden="true">${s.icon}</span>
+        
         <span><b>${s.name}</b><small>${s.about}</small>
           <small>${runs.length ? `${runs.length}번 했어요 · 가장 많이 ${best}/${SUPRA_N}` : `${SUPRA_N}문제, 2~3분`}</small></span>
       </button>`;
@@ -335,7 +335,7 @@ async function renderSupraQuiz(mode) {
     back: '#supra',
     eyebrow: `소리 구별 · ${s.name}`,
     title: s.q,
-    hint: `${SUPRA_N}문제예요. 보기의 그림을 보고 골라도 돼요.`,
+    hint: `${SUPRA_N}문제예요.`,
     n: SUPRA_N,
     next: async (i, ui) => {
       const it = supraItem(mode);
@@ -382,11 +382,11 @@ function renderWho(first = false) {
     <header class="page-head">
       <p class="eyebrow">${first ? '처음 설정' : '사용자 설정'}</p>
       <h1>누가 연습하나요?</h1>
-      <p class="lead">고른 유형에 맞춰 시작하는 곳, 말 빠르기, 권하는 연습을 다르게 드려요. 언제든 바꿀 수 있어요.</p>
+      <p class="lead">유형에 맞춰 시작하는 곳과 말 빠르기를 정해요.</p>
     </header>
     <div class="who-list" role="radiogroup" aria-label="사용자 유형">${Object.entries(WHO).map(([k, x]) => `
       <button class="who-card${data.who === k ? ' on' : ''}" role="radio" aria-checked="${data.who === k}" data-who="${k}">
-        <span class="ch-ico" aria-hidden="true">${x.icon}</span>
+        
         <span class="who-text"><b>${x.name}</b><small>${x.about}</small><em>${x.start}</em></span>
       </button>`).join('')}
     </div>
@@ -446,7 +446,7 @@ function fitCard() {
     ci: [['#ling', ICON.ear, '링 6소리', '매일 30초, 기기가 잘 되는지 확인'],
       ['#supra', ICON.shape, '소리 구별', '길이·말끝·목소리부터 익숙해지기'],
       [`#focus/word/${lv('word')}`, ICON.target, `단어 ${lv('word')}단계`, '집중 연습은 낮은 단계부터']],
-    kid: [['#ling', ICON.ear, '링 6소리', '그림을 같이 짚으며 매일 30초'],
+    kid: [['#ling', ICON.ear, '링 6소리', '매일 30초'],
       ['#supra/len', ICON.shape, '짧은 말·긴 말', '글자 없이 막대 그림으로 골라요'],
       ['#voices', ICON.mic, '가족 목소리 녹음', '엄마·아빠 목소리로 들으면 더 좋아요']],
     ear2: [['#ling', ICON.ear, `링 6소리${earSide() ? ` · ${EAR_NAME[data.ear]}` : ''}`, '새 귀로만 매일 30초'],
@@ -456,7 +456,7 @@ function fitCard() {
   return `
     <section class="panel fit-card">
       <div class="focus-head">
-        <span class="focus-ico" aria-hidden="true">${w.icon}</span>
+        
         <div><h2 class="panel-title">${w.name}에 맞춘 연습 <button class="link-btn" data-go="#who">바꾸기</button></h2><p class="note">${w.tip}</p></div>
       </div>
       ${data.who === 'ear2' && !earSide() ? '<button class="report-link warn-link" data-go="#who"><span><b>듣는 귀를 새 귀로 정해 주세요</b><small>소리를 새 귀 쪽으로만 보내요</small></span></button>' : ''}

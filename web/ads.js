@@ -11,13 +11,13 @@
 const AD_OFF_KEY = 'sorigil.adOff'; // 광고를 숨긴 날짜
 const CI_USERS = ['ci', 'kid', 'ear2'];
 const ADS = [
-  { id: 'ci-check', for: CI_USERS, cat: '인공와우', ico: '👂', t: '어음처리기 점검·교체 상담', b: '소리가 예전 같지 않다면 외부 기기 점검부터 받아 보세요', cta: '상담 알아보기' },
-  { id: 'ci-cover', for: CI_USERS, cat: '인공와우', ico: '💧', t: '인공와우 방수 커버·충전지', b: '물놀이나 운동할 때도 기기를 지켜요', cta: '보러 가기' },
-  { id: 'ha-fit', for: ['ha'], cat: '보청기', ico: '🦻', t: '보청기 다시 맞추기 상담', b: '잘 안 들리면 기기 조절만으로 나아질 수 있어요', cta: '가까운 센터 찾기' },
-  { id: 'ha-batt', for: ['ha'], cat: '보청기', ico: '🔋', t: '보청기 건전지 정기 배송', b: '떨어질 때쯤 집으로 보내 드려요', cta: '보러 가기' },
-  { id: 'tv', cat: '생활 보조기기', ico: '📺', t: 'TV 소리를 내 귀로 바로', b: '보청기·인공와우에 블루투스로 이어 주는 TV 연결기', cta: '보러 가기' },
-  { id: 'signal', cat: '생활 보조기기', ico: '🔔', t: '초인종·알람을 빛과 진동으로', b: '소리를 못 들어도 손님과 아침을 놓치지 않아요', cta: '보러 가기' },
-  { id: 'caption', cat: '생활 보조기기', ico: '💬', t: '전화를 글자로 보는 자막 서비스', b: '상대가 하는 말이 화면에 글자로 떠요', cta: '알아보기' },
+  { id: 'ci-check', for: CI_USERS, cat: '인공와우', ico: '', t: '어음처리기 점검·교체 상담', b: '소리가 예전 같지 않다면 외부 기기 점검부터 받아 보세요', cta: '상담 알아보기' },
+  { id: 'ci-cover', for: CI_USERS, cat: '인공와우', ico: '', t: '인공와우 방수 커버·충전지', b: '물놀이나 운동할 때도 기기를 지켜요', cta: '보러 가기' },
+  { id: 'ha-fit', for: ['ha'], cat: '보청기', ico: '', t: '보청기 다시 맞추기 상담', b: '잘 안 들리면 기기 조절만으로 나아질 수 있어요', cta: '가까운 센터 찾기' },
+  { id: 'ha-batt', for: ['ha'], cat: '보청기', ico: '', t: '보청기 건전지 정기 배송', b: '떨어질 때쯤 집으로 보내 드려요', cta: '보러 가기' },
+  { id: 'tv', cat: '생활 보조기기', ico: '', t: 'TV 소리를 내 귀로 바로', b: '보청기·인공와우에 블루투스로 이어 주는 TV 연결기', cta: '보러 가기' },
+  { id: 'signal', cat: '생활 보조기기', ico: '', t: '초인종·알람을 빛과 진동으로', b: '소리를 못 들어도 손님과 아침을 놓치지 않아요', cta: '보러 가기' },
+  { id: 'caption', cat: '생활 보조기기', ico: '', t: '전화를 글자로 보는 자막 서비스', b: '상대가 하는 말이 화면에 글자로 떠요', cta: '알아보기' },
 ];
 
 const adOffToday = () => { try { return localStorage.getItem(AD_OFF_KEY) === today(); } catch { return false; } };
@@ -31,7 +31,6 @@ function adSlot() {
     <aside class="ad-slot" aria-label="광고" data-ad="${a.id}">
       <span class="ad-tag">예시 광고</span>
       <button class="ad-body" type="button">
-        <span class="ad-ico" aria-hidden="true">${a.ico}</span>
         <span class="ad-text"><small class="ad-cat">${a.cat}</small><b>${a.t}</b><small>${a.b}</small></span>
         <span class="ad-cta">${a.cta}</span>
       </button>

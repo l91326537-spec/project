@@ -134,10 +134,10 @@ h1 { font: 700 36px/1.25 var(--display); letter-spacing: -.01em; }
 .hero {
   position: relative; overflow: hidden;
   display: grid; grid-template-columns: 1fr; gap: 18px 12px; align-items: center;
-  background: var(--surface); border: 1px solid var(--edge); border-radius: 28px; padding: 96px 20px 22px;
+  background: var(--surface); border: 1px solid var(--edge); border-radius: 28px; padding: 22px 20px;
 }
 .hero::before { /* 해와 언덕이 있는 오솔길 띠 */
-  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 76px;
+  content: none; position: absolute; left: 0; right: 0; top: 0; height: 76px;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 344 76' preserveAspectRatio='xMidYMax slice'%3E%3Crect width='344' height='76' fill='%23ffe3cc'/%3E%3Ccircle cx='286' cy='30' r='18' fill='%23f2b33d'/%3E%3Cpath d='M0 52C60 32 120 36 180 48S296 40 344 34V76H0Z' fill='%23d9ebcf'/%3E%3Cpath d='M0 66C80 50 160 56 230 64S316 62 344 58V76H0Z' fill='%23b9d7aa'/%3E%3C/svg%3E") center bottom / cover no-repeat;
   opacity: var(--art-dim, 1); pointer-events: none;
 }
@@ -969,10 +969,6 @@ body:has(.sheet:not([hidden])) .choices.ling .choice { min-height: 84px; }
 .today-plan .kind.gate { background: var(--warm-soft); color: var(--warm-ink); }
 .welcome-actions { margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 20px; }
 .welcome-actions .btn:not(.primary) svg { stroke-width: 2.4; }
-@media (max-width: 899px) {
-  /* 휴대폰: 첫 화면을 이 카드 하나로 채워, 광고는 아래로 내려야만 보이게 한다 */
-  .welcome { min-height: calc(100vh - var(--tabbar-h) - 40px); min-height: calc(100svh - var(--tabbar-h) - 40px - env(safe-area-inset-bottom, 0px)); }
-}
 
 /* 탭 다섯 개: 좁은 휴대폰에서도 한 줄에 들어가게 */
 .tabbar { gap: 2px; }
