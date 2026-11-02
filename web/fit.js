@@ -417,7 +417,7 @@ function renderWho(first = false) {
     <button class="btn primary block" id="who-done" ${first && !w ? 'disabled' : ''}>${first ? '이대로 시작하기' : '다 됐어요'}</button>
     ${first ? '<button class="btn ghost block" id="who-skip">나중에 고를게요</button>' : ''}`;
   view.querySelectorAll('[data-who]').forEach((b) => {
-    b.onclick = () => { data.who = b.dataset.who; data.talkSpeed = WHO[data.who].speed; persist(); renderWho(first); };
+    b.onclick = () => { data.who = b.dataset.who; data.talkSpeed = WHO[data.who].speed; data.startCh = null; persist(); renderWho(first); };
   });
   view.querySelectorAll('[data-ear]').forEach((b) => { b.onclick = () => { data.ear = b.dataset.ear; persist(); renderWho(first); }; });
   view.querySelectorAll('[data-voice]').forEach((b) => { b.onclick = () => { data.voice = b.dataset.voice; persist(); renderWho(first); }; });

@@ -61,6 +61,7 @@ const fresh = () => ({
   focusRuns: [],         // 집중 연습 도전: {cat: 'word'|'sound'|'sent', lv, date, at, correct, total, noise, sec}
   itemStats: {},         // 문제로 나온 말마다 [나온 횟수, 맞힌 횟수]
   focusNoise: { on: false, scene: 'cafe' }, // 집중 연습·단어장 소음 모드
+  startCh: null,         // 사용자가 고른 시작 장(없으면 사용자 유형의 시작 장)
   who: null,             // 사용자 유형(fit.js의 WHO): 'ha' 보청기, 'ci' 인공와우 성인, 'kid' 인공와우 아이, 'ear2' 두 번째 귀, 'none' 고르지 않음
   ear: 'both',           // 듣는 귀: 'both', 'L', 'R'
   talkSpeed: null,       // 말 빠르기(없으면 유형에 따라)
@@ -84,6 +85,7 @@ function migrate(d) {
   if (!['both', 'L', 'R'].includes(d.ear)) d.ear = 'both';
   if (!SPEEDS.some(([v]) => v === d.talkSpeed)) d.talkSpeed = null;
   if (!['woman', 'man', 'mix'].includes(d.voice)) d.voice = 'woman';
+  if (!(d.startCh >= 1 && d.startCh <= 7)) d.startCh = null;
   if (!d.itemStats || typeof d.itemStats !== 'object') d.itemStats = {};
   if (d.plan && !Array.isArray(d.plan.cells)) d.plan.cells = [...new Set((d.plan.stages || []).map((n) => PLAN_STAGE[n]).filter(Boolean))];
   if (d.plan && !d.plan.cells.length) d.plan = null;
@@ -152,6 +154,22 @@ function earOut(c = audio()) {
   }
   return earNode;
 }
+// 전화 음질(7장): 전화처럼 300~3400Hz만 남기고 소리 크기를 고르게 눌러 들려준다
+let phoneLine = false; let phoneNode = null; let phoneNodeOut = null;
+function phoneOut(c = audio()) {
+  const out = earOut(c);
+  if (!phoneNode || phoneNodeOut !== out) {
+    if (phoneNode) phoneNode.disconnect();
+    const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 300; hp.Q.value = 0.9;
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3400; lp.Q.value = 0.9;
+    const comp = c.createDynamicsCompressor(); comp.threshold.value = -24; comp.ratio.value = 4;
+    const g = c.createGain(); g.gain.value = 1.4;
+    hp.connect(lp); lp.connect(comp); comp.connect(g); g.connect(out);
+    phoneNode = hp; phoneNodeOut = out;
+  }
+  return phoneNode;
+}
+const soundOut = (c = audio()) => (phoneLine ? phoneOut(c) : earOut(c));
 const dbToGain = (db) => Math.pow(10, db / 20);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -396,7 +414,7 @@ const TTS_PITCH = { low: 0.6, high: 1.4, man: 0.5, woman: 1.3 };
 // speed: 높낮이는 그대로 두고 빠르기만 바꾼다(집중 연습 뒤 단계 문장, 말 빠르기)
 function playUrl(url, rate = 1, speed = 1) {
   const a = new Audio(url);
-  if (earSide()) try { const c = audio(); c.createMediaElementSource(a).connect(earOut(c)); } catch {} // 한쪽 귀로 보내려면 웹 오디오를 거친다
+  if (earSide() || phoneLine) try { const c = audio(); c.createMediaElementSource(a).connect(soundOut(c)); } catch {} // 한쪽 귀나 전화 음질은 웹 오디오를 거친다
   if (rate !== 1) { a.preservesPitch = a.webkitPreservesPitch = a.mozPreservesPitch = false; a.defaultPlaybackRate = a.playbackRate = rate; }
   if (speed !== 1) a.defaultPlaybackRate = a.playbackRate = rate * speed;
   return new Promise((res) => { a.onended = a.onerror = res; a.play().catch(res); setTimeout(res, 8000); }).then(() => a.pause()); // 재생이 멈춰도 넘어간다
@@ -411,7 +429,7 @@ function loadSprite(url) {
 async function playSprite({ s, t, d }, rate = 1) {
   const buf = await loadSprite(s);
   const c = audio(); const src = c.createBufferSource();
-  src.buffer = buf; src.playbackRate.value = rate; src.connect(earOut(c)); src.start(0, t, d);
+  src.buffer = buf; src.playbackRate.value = rate; src.connect(soundOut(c)); src.start(0, t, d);
   await new Promise((res) => { src.onended = res; setTimeout(res, (d / rate) * 1000 + 500); });
 }
 
@@ -568,8 +586,8 @@ const CELLS = [
   { id: '6-3', name: '두 사람이 함께 말할 때', desc: '한 사람 말만 골라 듣기' },
   { id: '6-4', name: '빠른 말', desc: '보통의 1.2배 빠르기' },
   { id: '6-5', name: '빠르기와 쉼', desc: '알맞게 끊어 읽기' },
-  { id: '7-1', name: '전화 음질 낱말', desc: '전화로 듣는 낱말' },
-  { id: '7-2', name: '전화 음질 문장', desc: '전화로 듣는 문장' },
+  { id: '7-1', name: '전화 음질 낱말', desc: '전화로 들리는 좁은 소리로 낱말 고르기', kind: 'word', phone: true, sets: () => WORD_SETS[2] },
+  { id: '7-2', name: '전화 음질 문장', desc: '전화로 들리는 좁은 소리로 문장 고르기', kind: 'sent', level: 2, phone: true },
   { id: '7-3', name: '보기 없이 듣기', desc: '들은 말을 그대로 말하기' },
   { id: '7-4', name: '뉴스 듣기', desc: '길고 빠른 말의 내용 고르기' },
   { id: '7-5', name: '스스로 대답하기', desc: '질문에 내 말로 대답하기' },
@@ -624,15 +642,16 @@ function stuckOpened(n, d = data) {
   const from = addDays(g[0].date, STUCK_DAYS);
   return g.some((x) => x.date >= from && x.correct >= gateNeed(x.total, GATE_STUCK));
 }
-// 사용자 유형에 따라 시작하는 장까지는 처음부터 열어 둔다(보청기는 3장부터)
+// 시작하는 장까지는 처음부터 열어 둔다. 사용자가 고른 장이 있으면 그곳, 없으면 사용자 유형의 장(보청기는 3장부터)
+const startCh = (d = data) => d.startCh || whoOf(d).ch;
 function chapterOpen(n, d = data) {
-  if (n <= whoOf(d).ch) return true;
+  if (n <= startCh(d)) return true;
   return (d.gates || []).some((g) => g.pass && g.ch >= n - 1) || stuckOpened(n - 1, d);
 }
-// 지금 오르는 장: 열린 장 중 가장 높은 곳(7장은 아직 칸이 없어 6장까지)
+// 지금 오르는 장: 열린 장 중 가장 높은 곳(만든 칸이 있는 장까지)
 function currentChapter(d = data) {
   let cur = 1;
-  for (let n = 2; n <= 6; n++) if (chapterOpen(n, d)) cur = n;
+  for (let n = 2; n <= CHAPTERS.length; n++) if (chapterOpen(n, d) && cellsOf(n).some((c) => c.kind)) cur = n;
   return cur;
 }
 // 다음에 할 일: 지금 장에서 아직 넘지 못한 첫 칸, 다 넘었으면 관문, 관문도 넘었으면 복습
@@ -895,7 +914,7 @@ function renderLearn() {
   const n = roundsOn(today());
   const now = step.cell ? `지금 칸은 <b>${step.cell} ${CELL[step.cell].name}</b>${hasBatchim(CELL[step.cell].name) ? '이에요' : '예요'}. ${passHint(CELL[step.cell])}.`
     : step.gate ? `칸을 다 넘었어요. 관문 <b>'${GATES[step.gate].title}'</b>에 도전할 차례예요.`
-    : `${ch.n}장까지 모두 넘었어요. ${chapterOf(7).name} 장은 곧 열려요.`;
+    : `${ch.n}장까지 만든 칸을 모두 넘었어요. 남은 칸은 곧 열려요. 넘은 칸을 복습해요.`;
   const cur = currentChapter();
   const reN = data.retests.some((r) => r.date === today()) ? 0 : retestPool().length; // 하루 한 번만 권한다
 
@@ -983,10 +1002,10 @@ function renderLearn() {
       const done = cells.filter((x) => cellState(x) === 'done').length;
       const passed = gatePassed(c.n); const open = chapterOpen(c.n);
       const state = !cells.length && !GATES[c.n] ? 'soon' : passed ? 'done' : c.n === cur ? 'current' : open ? 'open' : 'ahead';
-      const skipped = !passed && c.n < whoOf().ch; // 유형에 맞춰 건너뛴 장(몸풀기로 해도 된다)
+      const skipped = !passed && c.n < startCh(); // 시작 장보다 앞이라 건너뛴 장(몸풀기로 해도 된다)
       const sub = state === 'soon' ? '곧 열려요'
         : passed ? `관문 '${GATES[c.n].title}' 넘음`
-        : `칸 ${done}/${cells.length}${skipped ? ' · 건너뛰어도 되는 곳' : open ? '' : ' · 관문부터 도전해도 돼요'}`;
+        : `칸 ${done}/${cells.length}${skipped ? ' · 건너뛰어도 되는 곳' : open ? '' : ' · 바로 연습해도 돼요'}`;
       const pct = state === 'soon' ? 0 : passed ? 100 : Math.round((100 * done) / (cells.length + 1));
       return `
       <li class="ch-row ${state}">
@@ -1046,12 +1065,17 @@ function renderChapter(n) {
       <h1>${c.icon} ${c.name}</h1>
       <p class="lead">${c.about}</p>
     </header>
-    ${open ? '' : `<p class="note ahead-note">아직 앞에 있는 장이에요. 칸은 ${n - 1}장 관문을 넘으면 열리고, 이 장 관문에는 지금 먼저 도전할 수 있어요.</p>`}
-    ${!passed && n < whoOf().ch ? `<p class="note ahead-note">${whoOf().name} 사용자는 대개 이 장이 쉬워서 ${whoOf().ch}장부터 시작해요. 몸풀기로 해도 좋아요.</p>` : ''}
+    ${n !== currentChapter() && cellsOf(n).some((x) => x.kind) ? `
+    <section class="panel start-here">
+      <p class="tip-body">${n > currentChapter() ? '이 장이 내 수준에 맞으면 여기서부터 시작해요. 칸은 지금 바로 연습할 수 있어요.' : '앞 장부터 다시 다지고 싶으면 여기서부터 시작해요.'}</p>
+      <button class="btn block" id="start-here">${ICON.flag}${n}장부터 시작하기</button>
+      <p class="note">오늘의 연습이 이 장의 칸부터 나와요. 언제든 다른 장으로 바꿀 수 있어요.</p>
+    </section>` : ''}
+    ${!passed && n < startCh() && !data.startCh ? `<p class="note ahead-note">${whoOf().name} 사용자는 대개 이 장이 쉬워서 ${whoOf().ch}장부터 시작해요. 몸풀기로 해도 좋아요.</p>` : ''}
     <ol class="cell-list">${cellsOf(n).map((x) => {
       const st = cellState(x);
-      const can = x.kind && st !== 'skip' && (open || planHas(x.id));
-      const hint = st === 'open' && !open && !planHas(x.id) ? `${n - 1}장 관문을 넘으면 열려요` : passHint(x);
+      const can = x.kind && st !== 'skip'; // 내 수준에 맞는 곳부터 하도록 어느 장의 칸이든 바로 연습할 수 있다
+      const hint = passHint(x);
       return `
       <li class="cell-row ${st}${can ? '' : ' off'}">
         <span class="cell-id">${x.id}</span>
@@ -1089,6 +1113,8 @@ function renderChapter(n) {
     <h2 class="section-title">${c.name}에서 써 볼 요령</h2>
     ${c.tips.map(tipCard).join('')}
     <button class="btn ghost block" data-go="#learn">지도로</button>`;
+  const sh = view.querySelector('#start-here');
+  if (sh) sh.onclick = () => { data.startCh = n; persist(); toast(`${n}장부터 시작해요. 오늘의 연습이 이 장의 칸부터 나와요.`); renderChapter(n); };
 }
 
 let openGroup = 0; // 녹음한 뒤 다시 그려도 보던 묶음을 펼쳐 둔다
@@ -2317,6 +2343,7 @@ async function renderPlay(routeId) {
   const inRun = !!todayRun && todayRun.queue[todayRun.i] === current;
   const back = inRun || c.weak ? '#learn' : `#ch/${CELL[routeId].ch}`;
   const sc = c.kind === 'noise' ? NOISE_SCENES[c.scene] : null;
+  phoneLine = !!c.phone;
   const results = []; const misses = [];
   let toneDb = -10; // 소리 알아차리기: 들리면 5dB씩 작게, 놓치면 5dB 크게
   let quietest = null;
@@ -2325,8 +2352,8 @@ async function renderPlay(routeId) {
   const intro = {
     tone: ['소리가 들리면 알려 주세요', '삐 소리가 날 수도, 안 날 수도 있어요. 조용한 곳에서 해 주세요.'],
     env: ['무슨 소리인지 맞혀 보세요', '생활 속 소리를 들려드려요. 몇 번이든 다시 들을 수 있어요.'],
-    word: ['들은 말을 골라 주세요', c.weak ? '자주 헷갈린 소리가 든 낱말을 모아 냈어요.' : `${ida(c.desc)}.`],
-    sent: c.level === 3 ? ['문장 속 낱말을 골라 주세요', '문장을 듣고, 그 속에 들린 낱말을 골라요.'] : ['들은 문장을 골라 주세요', '생활 속 문장을 들려드려요.'],
+    word: ['들은 말을 골라 주세요', c.weak ? '자주 헷갈린 소리가 든 낱말을 모아 냈어요.' : c.phone ? '전화로 듣는 것처럼 낮은 소리와 높은 소리를 깎아 들려드려요.' : `${ida(c.desc)}.`],
+    sent: c.level === 3 ? ['문장 속 낱말을 골라 주세요', '문장을 듣고, 그 속에 들린 낱말을 골라요.'] : ['들은 문장을 골라 주세요', c.phone ? '전화로 듣는 것처럼 낮은 소리와 높은 소리를 깎아 들려드려요.' : '생활 속 문장을 들려드려요.'],
     noise: sc && [`${sc.name}에서 들어 보세요`, `${sc.name} 소음 속에서 말을 알아들어요. 말소리가 소음보다 ${c.snr}dB 커요.`],
     supra: ['말끝을 들어 보세요', '"아?"처럼 끝이 올라가는 소리와 "아."처럼 내려가는 소리를 가려 들어요. 묻는 말은 끝이 올라가요.'],
   }[c.kind];
@@ -2819,6 +2846,7 @@ window.addEventListener('popstate', (e) => { current = e.state?.h || '#home'; ro
 try { history.replaceState({ h: current }, ''); } catch {}
 function route() {
   playToken++;
+  phoneLine = false;
   if (window.speechSynthesis) speechSynthesis.cancel();
   if (stopNoise) stopNoise();
   if (activeRec) activeRec.abort();
