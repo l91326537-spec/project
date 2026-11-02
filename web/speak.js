@@ -26,13 +26,13 @@ const TUNE_LINES = ['밥 먹었어요', '잘 잤어요', '약 먹었어요', '�
 
 // kind: say 따라 말하기(음성 인식), voice 목소리 크기·길이, tune 말끝 높낮이
 const SPEAK_MODES = {
-  word: { kind: 'say', name: '쉬운 단어', icon: '🍎', about: '사과, 우유처럼 쉬운 낱말', items: () => [...new Set([...WORD_SETS[1], ...WORD_SETS[2]].flat())] },
-  pair: { kind: 'say', name: '헷갈리는 단어', icon: '🌾', about: '살과 쌀처럼 한 소리만 다른 낱말', items: () => [...new Set(WORD_SETS[3].flat())] },
-  sentence: { kind: 'say', name: '생활 문장', icon: '💬', about: '물 좀 주세요 같은 짧은 문장', items: () => [...new Set(SENTENCE_SETS[1].flat())].filter((t) => !hasNumber(t)) },
-  weak: { kind: 'say', name: '내가 약한 소리', icon: '🎯', about: '말할 때 자주 다르게 들린 소리가 든 낱말', items: () => weakSpeakWords() },
-  order: { kind: 'say', name: '소음 속에서 주문하기', icon: '☕', about: '카페 소음 속에서 듣고 또박또박 주문해요', items: () => ORDER_LINES, noise: { id: 'cafe', snr: 12 } },
-  aah: { kind: 'voice', name: '"아—" 길게 내기', icon: '🎈', about: `${AAH_SEC}초 넘게, 고른 크기와 높이로` },
-  tune: { kind: 'tune', name: '말끝 올리기·내리기', icon: '🎵', about: '묻는 말은 끝을 올리고, 대답은 내려요' },
+  word: { kind: 'say', name: '쉬운 단어', icon: '', about: '사과, 우유처럼 쉬운 낱말', items: () => [...new Set([...WORD_SETS[1], ...WORD_SETS[2]].flat())] },
+  pair: { kind: 'say', name: '헷갈리는 단어', icon: '', about: '살과 쌀처럼 한 소리만 다른 낱말', items: () => [...new Set(WORD_SETS[3].flat())] },
+  sentence: { kind: 'say', name: '생활 문장', icon: '', about: '물 좀 주세요 같은 짧은 문장', items: () => [...new Set(SENTENCE_SETS[1].flat())].filter((t) => !hasNumber(t)) },
+  weak: { kind: 'say', name: '내가 약한 소리', icon: '', about: '말할 때 자주 다르게 들린 소리가 든 낱말', items: () => weakSpeakWords() },
+  order: { kind: 'say', name: '소음 속에서 주문하기', icon: '', about: '카페 소음 속에서 듣고 또박또박 주문해요', items: () => ORDER_LINES, noise: { id: 'cafe', snr: 12 } },
+  aah: { kind: 'voice', name: '"아—" 길게 내기', icon: '', about: `${AAH_SEC}초 넘게, 고른 크기와 높이로` },
+  tune: { kind: 'tune', name: '말끝 올리기·내리기', icon: '', about: '묻는 말은 끝을 올리고, 대답은 내려요' },
 };
 const SPEAK_KIND = { say: '발음', voice: '목소리', tune: '억양' };
 const canMic = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) && !!(window.AudioContext || window.webkitAudioContext);
@@ -390,7 +390,7 @@ function renderSpeakHome() {
       : `${runs.length}번 했어요 · 최근 ${last.good}/${last.n}`;
     return `
       <button class="report-link focus-cat" data-go="#speak/${k}">
-        <span class="cat-ico" aria-hidden="true">${m.icon}</span>
+        
         <span><b>${m.name}</b><small>${m.about}</small><small>${sub}</small></span>
       </button>`;
   };
@@ -399,7 +399,7 @@ function renderSpeakHome() {
     <header class="page-head">
       <p class="eyebrow">말하기 연습</p>
       <h1>듣기만큼 말하기도 연습해요</h1>
-      <p class="lead">발음은 음성 인식으로 음절과 자모 하나하나까지 견주고, 목소리 크기·길이와 말끝 높낮이는 마이크 소리로 바로 재요.</p>
+      <p class="lead">발음, 목소리 크기·길이, 말끝 높낮이를 확인해요.</p>
     </header>
     <h2 class="section-title">발음 <span>따라 말하기</span></h2>
     ${Recognition ? '' : `<p class="note warn">${canMic() ? '이 브라우저는 음성 인식이 없어 녹음해서 정답과 견줘 들어요. 크롬이나 사파리에서는 발음을 자동으로 확인해 드려요.' : '이 화면에서는 마이크를 쓸 수 없어요. 크롬이나 사파리에서 앱 주소를 열어 주세요.'}</p>`}
@@ -410,7 +410,7 @@ function renderSpeakHome() {
     <div class="focus-cats">${card('tune')}</div>
     ${canMic() ? '' : '<p class="note warn">이 화면에서는 마이크를 쓸 수 없어 목소리와 억양은 연습할 수 없어요.</p>'}
     ${speakPanel(false)}
-    <p class="note center">지도의 말하기 칸(1-5, 2-5, 3-5, 4-5, 5-5)도 같은 방식으로 확인해요. 음성 인식과 마이크 측정은 참고용이에요.</p>
+    <p class="note center">음성 인식과 마이크 측정은 참고용이에요.</p>
     <button class="btn ghost block" data-go="#learn">지도로</button>`;
 }
 

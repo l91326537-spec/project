@@ -215,35 +215,35 @@ function playTone(freq, db, dur = 0.8) {
 
 // 생활 소리(1-2, 2-1, 1장 관문)를 녹음 파일 없이 합성한다.
 const ENV_SOUNDS = {
-  doorbell: { name: '초인종', icon: '🔔', dur: 1.3, make(c, d, t) {
+  doorbell: { name: '초인종', icon: '', dur: 1.3, make(c, d, t) {
     osc(c, d, 'sine', 659, t, 0.6, 0.4); osc(c, d, 'sine', 1318, t, 0.6, 0.08);
     osc(c, d, 'sine', 523, t + 0.6, 0.7, 0.4); osc(c, d, 'sine', 1046, t + 0.6, 0.7, 0.08);
   } },
-  phone: { name: '전화벨', icon: '📞', dur: 1.6, make(c, d, t) {
+  phone: { name: '전화벨', icon: '', dur: 1.6, make(c, d, t) {
     for (let k = 0; k < 2; k++) for (let i = 0; i < 12; i++) {
       const s = t + k * 0.9 + i * 0.05;
       osc(c, d, 'square', i % 2 ? 1400 : 1100, s, 0.045, 0.08);
     }
   } },
-  horn: { name: '자동차 경적', icon: '🚗', dur: 1.0, make(c, d, t) {
+  horn: { name: '자동차 경적', icon: '', dur: 1.0, make(c, d, t) {
     const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1800; f.connect(d);
     osc(c, f, 'sawtooth', 415, t, 0.9, 0.2); osc(c, f, 'sawtooth', 523, t, 0.9, 0.2);
   } },
   clock: { name: '시계 똑딱', icon: '⏰', dur: 2.0, make(c, d, t) {
     for (let i = 0; i < 4; i++) noise(c, d, t + i * 0.5, 0.025, 0.9, 'bandpass', i % 2 ? 2500 : 3500, 8);
   } },
-  water: { name: '물 흐르는 소리', icon: '🚰', dur: 2.0, make(c, d, t) {
+  water: { name: '물 흐르는 소리', icon: '', dur: 2.0, make(c, d, t) {
     const f = noise(c, d, t, 2.0, 0.6, 'bandpass', 900, 0.8);
     const lfo = c.createOscillator(); const lg = c.createGain();
     lfo.frequency.value = 7; lg.gain.value = 400; lfo.connect(lg); lg.connect(f.frequency);
     lfo.start(t); lfo.stop(t + 2.05);
   } },
-  siren: { name: '구급차 사이렌', icon: '🚑', dur: 2.0, make(c, d, t) {
+  siren: { name: '구급차 사이렌', icon: '', dur: 2.0, make(c, d, t) {
     const o = c.createOscillator(); o.type = 'triangle';
     for (let i = 0; i < 4; i++) o.frequency.setValueAtTime(i % 2 ? 700 : 960, t + i * 0.5);
     o.connect(envGain(c, d, t, 2.0, 0.35)); o.start(t); o.stop(t + 2.05);
   } },
-  kettle: { name: '주전자 휘파람', icon: '🫖', dur: 1.6, make(c, d, t) {
+  kettle: { name: '주전자 휘파람', icon: '', dur: 1.6, make(c, d, t) {
     const o = c.createOscillator(); o.type = 'sine';
     o.frequency.setValueAtTime(1800, t); o.frequency.linearRampToValueAtTime(2600, t + 1.2);
     const v = c.createOscillator(); const vg = c.createGain();
@@ -251,7 +251,7 @@ const ENV_SOUNDS = {
     o.connect(envGain(c, d, t, 1.6, 0.18, 0.4)); o.start(t); o.stop(t + 1.65); v.start(t); v.stop(t + 1.65);
     noise(c, d, t, 1.6, 0.08, 'highpass', 4000);
   } },
-  knock: { name: '노크 소리', icon: '🚪', dur: 1.2, make(c, d, t) {
+  knock: { name: '노크 소리', icon: '', dur: 1.2, make(c, d, t) {
     for (let i = 0; i < 3; i++) {
       const s = t + i * 0.28;
       const o = c.createOscillator(); o.frequency.setValueAtTime(180, s); o.frequency.exponentialRampToValueAtTime(70, s + 0.12);
@@ -272,7 +272,7 @@ function playEnv(id) {
 // 소음 RMS는 0.1, AI 음성 말소리 RMS는 약 0.14다. 말소리가 소음보다 snr dB 크도록 소음 크기를 정한다(+12dB → 0.35배).
 const noiseGain = (snr) => 1.4 * Math.pow(10, -snr / 20);
 const snrText = (snr) => `${snr > 0 ? '+' : ''}${snr}dB`;
-const SCENE_NAME = { restaurant: '🍽️ 식당', cafe: '☕ 카페', bus: '🚌 버스', clinic: '🏥 병원 대기실', market: '🛒 시장' };
+const SCENE_NAME = { restaurant: '식당', cafe: '카페', bus: '버스', clinic: '병원 대기실', market: '시장' };
 const noiseCache = {};
 function sceneBuffer(c, id) {
   if (noiseCache[id]) return noiseCache[id];
@@ -829,7 +829,7 @@ function setNav(name) {
   });
 }
 
-const sceneOf = (g) => (g.noise ? `${SCENE_NAME[g.noise.id]} 소음 ${snrText(g.noise.snr)}` : '🏠 조용한 집');
+const sceneOf = (g) => (g.noise ? `${SCENE_NAME[g.noise.id]} 소음 ${snrText(g.noise.snr)}` : '조용한 집');
 const tipCard = (i) => {
   const t = LISTEN_TIPS[i];
   return `<section class="panel tip-card">
@@ -840,16 +840,6 @@ const tipCard = (i) => {
 
 // 홈: 앱을 열면 처음 보는 화면. 큰 버튼 하나로 오늘의 연습에 바로 들어가고, 지도와 나머지 연습은 '학습' 화면에 있다.
 // 휴대폰에서는 첫 화면을 이 카드 하나로 채워 광고는 아래로 내려야만 보이게 한다.
-// 그림은 가로 560으로 그리고, 좁은 휴대폰에서는 가운데(해와 길)만 보인다.
-const WELCOME_ART = `<svg class="welcome-art" viewBox="0 0 560 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <rect class="sky" width="560" height="150"/>
-      <circle class="sun" cx="396" cy="48" r="22"/>
-      <path class="ring" d="M362 36q-7 12 0 24M350 28q-12 20 0 40M338 20q-17 28 0 56"/>
-      <path class="hill" d="M0 92C110 66 220 72 330 86S500 78 560 70V150H0Z"/>
-      <path class="hill2" d="M0 118C140 98 280 106 400 114S530 110 560 106V150H0Z"/>
-      <path class="road" d="M200 150C236 132 212 116 264 106S336 96 366 88"/>
-      <path class="road-line" d="M200 150C236 132 212 116 264 106S336 96 366 88"/>
-    </svg>`;
 const dayNo = () => Math.round(new Date(`${today()}T12:00:00`).getTime() / 86400000);
 // 며칠 연달아 연습했는지(오늘 아직 안 했으면 어제까지 센다)
 function streakDays(d = data) {
@@ -874,11 +864,10 @@ function renderHome() {
   const queue = todayQueue();
   view.innerHTML = `
     <section class="welcome">
-      ${WELCOME_ART}
       <div class="welcome-body">
         <p class="eyebrow">${hello}${streak >= 2 ? ` · ${streak}일째 이어서 연습 중` : ''}</p>
         <h1>${n >= TODAY_N ? '오늘 연습을 다 했어요' : n ? '조금만 더 걸어요' : '오늘도 소리길을 걸어 볼까요?'}</h1>
-        <p class="lead">지금 <b>${ch.n}장 ${ch.icon} ${josa(ch.name, '을', '를')}</b> 걷고 있어요.</p>
+        <p class="lead">지금 <b>${ch.n}장 ${josa(ch.name, '을', '를')}</b> 걷고 있어요.</p>
         <div class="today-plan">
           <p class="today-plan-head"><span>${data.plan ? '선생님 숙제' : '오늘 할 연습'} · 8~10분</span>
             <span class="pips" role="img" aria-label="오늘 ${TODAY_N}판 중 ${Math.min(n, TODAY_N)}판 했어요">${pips}<small>${Math.min(n, TODAY_N)}/${TODAY_N}</small></span></p>
@@ -892,13 +881,11 @@ function renderHome() {
       </div>
       <div class="welcome-actions">
         <button class="btn primary block today-btn" id="today">${ICON.play}<span><b>${n >= TODAY_N ? '한 판 더 하기' : n ? '오늘의 연습 이어서' : '오늘의 연습 시작'}</b>
-          <small>누르면 바로 첫 판이 시작돼요</small></span></button>
+</span></button>
         <button class="btn block" data-go="#learn">${ICON.path}소리길 지도에서 골라 하기</button>
       </div>
     </section>
     ${drop && daysSince(drop.date) <= 1 ? lingAlert(drop) : ''}
-    <h2 class="section-title">오늘의 듣기 요령</h2>
-    ${tipCard(dayNo() % LISTEN_TIPS.length)}
     ${adSlot()}
     <p class="note center">훈련용 앱이며 청력 검사나 진단을 대신하지 않아요.</p>`;
   $('#today').onclick = startToday;
@@ -922,7 +909,7 @@ function renderLearn() {
     <section class="hero">
       <div class="hero-text">
         <p class="eyebrow">소리길 지도 · 지금 ${ch.n}장</p>
-        <h1>${ch.icon} ${ch.name}</h1>
+        <h1>${ch.name}</h1>
         <p class="lead">${now}</p>
       </div>
       <button class="btn primary block today-btn" id="today">${ICON.play}<span><b>${n >= TODAY_N ? '한 판 더 하기' : n ? '오늘의 연습 이어서' : '오늘의 연습 시작'}</b>
@@ -1010,7 +997,7 @@ function renderLearn() {
       return `
       <li class="ch-row ${state}">
         <button class="ch-btn" data-go="#ch/${c.n}" aria-label="${c.n}장 ${c.name}, ${sub}">
-          <span class="ch-ico" aria-hidden="true">${c.icon}</span>
+          <span class="ch-ico" aria-hidden="true">${c.n}</span>
           <span class="ch-text"><b>${c.n}장 ${c.name}</b><small>${state === 'current' ? '지금 오르는 곳 · ' : ''}${sub}</small>
             <span class="ch-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></span>
           ${passed ? `<span class="ch-done" aria-hidden="true">${ICON.check}</span>` : ''}
@@ -1062,14 +1049,13 @@ function renderChapter(n) {
   view.innerHTML = `
     <header class="page-head">
       <p class="eyebrow">${n}장${n === currentChapter() && !passed ? ' · 지금 오르는 곳' : ''}</p>
-      <h1>${c.icon} ${c.name}</h1>
+      <h1>${c.name}</h1>
       <p class="lead">${c.about}</p>
     </header>
     ${n !== currentChapter() && cellsOf(n).some((x) => x.kind) ? `
     <section class="panel start-here">
-      <p class="tip-body">${n > currentChapter() ? '이 장이 내 수준에 맞으면 여기서부터 시작해요. 칸은 지금 바로 연습할 수 있어요.' : '앞 장부터 다시 다지고 싶으면 여기서부터 시작해요.'}</p>
+      <p class="tip-body">${n > currentChapter() ? '내 수준에 맞으면 여기서부터 시작해요.' : '앞 장부터 다시 다질 때 눌러요.'}</p>
       <button class="btn block" id="start-here">${ICON.flag}${n}장부터 시작하기</button>
-      <p class="note">오늘의 연습이 이 장의 칸부터 나와요. 언제든 다른 장으로 바꿀 수 있어요.</p>
     </section>` : ''}
     ${!passed && n < startCh() && !data.startCh ? `<p class="note ahead-note">${whoOf().name} 사용자는 대개 이 장이 쉬워서 ${whoOf().ch}장부터 시작해요. 몸풀기로 해도 좋아요.</p>` : ''}
     <ol class="cell-list">${cellsOf(n).map((x) => {
@@ -1301,7 +1287,7 @@ function renderProgress() {
             ${g.length && !gatePassed(c.n) ? `<li class="sub"><span class="note">관문 ${g.length}번 도전, 가장 많이 ${best}/15</span></li>` : ''}`;
         }).join('')}
       </ul>
-      <p class="note">막대는 넘은 칸 수예요. 관문을 넘으면 ✓로 바뀌어요.</p>
+      <p class="note">막대는 넘은 칸 수예요. 관문을 넘으면 체크로 바뀌어요.</p>
     </section>
     <section class="panel"${has ? '' : ' hidden'}>
       <h2 class="panel-title">최근 14일 맞힌 문제</h2>
@@ -1438,7 +1424,7 @@ function renderReport() {
   // 한눈에 보기: 기록에서 바로 읽히는 사실만 문장으로 만든다
   const lines = [`최근 2주 동안 14일 중 <b>${n14}일</b> 연습했어요${n14 >= 10 ? '. 아주 꾸준해요' : n14 >= 5 ? '' : '. 하루 한 판부터 다시 시작해 보세요'}.`];
   lines.push(`지금 <b>${cur.n}장 ${cur.name}</b>에서 연습하고 있어요(칸 ${curCells.filter((c) => cellState(c) === 'done').length}/${curCells.length} 통과${curTries.length ? `, 관문 '${GATES[cur.n].title}' ${curTries.length}번 도전해 가장 많이 ${curTries.reduce((a, x) => Math.max(a, x.correct), 0)}/15` : ''}).`);
-  if (passedGates.length) lines.push(`넘은 관문: ${passedGates.map(({ c, g }) => `${c.n}장 '${GATES[c.n].title}'${GATES[c.n].noise ? `(${SCENE_NAME[GATES[c.n].noise.id].split(' ')[1]} ${snrText(GATES[c.n].noise.snr)})` : ''} ${shortDate(g.date)}`).join(', ')}${gatePassed(5) ? '. 일상 대화 대부분을 해내는 생활 깃발(카페 +5dB)에 닿았어요' : ''}.`);
+  if (passedGates.length) lines.push(`넘은 관문: ${passedGates.map(({ c, g }) => `${c.n}장 '${GATES[c.n].title}'${GATES[c.n].noise ? `(${SCENE_NAME[GATES[c.n].noise.id]} ${snrText(GATES[c.n].noise.snr)})` : ''} ${shortDate(g.date)}`).join(', ')}${gatePassed(5) ? '. 일상 대화 대부분을 해내는 생활 깃발(카페 +5dB)에 닿았어요' : ''}.`);
   const up = rows.filter((r) => r.first != null && r.n >= 4 && r.recent - r.first >= 10).sort((a, b) => (b.recent - b.first) - (a.recent - a.first))[0];
   if (up) lines.push(`${up.c.id} ${up.c.name} 정답률이 <b>${up.first}%에서 ${up.recent}%로</b> 올랐어요.`);
   if (weak.length) lines.push(`가장 자주 헷갈린 소리는 <b>${esc(friendly(weak[0].c))}</b>예요(${weak[0].n}회). 이 소리가 든 문제를 더 자주 내고 있어요${weak[0].rate != null ? `. 맞춤 문제 정답률은 ${weak[0].rate}%예요` : ''}.`);
@@ -1857,7 +1843,7 @@ async function renderCheck() {
     $('#count').textContent = `${i + 1}번째 / ${CHECK_ITEMS.length}문제`;
     $('#part').textContent = `이달의 듣기 점검 · ${CHECK_KIND[it.kind]}`;
     $('#q').textContent = sc ? `${sc.name}에서 들린 말은?` : it.kind === 'word' ? '어떤 단어를 들었나요?' : '어떤 문장을 들었나요?';
-    $('#hint').innerHTML = (sc ? `<span class="chip scene">${sc.icon} ${sc.name} · 소음 ${snrText(6)}</span>` : '') + `<button class="pill" id="replay">${ICON.speaker}한 번 더 듣기</button>`;
+    $('#hint').innerHTML = (sc ? `<span class="chip scene">${sc.name} · 소음 ${snrText(6)}</span>` : '') + `<button class="pill" id="replay">${ICON.speaker}한 번 더 듣기</button>`;
     $('#answers').className = '';
     $('#answers').innerHTML = '';
     const say = () => playWord(it.answer, undefined, 1, true); // 늘 같은 빠르기
@@ -2134,7 +2120,7 @@ async function renderNoiseRec() {
       const opts = shuffle(pick(pool)); const target = pickHeard(opts);
       $('#answers').innerHTML = '';
       $('#q').textContent = '들린 말은?';
-      $('#hint').innerHTML = `<span class="chip scene">☕ 카페 소음 · ${snrText(level)}</span>`;
+      $('#hint').innerHTML = `<span class="chip scene">카페 소음 · ${snrText(level)}</span>`;
       setLevel(level);
       await wait(700);
       if (!alive()) return;
@@ -2227,7 +2213,7 @@ async function renderRetest() {
     if (!alive()) return;
     const opts = shuffle(m.options);
     const layout = m.kind === 'env' ? (opts.length === 2 ? 'two' : '') : opts.some((w) => w.length > 5) ? 'sentences' : 'words';
-    const ans = await ask(opts.map((x) => (m.kind === 'env' ? [ENV_SOUNDS[x].name, ENV_SOUNDS[x].icon] : [x])), opts.indexOf(m.answer), layout);
+    const ans = await ask(opts.map((x) => (m.kind === 'env' ? [ENV_SOUNDS[x].name] : [x])), opts.indexOf(m.answer), layout);
     out.push({ m, ok: opts[ans] === m.answer, chose: opts[ans] });
     await wait(900);
   }
@@ -2477,7 +2463,7 @@ async function renderPlay(routeId) {
     $('#replay').onclick = replay(() => playEnv(target));
     await playing(playEnv(target));
     if (!alive()) return false;
-    const ans = await ask(ids.map((x) => [ENV_SOUNDS[x].name, ENV_SOUNDS[x].icon]), ids.indexOf(target), ids.length === 2 ? 'two' : '');
+    const ans = await ask(ids.map((x) => [ENV_SOUNDS[x].name]), ids.indexOf(target), ids.length === 2 ? 'two' : '');
     const ok = ids[ans] === target;
     const pair = [() => playEnv(target), () => playEnv(ids[ans])];
     feedback(ok, ok ? '잘 들으셨어요!' : '괜찮아요', ok ? `${ENV_SOUNDS[target].name} 소리였어요.` : `정답은 ${ida(ENV_SOUNDS[target].name)}. 두 소리를 견줘 들어 보세요.`,
@@ -2554,7 +2540,7 @@ async function renderPlay(routeId) {
   async function noiseTrial() {
     const opts = shuffle(pick([...sc.easy, ...sc.hard])); const target = pickHeard(opts);
     $('#answers').innerHTML = '';
-    setQ(`${sc.name}에서 들린 말은?`, `<span class="chip scene">${sc.icon} ${sc.name} · 소음 ${snrText(c.snr)}</span>` + replayBtn() + '<span class="src" id="src"></span>');
+    setQ(`${sc.name}에서 들린 말은?`, `<span class="chip scene">${sc.name} · 소음 ${snrText(c.snr)}</span>` + replayBtn() + '<span class="src" id="src"></span>');
     const listen = () => withNoise(c.scene, c.snr, () => playWord(target));
     $('#replay').onclick = replay(listen);
     const src = await playing(listen());
@@ -2701,7 +2687,7 @@ async function renderGate(n) {
       const listen = () => noisy(() => playEnv(it.s));
       await playing(listen); if (!alive()) return;
       oneReplay(listen);
-      const k = await ask(opts.map((x) => [ENV_SOUNDS[x].name, ENV_SOUNDS[x].icon]), null);
+      const k = await ask(opts.map((x) => [ENV_SOUNDS[x].name]), null);
       ok = opts[k] === it.s;
       if (!ok) miss.push({ label: ENV_SOUNDS[it.s].name, note: `고른 것: ${ENV_SOUNDS[opts[k]].name}`, fns: [['정답 소리', () => playEnv(it.s)], ['고른 소리', () => playEnv(opts[k])]] });
     } else if (it.t === 'pick') {
