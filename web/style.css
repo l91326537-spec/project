@@ -1039,3 +1039,8 @@ body:has(.sheet:not([hidden])) .choices.ling .choice { min-height: 84px; }
   .today-btn { padding-inline: 16px; }
   .today-btn b { font-size: 25px; }
 }
+
+/* 화면 밝기 고르기(연습 탭 설정) */
+.theme-row { display: flex; align-items: center; gap: 12px; }
+.theme-row > span { flex: none; font: 700 18px var(--display); }
+.theme-row .seg { flex: 1; }

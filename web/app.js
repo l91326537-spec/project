@@ -49,6 +49,7 @@ const fresh = () => ({
   minDb: null,           // 소리 알아차리기에서 들린 가장 작은 소리(dB, 기준 대비)
   toneByFreq: {},        // 높낮이별로 들린 가장 작은 소리
   bigText: false,
+  theme: 'auto',         // 화면 밝기: 'auto' 휴대폰 설정대로, 'light' 밝게, 'dark' 어둡게
   confusions: {},        // '초성 ㅅ↔ㅆ': 횟수
   focusLog: {},          // 맞춤 문제 결과 '초성 ㅅ↔ㅆ': {n, ok}
   speakLog: [],          // 말하기 한 판: {date, at, mode, n, score, good, asr, auto?, cell?, sec?, best?(아— 초), hz?, q?/s?: [맞음, 문제 수](말끝)}
@@ -85,6 +86,7 @@ function migrate(d) {
   if (!['both', 'L', 'R'].includes(d.ear)) d.ear = 'both';
   if (!SPEEDS.some(([v]) => v === d.talkSpeed)) d.talkSpeed = null;
   if (!['woman', 'man', 'mix'].includes(d.voice)) d.voice = 'woman';
+  if (!['auto', 'light', 'dark'].includes(d.theme)) d.theme = 'auto';
   if (!(d.startCh >= 1 && d.startCh <= 7)) d.startCh = null;
   if (!d.itemStats || typeof d.itemStats !== 'object') d.itemStats = {};
   if (d.plan && !Array.isArray(d.plan.cells)) d.plan.cells = [...new Set((d.plan.stages || []).map((n) => PLAN_STAGE[n]).filter(Boolean))];
@@ -96,6 +98,14 @@ let data = migrate(Object.assign(fresh(), store.load()));
 const persist = () => store.save(data);
 const applyTextSize = () => document.documentElement.classList.toggle('big', !!data.bigText);
 applyTextSize();
+// 화면 밝기: 고르지 않으면 휴대폰 설정(다크 모드)을 따른다
+function applyTheme() {
+  const root = document.documentElement;
+  if (data.theme === 'auto') delete root.dataset.theme; else root.dataset.theme = data.theme;
+  const dark = data.theme === 'dark' || (data.theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#10141c' : '#f3f5f9');
+}
+applyTheme();
 
 // 가족 녹음은 용량이 커서 IndexedDB에 둔다.
 const voiceDb = (() => {
@@ -988,6 +998,11 @@ function renderLearn() {
         <span class="switch-ui" aria-hidden="true"></span>
         글자 크게 보기
       </label>
+      <div class="theme-row">
+        <span>화면</span>
+        <div class="seg" role="radiogroup" aria-label="화면 밝기">${[['auto', '자동'], ['light', '밝게'], ['dark', '어둡게']].map(([k, label]) =>
+          `<button class="seg-btn${data.theme === k ? ' on' : ''}" role="radio" aria-checked="${data.theme === k}" data-theme-pick="${k}">${label}</button>`).join('')}</div>
+      </div>
       <button class="set-row" data-go="#who">
         <span><b>${whoOf().name || '사용자 유형 고르기'}</b><small>듣는 귀 ${EAR_NAME[data.ear]} · 말 빠르기 ${speedName()}</small></span>
         <span class="set-go">바꾸기</span>
@@ -995,6 +1010,7 @@ function renderLearn() {
     </section>
 `;
   view.querySelector('#big').onchange = (e) => { data.bigText = e.target.checked; persist(); applyTextSize(); };
+  view.querySelectorAll('[data-theme-pick]').forEach((b) => { b.onclick = () => { data.theme = b.dataset.themePick; persist(); applyTheme(); renderLearn(); }; });
 }
 
 // 장 화면: 칸 5개, 관문, 생활 미션, 그 장소에서 써 볼 듣기 요령
@@ -1347,7 +1363,7 @@ function renderProgress() {
   const reset = view.querySelector('#reset');
   reset.onclick = () => {
     if (reset.dataset.confirm) {
-      data = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, who: data.who, ear: data.ear, talkSpeed: data.talkSpeed, voice: data.voice });
+      data = Object.assign(fresh(), { preferFamily: data.preferFamily, bigText: data.bigText, theme: data.theme, who: data.who, ear: data.ear, talkSpeed: data.talkSpeed, voice: data.voice });
       persist(); renderProgress(); toast('기록을 지웠어요.');
     } else { reset.dataset.confirm = '1'; reset.textContent = '한 번 더 누르면 지워져요'; reset.classList.add('danger'); }
   };
